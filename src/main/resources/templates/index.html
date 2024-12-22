@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/layout}">
+<div layout:fragment="page-content">
+    <section class="bg-green-100 py-20 mb-4">
+        <div
+                class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center"
+        >
+            <div class="text-center">
+                <h1
+                        class="text-4xl font-extrabold text-blue-600 sm:text-5xl md:text-6xl"
+                >
+                    Level up your snooker
+                </h1>
+                <p class="my-4 text-xl text-red-600">
+                    Become a better player with SnookerUp
+                </p>
+                <button class="bg-yellow-200 border-solid border-2 border-green-800 hover:bg-green-800 hover:text-yellow-200 mt-5 px-8 py-4 rounded-lg text-center text-xl text-green-800">
+                    <a th:href="@{/signup}">Sign Up Now</a>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-4">
+        <div class="container-xl lg:container m-auto">
+            <h2 class="text-3xl font-bold text-green-800 mb-6 text-center">
+                How It Works
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 rounded-lg">
+                <div class="bg-yellow-100 p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-center">Browse</h2>
+                    <img class="h-20 w-auto m-auto mt-5 mb-5" src="images/browse-icon.svg"/>
+                    <p class="mt-2 mb-4 text-center">
+                        Search our vast catalogue of routines for a routine that aims to improve part of the game you struggle with
+                    </p>
+                </div>
+                <div class="bg-red-100 p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-center">Play</h2>
+                    <img class="h-20 w-auto m-auto mt-5 mb-5" src="images/complete-icon.svg"/>
+                    <p class="mt-2 mb-4 text-center">
+                        Go to your local club and try out your selected routine a few times
+                    </p>
+                </div>
+                <div class="bg-blue-100 p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-center">Record</h2>
+                    <img class="h-20 w-auto m-auto mt-5 mb-5" src="images/record-icon.svg"/>
+                    <p class="mt-2 mb-4 text-center">
+                        After each attempt, add your score to your SnookerUp profile (don't worry about mistakes, scores are private to yourself!)
+                    </p>
+                </div>
+                <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-center">Analyse</h2>
+                    <img class="h-20 w-auto m-auto mt-5 mb-5" src="images/analyse-icon.svg"/>
+                    <p class="mt-2 mb-4 text-center">
+                        Keep practising the routines, and over time you'll see your progress and how your scores improve!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="bg-blue-50 px-4 py-10">
+        <div class="container-xl lg:container m-auto">
+            <h2 class="text-3xl font-bold text-black mb-6 text-center">
+                Sample Routine
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white max-w-4xl m-auto p-6 rounded-lg shadow-md">
+                <img class="h-routine w-auto m-auto" src="images/clearing-the-colours.png"/>
+                <div>
+                    <h1 class="text-2xl font-bold text-blue-600 mb-4">Clearing the Colours</h1>
+                    <p class="text-m text-green-700 m-6">Put all colours on their spots, then try to clear them in order, i.e. yellow, green, brown, blue, pink, black.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="m-auto max-w-lg my-10 px-6">
+        <a
+                th:href="@{/routines}"
+                class="block bg-black text-white text-center py-4 px-6 rounded-xl hover:bg-gray-700"
+        >View All Routines</a
+        >
+    </section>
+</div>
+</html>
