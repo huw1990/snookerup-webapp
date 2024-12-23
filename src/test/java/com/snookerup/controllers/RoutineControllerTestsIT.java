@@ -9,20 +9,20 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 /**
- * Integration tests for the IndexController class.
+ * Integration tests for the RoutineController class.
  *
  * @author Huw
  */
-@WebMvcTest(IndexController.class)
-class IndexControllerITTests {
+@WebMvcTest(RoutineController.class)
+class RoutineControllerTestsIT {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    void getIndex() throws Exception {
+    void getAllRoutines() throws Exception {
         this.mockMvc
-                .perform(get("/"))
+                .perform(get("/routines"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

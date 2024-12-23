@@ -6,28 +6,28 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Unit tests for the IndexController class.
+ * Unit tests for the RoutineController class.
  *
  * @author Huw
  */
-class IndexControllerTests {
+class RoutineControllerTests {
 
-    IndexController indexController;
+    RoutineController routineController;
 
     @BeforeEach
     public void beforeEach() {
-        indexController = new IndexController();
+        routineController = new RoutineController();
     }
 
     @Test
-    public void getIndex_Should_ReturnIndex() {
+    public void getAllRoutines_Should_ReturnRoutines() {
         // Define variables
-        String expectedReturn = "index";
+        String expectedReturn = "routines";
 
         // Set mock expectations
 
         // Execute method under test
-        String returnedPage = indexController.getIndex();
+        String returnedPage = routineController.getAllRoutines();
 
         // Verify
         assertEquals(expectedReturn, returnedPage);
