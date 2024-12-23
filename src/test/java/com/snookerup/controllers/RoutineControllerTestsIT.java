@@ -25,4 +25,11 @@ class RoutineControllerTestsIT {
                 .perform(get("/routines"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
+
+    @Test
+    void getRoutineById() throws Exception {
+        this.mockMvc
+                .perform(get("/routines/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
 }

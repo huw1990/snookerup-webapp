@@ -32,4 +32,18 @@ class RoutineControllerTests {
         // Verify
         assertEquals(expectedReturn, returnedPage);
     }
+
+    @Test
+    public void getRoutineById_Should_ReturnRoutine() {
+        // Define variables
+        String expectedReturn = "routine";
+
+        // Set mock expectations
+
+        // Execute method under test
+        String returnedPage = routineController.getRoutineById("1");
+
+        // Verify
+        assertEquals(expectedReturn, returnedPage);
+    }
 }

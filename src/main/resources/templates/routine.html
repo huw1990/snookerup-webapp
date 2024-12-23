@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/layout}">
+<div layout:fragment="page-content">
+    <section class="bg-gray-50 px-4 py-10">
+        <div class="container-xl lg:container m-auto">
+            <h2 class="text-3xl font-bold text-black mb-6 text-center">
+                Clearing the Colours
+            </h2>
+            <div class="m-auto max-w-lg my-10 px-6 flex gap-6">
+                <a
+                        href="addscore.html"
+                        class="flex-grow bg-green-500 text-white text-center py-4 px-6 rounded-xl hover:bg-green-700 border-solid border-2 border-green-800 "
+                >Add Score</a
+                >
+                <a
+                        href="scores.html"
+                        class="flex-grow bg-green-500 text-white text-center py-4 px-6 rounded-xl hover:bg-green-700 border-solid border-2 border-green-800 "
+                >View Scores</a
+                >
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl m-auto p-6">
+                <img class="h-routine w-auto m-auto" src="/images/clearing-the-colours.png"/>
+                <div>
+                    <p class="text-m text-green-700 m-6 ml-2 mr-2">Put all colours on their spots, then try to clear them in order, i.e. yellow, green, brown, blue, pink, black.</p>
+                    <p class="text-m text-green-700 m-6 ml-2 mr-2">Try a variation to change the difficulty of this routine:</p>
+                    <ul class="text-m text-green-700 m-4 mb-6">
+                        <li class="m-2"><strong>As a loop:</strong> Complete the routine, but with your last shot of the routine, play position for the first shot again, then carry on.</li>
+                        <li class="m-2"><strong>Limit the number of cushions you can hit:</strong> Try to complete the routine either without hitting a routine at all, or with at most a fixed number of cushions, e.g. 3, 5, or 7.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
