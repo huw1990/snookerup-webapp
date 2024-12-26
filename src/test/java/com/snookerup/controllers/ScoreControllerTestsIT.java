@@ -25,4 +25,11 @@ class ScoreControllerTestsIT {
                 .perform(get("/scores"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
+
+    @Test
+    void getAddNewScore() throws Exception {
+        this.mockMvc
+                .perform(get("/addscore"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
 }

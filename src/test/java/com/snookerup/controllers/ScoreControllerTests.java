@@ -32,4 +32,18 @@ class ScoreControllerTests {
         // Verify
         assertEquals(expectedReturn, returnedPage);
     }
+
+    @Test
+    public void getAddNewScore_Should_ReturnAddScore() {
+        // Define variables
+        String expectedReturn = "addscore";
+
+        // Set mock expectations
+
+        // Execute method under test
+        String returnedPage = scoreController.getAddNewScore();
+
+        // Verify
+        assertEquals(expectedReturn, returnedPage);
+    }
 }
