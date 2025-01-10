@@ -1,0 +1,16 @@
+{
+  "name": "snookerup-cdk",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "info": "IMPORTANT NOTE: Please make sure to replace the values inside the cdk.json with your configuration",
+    "repository:deploy": "cdk deploy --app \"./mvnw -e -q compile exec:java -Dexec.mainClass=com.snookerup.cdk.DockerRepositoryApp\" --require-approval never",
+    "repository:destroy": "cdk destroy --app \"./mvnw -e -q compile exec:java -Dexec.mainClass=com.snookerup.cdk.DockerRepositoryApp\" --force --require-approval never"
+  },
+  "devDependencies": {
+    "aws-cdk": "2.173.4"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
