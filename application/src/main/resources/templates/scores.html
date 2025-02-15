@@ -9,27 +9,46 @@
             <h2 class="text-3xl font-bold text-black mb-5 text-center">
                 Scores
             </h2>
-            <div class="text-center text-xs">
-                <div class="inline-block m-2 text-center py-6 border-solid border-2 rounded-md border-green-800">
+            <div class="text-center text-xs flex flex-col md:flex-row justify-center">
+                <div class="m-2 text-center py-6 border-solid border-2 rounded-md border-green-800">
                     <p class="inline ml-4">Routine:</p>
                     <p class="inline border-solid border-2 rounded-md border-gray-300 p-2 px-4 mx-4">Clearing the Colours</p>
                 </div>
-                <form class="inline-block m-2 p-4">
-                    <div class="inline text-center py-6 border-solid border-2 rounded-md border-green-800">
+                <div class="m-2 flex flex-col md:flex-row text-center py-2 md:py-6 border-solid border-2 rounded-md border-green-800">
+                    <div class="pb-2 md:pb-0">
                         <p class="inline ml-4">From:</p>
-                        <input class="mx-1" type="datetime-local" id="from-date-time" name="meeting-time" value="2018-06-12T19:30" min="2018-06-07T00:00" max="2018-06-14T00:00" />
+                        <input class="mx-1 text-lg md:text-xs" type="datetime-local" id="from-date-time" name="meeting-time" value="2018-06-12T19:30" min="2018-06-07T00:00" max="2018-06-14T00:00" />
+                    </div>
+                    <div>
                         <p class="inline">To:</p>
-                        <input class="mx-1" type="datetime-local" id="to-date-time" name="meeting-time" value="2018-06-12T19:30" min="2018-06-07T00:00" max="2018-06-14T00:00" />
+                        <input class="mx-1 text-lg md:text-xs" type="datetime-local" id="to-date-time" name="meeting-time" value="2018-06-12T19:30" min="2018-06-07T00:00" max="2018-06-14T00:00" />
                     </div>
-                    <div class="inline px-6 py-6 mx-4 border-solid border-2 rounded-md border-green-800">
-                        <input id="loop" type="checkbox" value="" class="align-middle w-4 h-4 accent-green-700">
-                        <label for="loop" class="ms-2 font-medium text-gray-900 dark:text-gray-300">In a loop?</label>
-                        <input id="cushion_limit" type="checkbox" value="" class="ml-4 align-middle w-4 h-4 accent-green-700">
-                        <label for="cushion_limit" class="ms-2 font-medium text-gray-900 dark:text-gray-300">Cushion limit?</label>
-                        <label for="cushions" class="ml-4 mr-2 font-medium leading-6 text-gray-900">Max cushions</label>
-                        <input id="cushions" name="cushions" type="number" class="inline px-4 w-20 rounded-md border-0 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </form>
+                </div>
+                <button id="showHideVariationsButton" class="m-4 p-2 px-4 mx-4 text-white bg-green-800 hover:bg-green-950 hover:text-white rounded-md px-3 py-2 border-solid border-2 border-green-800">Show/Hide Variations</button>
+            </div>
+            <div id="variationsBlock" class="hidden flex flex-wrap px-6 py-6 mx-4 border-solid border-2 rounded-md border-green-800">
+                <div class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                    <input id="loop" type="checkbox" value="" class="align-middle w-4 h-4 accent-green-700">
+                    <label for="loop" class="ml-1 font-medium text-gray-900 dark:text-gray-300">In a loop?</label>
+                </div>
+                <div class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                    <input id="cushion-limit" type="checkbox" value="" class="align-middle w-4 h-4 accent-green-700">
+                    <label for="cushions" class="ml-1 mr-2 font-medium leading-6 text-gray-900">Cushion limit?</label>
+                    <input id="cushions" name="cushions" value="0" type="number" class="inline px-4 w-20 rounded-md border-0 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>
+                <div class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                    <input id="redballs-limit" type="checkbox" value="" class="align-middle w-4 h-4 accent-green-700">
+                    <label for="redballs" class="ml-1 mr-2 font-medium leading-6 text-gray-900">Reds/Balls limit?</label>
+                    <input id="redballs" name="cushions" value="0" type="number" class="inline px-4 w-20 rounded-md border-0 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>
+                <div class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                    <input id="potinorder" type="checkbox" value="" class="align-middle w-4 h-4 accent-green-700">
+                    <label for="potinorder" class="ml-1 font-medium text-gray-900 dark:text-gray-300">Pot in order?</label>
+                </div>
+                <div class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                    <input id="stayononeside" type="checkbox" value="" class="align-middle w-4 h-4 accent-green-700">
+                    <label for="stayononeside" class="ml-1 font-medium text-gray-900 dark:text-gray-300">Stay on one side of table?</label>
+                </div>
             </div>
             <p class="text-lg p-2 mt-10 mb-4 text-left font-bold text-green-900">Thursday 29th August 2024</p>
             <div class="grid grid-cols-8 gap-4 mx-4 text-md font-medium text-green-900">
