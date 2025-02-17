@@ -5,6 +5,11 @@ import software.amazon.awscdk.Environment;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 
+/**
+ * CDK app for bootstrapping a new AWS environment.
+ *
+ * @author Huw
+ */
 public class BootstrapApp {
 
     public static void main(final String[] args) {

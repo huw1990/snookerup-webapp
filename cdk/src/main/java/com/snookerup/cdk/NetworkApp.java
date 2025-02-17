@@ -1,20 +1,25 @@
 package com.snookerup.cdk;
 
-import dev.stratospheric.cdk.DockerRepository;
+import dev.stratospheric.cdk.Network;
+import dev.stratospheric.cdk.Network.NetworkInputParameters;
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.Environment;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 
 /**
- * CDK app for setting up an ECR entry for hosting the Docker container of our app.
+ * CDK app responsible for deploying the network components for our app, including creating a VPC, and ECS cluster,
+ * and a load balancer that directs traffic to the ECS cluster.
  *
  * @author Huw
  */
-public class DockerRepositoryApp {
+public class NetworkApp {
 
     public static void main(final String[] args) {
         App app = new App();
+
+        String environmentName = (String) app.getNode().tryGetContext("environmentName");
+        Validations.requireNonEmpty(environmentName, "context variable 'environmentName' must not be null");
 
         String accountId = (String) app.getNode().tryGetContext("accountId");
         Validations.requireNonEmpty(accountId, "context variable 'accountId' must not be null");
@@ -22,21 +27,21 @@ public class DockerRepositoryApp {
         String region = (String) app.getNode().tryGetContext("region");
         Validations.requireNonEmpty(region, "context variable 'region' must not be null");
 
-        String applicationName = (String) app.getNode().tryGetContext("applicationName");
-        Validations.requireNonEmpty(applicationName, "context variable 'applicationName' must not be null");
-
         Environment awsEnvironment = makeEnv(accountId, region);
 
-        Stack dockerRepositoryStack = new Stack(app, "DockerRepositoryStack", StackProps.builder()
-                .stackName(applicationName + "-DockerRepository")
+        Stack networkStack = new Stack(app, "NetworkStack", StackProps.builder()
+                .stackName(environmentName + "-Network")
                 .env(awsEnvironment)
                 .build());
 
-        DockerRepository dockerRepository = new DockerRepository(
-                dockerRepositoryStack,
-                "DockerRepository",
+        NetworkInputParameters inputParameters = new NetworkInputParameters();
+
+        new Network(
+                networkStack,
+                "Network",
                 awsEnvironment,
-                new DockerRepository.DockerRepositoryInputParameters(applicationName, accountId));
+                environmentName,
+                inputParameters);
 
         app.synth();
     }
