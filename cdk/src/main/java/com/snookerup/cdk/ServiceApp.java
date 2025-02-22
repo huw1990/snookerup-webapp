@@ -42,9 +42,6 @@ public class ServiceApp {
         String region = (String) app.getNode().tryGetContext("region");
         Validations.requireNonEmpty(region, "context variable 'region' must not be null");
 
-        String commitSha = (String) app.getNode().tryGetContext("commitSha");
-        Validations.requireNonEmpty(commitSha, "context variable 'commitSha' must not be null");
-
         Environment awsEnvironment = makeEnv(accountId, region);
 
         ApplicationEnvironment applicationEnvironment = new ApplicationEnvironment(
