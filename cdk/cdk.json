@@ -2,6 +2,10 @@
   "context": {
     "applicationName": "snookerup-webapp",
     "region": "eu-west-2",
-    "accountId": "886436943159"
+    "accountId": "886436943159",
+    "dockerRepositoryName": "snookerup-webapp",
+    "dockerImageTag": "DYNAMICALLY_OVERRIDDEN_BY_WORKFLOW",
+    "environmentName": "staging",
+    "springProfile": "aws"
   }
 }
