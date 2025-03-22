@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 <html lang="en"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:th="http://www.thymeleaf.org">
 <div th:fragment="header">
     <nav class="bg-green-700 border-b border-green-500">
@@ -35,16 +35,24 @@
                         >Routines</a
                         >
                     </li>
-                    <li>
+                    <li sec:authorize="isAuthenticated()">
+                        <p class="block my-1 md:my-0 text-white px-3 py-2">Welcome, [[${#authentication.principal.attributes.name}]]!</p>
+                    </li>
+                    <li sec:authorize="isAuthenticated()">
+                        <form th:action="@{/logout}" method="post">
+                            <input class="block my-1 md:my-0 text-white hover:bg-green-950 hover:text-white rounded-md px-3 py-2 border-solid border-2 border-green-800" type="submit" value="Logout">
+                        </form>
+                    </li>
+                    <li sec:authorize="isAnonymous()">
                         <a
                                 th:href="@{/signup}"
                                 class="block my-1 md:my-0 text-white hover:bg-green-950 hover:text-white rounded-md px-3 py-2 border-solid border-2 border-green-800"
                         >Sign Up</a
                         >
                     </li>
-                    <li>
+                    <li sec:authorize="isAnonymous()">
                         <a
-                                href="login.html"
+                                th:href="@{/oauth2/authorization/cognito}"
                                 class="block my-1 md:my-0 text-white hover:bg-green-950 hover:text-white rounded-md px-3 py-2 border-solid border-2 border-green-800"
                         >Log In</a
                         >

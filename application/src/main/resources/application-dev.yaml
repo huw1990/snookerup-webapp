@@ -1,0 +1,23 @@
+spring:
+  cloud:
+    aws:
+      credentials:
+        secret-key: foo
+        access-key: bar
+      endpoint: http://localhost:4566
+      region:
+        static: eu-west-2
+  security:
+    oauth2:
+      client:
+        registration:
+          cognito:
+            client-id: spring-boot-application
+            client-secret: 27b07baf-53ba-42c6-b11f-6384769cada3
+            scope: openid
+        provider:
+          cognito:
+            issuerUri: http://localhost:8888/auth/realms/snookerup
+
+custom:
+  use-cognito-as-identity-provider: false

@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: snookerup-webapp
+  cloud:
+    aws:
+      region:
+        static: eu-west-2
+
+logging:
+  level:
+    com.snookerup: DEBUG
+    org.springframework: DEBUG
