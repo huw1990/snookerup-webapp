@@ -15,12 +15,13 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 @Configuration
 public class LogoutSuccessHandlerConfig {
 
-    @Bean
-    @ConditionalOnProperty(prefix = "custom", name = "use-cognito-as-identity-provider", havingValue = "false")
-    public LogoutSuccessHandler oidcLogoutSuccessHandler(ClientRegistrationRepository clientRegistrationRepository) {
-        OidcClientInitiatedLogoutSuccessHandler successHandler = new OidcClientInitiatedLogoutSuccessHandler(
-                clientRegistrationRepository);
-        successHandler.setPostLogoutRedirectUri("{baseUrl}");
-        return successHandler;
-    }
+    // TODO: uncomment out when proper security config re-instated
+//    @Bean
+//    @ConditionalOnProperty(prefix = "custom", name = "use-cognito-as-identity-provider", havingValue = "false")
+//    public LogoutSuccessHandler oidcLogoutSuccessHandler(ClientRegistrationRepository clientRegistrationRepository) {
+//        OidcClientInitiatedLogoutSuccessHandler successHandler = new OidcClientInitiatedLogoutSuccessHandler(
+//                clientRegistrationRepository);
+//        successHandler.setPostLogoutRedirectUri("{baseUrl}");
+//        return successHandler;
+//    }
 }

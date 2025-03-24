@@ -20,23 +20,30 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class WebSecurityConfig {
 
-    private final LogoutSuccessHandler logoutSuccessHandler;
-
-    public WebSecurityConfig(LogoutSuccessHandler logoutSuccessHandler) {
-        this.logoutSuccessHandler = logoutSuccessHandler;
-    }
+//    private final LogoutSuccessHandler logoutSuccessHandler;
+//
+//    public WebSecurityConfig(LogoutSuccessHandler logoutSuccessHandler) {
+//        this.logoutSuccessHandler = logoutSuccessHandler;
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        // TODO: uncomment out for proper security
+//        httpSecurity
+//                .csrf(withDefaults())
+//                .oauth2Login(withDefaults())
+//                .authorizeHttpRequests(httpRequests -> httpRequests
+//                        .requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
+//                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+//                        .requestMatchers("/", "/login*", "/routines", "/routines/**").permitAll()
+//                        .anyRequest().authenticated())
+//                .logout(logout -> logout.logoutSuccessHandler(logoutSuccessHandler));
+
+        // Allow everything - just for this placeholder page
         httpSecurity
                 .csrf(withDefaults())
-                .oauth2Login(withDefaults())
                 .authorizeHttpRequests(httpRequests -> httpRequests
-                        .requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
-                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/", "/login*", "/routines", "/routines/**").permitAll()
-                        .anyRequest().authenticated())
-                .logout(logout -> logout.logoutSuccessHandler(logoutSuccessHandler));;
+                        .anyRequest().permitAll());
 
         return httpSecurity.build();
     }

@@ -8,7 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("dev")
 @SpringBootTest
 @AutoConfigureMockMvc
-class SnookerupWebappApplicationTests extends BaseTestcontainersIT {
+class SnookerupWebappApplicationTests {//extends BaseTestcontainersIT {
 
 	@Test
 	void contextLoads() {
