@@ -1,0 +1,43 @@
+# This workflow creates an SSL certificate that we'll use for our application, designed to be triggered manually
+name: 01a - Manually create an SSL certificate
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      hostedZoneDomain:
+        description: 'The name of the hosted zone domain in AWS'
+        required: true
+        default: 'snookerup.com'
+      applicationDomain:
+        description: 'The name of the domain the application will be hosted on'
+        required: true
+        default: 'staging.snookerup.com'
+jobs:
+  deploy-network-stack:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-22.04
+    name: Run the certificate stack
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+          cache: 'maven'
+
+      - name: NPM install
+        working-directory: cdk
+        run: npm install
+
+      - name: Run certificate stack
+        working-directory: cdk
+        run: npm run certificate:deploy -- -c hostedZoneDomain=${{ github.event.inputs.hostedZoneDomain }} -c applicationDomain=${{ github.event.inputs.applicationDomain }}

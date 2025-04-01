@@ -6,6 +6,8 @@
     "dockerRepositoryName": "snookerup-webapp",
     "dockerImageTag": "DYNAMICALLY_OVERRIDDEN_BY_WORKFLOW",
     "environmentName": "staging",
-    "springProfile": "aws"
+    "springProfile": "aws",
+    "applicationDomain": "staging.snookerup.com",
+    "hostedZoneDomain": "snookerup.com"
   }
 }
