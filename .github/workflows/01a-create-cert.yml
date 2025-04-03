@@ -18,7 +18,7 @@ on:
         required: true
         default: 'staging.snookerup.com'
 jobs:
-  deploy-network-stack:
+  deploy-cert-stack:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-22.04
     name: Run the certificate stack
