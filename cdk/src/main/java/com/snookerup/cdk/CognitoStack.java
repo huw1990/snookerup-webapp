@@ -1,4 +1,4 @@
-package dev.stratospheric.todoapp.cdk;
+package com.snookerup.cdk;
 
 import java.util.Arrays;
 import java.util.Collections;
