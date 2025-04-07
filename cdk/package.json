@@ -13,6 +13,8 @@
     "repository:destroy": "cdk destroy --app \"./mvnw -e -q compile exec:java -Dexec.mainClass=com.snookerup.cdk.DockerRepositoryApp\" --force --require-approval never",
     "network:deploy": "cdk deploy --app \"./mvnw -e -q compile exec:java -Dexec.mainClass=com.snookerup.cdk.NetworkApp\" --require-approval never",
     "network:destroy": "cdk destroy --app \"./mvnw -e -q compile exec:java -Dexec.mainClass=com.snookerup.cdk.NetworkApp\" --force --require-approval never",
+    "cognito:deploy": "cdk deploy --app \"./mvnw -e -q compile exec:java -Dexec.mainClass=com.snookerup.cdk.CognitoApp\" --require-approval never",
+    "cognito:destroy": "cdk destroy --app \"./mvnw -e -q compile exec:java -Dexec.mainClass=com.snookerup.cdk.CognitoApp\" --force --require-approval never",
     "service:deploy": "cdk deploy --app \"./mvnw -e -q compile exec:java -Dexec.mainClass=com.snookerup.cdk.ServiceApp\" --require-approval never --all",
     "service:destroy": "cdk destroy --app \"./mvnw -e -q compile exec:java -Dexec.mainClass=com.snookerup.cdk.ServiceApp\" --force --require-approval never --all"
   },

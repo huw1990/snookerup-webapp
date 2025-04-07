@@ -9,6 +9,8 @@
     "springProfile": "aws",
     "applicationDomain": "staging.snookerup.com",
     "hostedZoneDomain": "snookerup.com",
-    "sslCertificateArn": "arn:aws:acm:eu-west-2:886436943159:certificate/b77d51e4-9482-4092-9926-ec0e4a8b3f60"
+    "sslCertificateArn": "arn:aws:acm:eu-west-2:886436943159:certificate/b77d51e4-9482-4092-9926-ec0e4a8b3f60",
+    "applicationUrl": "https://staging.snookerup.com",
+    "loginPageDomainPrefix": "snookerup-staging"
   }
 }

@@ -14,4 +14,26 @@ on:
         required: true
         default: 'staging'
 jobs:
-#  No jobs yet
+  deploy-cognito-stack:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-22.04
+    name: Deploy the Cognito stack
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+          cache: 'maven'
+
+      - name: NPM install
+        working-directory: cdk
+        run: npm install
+
+      - name: Deploy Cognito stack
+        working-directory: cdk
+        run: npm run cognito:deploy -- -c environmentName=${{ github.event.inputs.environmentName }}
