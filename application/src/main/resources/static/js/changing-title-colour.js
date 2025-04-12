@@ -10,14 +10,20 @@ window.addEventListener('load', function() {
         const blueRgb = {r:16, g:118, b:196};
         const pinkRgb = {r:217, g:143, b:213};
         const blackRgb = {r:1, g:1, b:1};
+        const coloursInOrder = [redRgb, yellowRgb, greenRgb, brownRgb, blueRgb, pinkRgb, blackRgb];
         const lerp = function(a,b,u) {
             return (1-u) * a + u * b;
         };
         const fade = function(element, start, end, duration) {
+            if (document.hidden) {
+                // Don't change colour while tab isn't active
+                return;
+            }
             let interval = 10;
             let steps = duration/interval;
             let step_u = 1.0/steps;
             let u = 0.0;
+            currentColourIndex++;
             let theInterval = setInterval(function(){
                 if (u >= 1.0){ clearInterval(theInterval) }
                 let r = parseInt(lerp(start.r, end.r, u));
@@ -30,49 +36,16 @@ window.addEventListener('load', function() {
         };
         const transitionDuration = 400;
         const timeBetweenTransitions = 6000;
-        const scheduleChangeRedToYellow = function() {
-            setTimeout(function(){
-                fade(heroTitle,redRgb, yellowRgb,transitionDuration);
-                scheduleChangeYellowToGreen();
-            },timeBetweenTransitions);
-        }
-        const scheduleChangeYellowToGreen = function() {
-            setTimeout(function(){
-                fade(heroTitle,yellowRgb,greenRgb,transitionDuration);
-                scheduleChangeGreenToBrown();
-            },timeBetweenTransitions);
-        }
-        const scheduleChangeGreenToBrown = function() {
-            setTimeout(function(){
-                fade(heroTitle,greenRgb, brownRgb,transitionDuration);
-                scheduleChangeBrownToBlue();
-            },timeBetweenTransitions);
-        }
-        const scheduleChangeBrownToBlue = function() {
-            setTimeout(function(){
-                fade(heroTitle,brownRgb, blueRgb,transitionDuration);
-                scheduleChangeBlueToPink();
-            },timeBetweenTransitions);
-        }
-        const scheduleChangeBlueToPink = function() {
-            setTimeout(function(){
-                fade(heroTitle,blueRgb, pinkRgb,transitionDuration);
-                scheduleChangePinkToBlack();
-            },timeBetweenTransitions);
-        }
-        const scheduleChangePinkToBlack = function() {
-            setTimeout(function(){
-                fade(heroTitle,pinkRgb, blackRgb,transitionDuration);
-                scheduleChangeBlackToRed();
-            },timeBetweenTransitions);
-        }
-        const scheduleChangeBlackToRed = function() {
-            setTimeout(function(){
-                fade(heroTitle,blackRgb, redRgb,transitionDuration);
-                scheduleChangeRedToYellow();
-            },timeBetweenTransitions);
-        }
-        // Now schedule the first transition (the others will run recursively)
-        scheduleChangeRedToYellow();
+        let currentColourIndex = 0;
+        setInterval(function() {
+            if (currentColourIndex >= coloursInOrder.length) {
+                currentColourIndex = 0;
+            }
+            let nextColour = currentColourIndex + 1;
+            if (nextColour >= coloursInOrder.length) {
+                nextColour = 0;
+            }
+            fade(heroTitle, coloursInOrder[currentColourIndex], coloursInOrder[nextColour], transitionDuration);
+        }, timeBetweenTransitions);
     }
 });
