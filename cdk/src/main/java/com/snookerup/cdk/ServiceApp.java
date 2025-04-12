@@ -7,8 +7,13 @@ import software.amazon.awscdk.App;
 import software.amazon.awscdk.Environment;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.services.iam.Effect;
+import software.amazon.awscdk.services.iam.PolicyStatement;
+import software.constructs.Construct;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
@@ -68,6 +73,9 @@ public class ServiceApp {
                 .env(awsEnvironment)
                 .build());
 
+        CognitoStack.CognitoOutputParameters cognitoOutputParameters =
+                CognitoStack.getOutputParametersFromParameterStore(parametersStack, applicationEnvironment);
+
         new Service(
                 serviceStack,
                 stackPrefix,
@@ -76,16 +84,51 @@ public class ServiceApp {
                 new Service.ServiceInputParameters(
                         new Service.DockerImageSource(dockerRepositoryName, dockerImageTag),
                         emptyList(),
-                        environmentVariables(springProfile)),
+                        environmentVariables(
+                                serviceStack,
+                                cognitoOutputParameters,
+                                springProfile,
+                                environmentName))
+                        .withCpu(512)
+                        .withMemory(1024)
+                        .withTaskRolePolicyStatements(List.of(
+                                PolicyStatement.Builder.create()
+                                        .sid("AllowCreatingUsers")
+                                        .effect(Effect.ALLOW)
+                                        .resources(
+                                                List.of(String.format("arn:aws:cognito-idp:%s:%s:userpool/%s", region,
+                                                        accountId, cognitoOutputParameters.getUserPoolId()))
+                                        )
+                                        .actions(List.of(
+                                                "cognito-idp:AdminCreateUser"
+                                        ))
+                                        .build()
+                        ))
+                        .withStickySessionsEnabled(true)
+                        .withHealthCheckPath("/actuator/health")
+                        .withAwsLogsDateTimeFormat("%Y-%m-%dT%H:%M:%S.%f%z")
+                        .withHealthCheckIntervalSeconds(30), // needs to be long enough to allow for slow start up with low-end computing instances
+
                 Network.getOutputParametersFromParameterStore(serviceStack, applicationEnvironment.getEnvironmentName()));
 
         app.synth();
     }
 
     static Map<String, String> environmentVariables(
-            String springProfile) {
+            Construct scope,
+            CognitoStack.CognitoOutputParameters cognitoOutputParameters,
+            String springProfile,
+            String environmentName
+    ) {
         Map<String, String> vars = new HashMap<>();
         vars.put("SPRING_PROFILES_ACTIVE", springProfile);
+        vars.put("COGNITO_CLIENT_ID", cognitoOutputParameters.getUserPoolClientId());
+        vars.put("COGNITO_CLIENT_SECRET", cognitoOutputParameters.getUserPoolClientSecret());
+        vars.put("COGNITO_USER_POOL_ID", cognitoOutputParameters.getUserPoolId());
+        vars.put("COGNITO_LOGOUT_URL", cognitoOutputParameters.getLogoutUrl());
+        vars.put("COGNITO_PROVIDER_URL", cognitoOutputParameters.getProviderUrl());
+        vars.put("ENVIRONMENT_NAME", environmentName);
+
         return vars;
     }
 

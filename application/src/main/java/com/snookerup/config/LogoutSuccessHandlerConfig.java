@@ -1,5 +1,7 @@
 package com.snookerup.config;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,15 +15,23 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
  * @author Huw
  */
 @Configuration
+@RequiredArgsConstructor
 public class LogoutSuccessHandlerConfig {
 
-    // TODO: uncomment out when proper security config re-instated
-//    @Bean
-//    @ConditionalOnProperty(prefix = "custom", name = "use-cognito-as-identity-provider", havingValue = "false")
-//    public LogoutSuccessHandler oidcLogoutSuccessHandler(ClientRegistrationRepository clientRegistrationRepository) {
-//        OidcClientInitiatedLogoutSuccessHandler successHandler = new OidcClientInitiatedLogoutSuccessHandler(
-//                clientRegistrationRepository);
-//        successHandler.setPostLogoutRedirectUri("{baseUrl}");
-//        return successHandler;
-//    }
+    private final AwsConfig awsConfig;
+
+    @Bean
+    @ConditionalOnProperty(prefix = "custom", name = "use-cognito-as-identity-provider", havingValue = "true")
+    public LogoutSuccessHandler cognitoOidcLogoutSuccessHandler() {
+        return new CognitoOidcLogoutSuccessHandler(awsConfig.getCognitoLogoutUrl(), awsConfig.getCognitoClientId());
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "custom", name = "use-cognito-as-identity-provider", havingValue = "false")
+    public LogoutSuccessHandler oidcLogoutSuccessHandler(ClientRegistrationRepository clientRegistrationRepository) {
+        OidcClientInitiatedLogoutSuccessHandler successHandler = new OidcClientInitiatedLogoutSuccessHandler(
+                clientRegistrationRepository);
+        successHandler.setPostLogoutRedirectUri("{baseUrl}");
+        return successHandler;
+    }
 }

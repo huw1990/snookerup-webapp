@@ -10,3 +10,11 @@ logging:
   level:
     com.snookerup: DEBUG
     org.springframework: DEBUG
+
+custom:
+  invitation-codes: CRUCIBLE, 147_BREAK, SNOOKER_CUE
+
+# Will be overwritten by environment variables in AWS
+COGNITO_CLIENT_ID: TBD
+COGNITO_LOGOUT_URL: TBD
+COGNITO_USER_POOL_ID: TBD

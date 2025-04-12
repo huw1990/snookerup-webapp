@@ -1,8 +1,9 @@
 
 <!DOCTYPE html>
 <html lang="en"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <div th:fragment="header">
     <nav class="bg-green-700 border-b border-green-500">
         <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -25,7 +26,36 @@
                         <a
                                 th:href="@{/}"
                                 class="block my-1 md:my-0 text-white hover:bg-green-950 hover:text-white rounded-md px-3 py-2"
-                        >Coming Soon</a
+                        >Home</a
+                        >
+                    </li>
+                    <li>
+                        <a
+                                th:href="@{/routines}"
+                                class="block my-1 md:my-0 text-white hover:bg-green-950 hover:text-white rounded-md px-3 py-2"
+                        >Routines</a
+                        >
+                    </li>
+                    <li sec:authorize="isAuthenticated()">
+                        <p class="block my-1 md:my-0 text-white rounded-md px-3 py-2 border-solid border-2 border-green-800">[[${#authentication.principal.attributes.name}]]</p>
+                    </li>
+                    <li sec:authorize="isAuthenticated()">
+                        <form th:action="@{/logout}" method="post">
+                            <input class="cursor-pointer block my-1 md:my-0 text-white hover:bg-green-950 hover:text-white rounded-md px-3 py-2 border-solid border-2 border-green-800" type="submit" value="Logout">
+                        </form>
+                    </li>
+                    <li sec:authorize="isAnonymous()">
+                        <a
+                                th:href="@{/register}"
+                                class="block my-1 md:my-0 text-white hover:bg-green-950 hover:text-white rounded-md px-3 py-2 border-solid border-2 border-green-800"
+                        >Sign Up</a
+                        >
+                    </li>
+                    <li sec:authorize="isAnonymous()">
+                        <a
+                                th:href="@{/oauth2/authorization/cognito}"
+                                class="block my-1 md:my-0 text-white hover:bg-green-950 hover:text-white rounded-md px-3 py-2 border-solid border-2 border-green-800"
+                        >Log In</a
                         >
                     </li>
                 </ul>

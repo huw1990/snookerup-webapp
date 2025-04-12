@@ -1,6 +1,6 @@
 package com.snookerup.controllers;
 
-//import com.snookerup.BaseTestcontainersIT;
+import com.snookerup.BaseTestcontainersIT;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ActiveProfiles("dev")
 @SpringBootTest
 @AutoConfigureMockMvc
-class IndexControllerTestsIT {//extends BaseTestcontainersIT {
+class IndexControllerTestsIT extends BaseTestcontainersIT {
 
     @Autowired
     private MockMvc mockMvc;
