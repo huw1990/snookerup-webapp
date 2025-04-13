@@ -7,7 +7,7 @@ spring:
             clientId: ${COGNITO_CLIENT_ID}
             clientSecret: ${COGNITO_CLIENT_SECRET}
             scope: openid, profile, email
-            clientName: snookerup-users-client
+            clientName: snookerup-webapp-client
         provider:
           cognito:
             issuerUri: ${COGNITO_PROVIDER_URL}

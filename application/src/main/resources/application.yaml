@@ -9,7 +9,6 @@ spring:
 logging:
   level:
     com.snookerup: DEBUG
-    org.springframework: DEBUG
 
 custom:
   invitation-codes: CRUCIBLE, 147_BREAK, SNOOKER_CUE
