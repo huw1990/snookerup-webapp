@@ -1,0 +1,13 @@
+{
+  "routineFileNames": [
+    "routines/the-line-up.json",
+    "routines/the-t-line-up.json",
+    "routines/the-y-line-up.json",
+    "routines/the-x-line-up.json",
+    "routines/clearing-the-colours.json",
+    "routines/straight-pots-along-blue-spot.json",
+    "routines/eight-reds-with-blue-and-black.json",
+    "routines/five-reds-within-triangle.json",
+    "routines/three-distant-reds-and-colours.json"
+  ]
+}

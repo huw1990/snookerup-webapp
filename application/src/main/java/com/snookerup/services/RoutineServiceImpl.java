@@ -1,13 +1,13 @@
 package com.snookerup.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.snookerup.model.AllRoutines;
 import com.snookerup.model.Routine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
-import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,10 +20,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RoutineServiceImpl implements RoutineService, CommandLineRunner {
 
-    /** The location of the directory containing the schema and routine JSON files (in src/resources/routines in the code). */
-    public static final String LOCATION_OF_ROUTINES_JSON_FILES = "classpath:routines/";
-    /** The name of the schema file, so that we don't try to parse it as a routine. */
-    public static final String SCHEMA_FILE_NAME = "routine-schema.json";
+    /** The name of the file containing all the routine file names. */
+    public static final String ALL_ROUTINES_JSON_FILE = "routines/all-routines.json";
 
     private final Map<String, Routine> routineIdToRoutines = new HashMap<>();
     private final Set<String> allTags = new HashSet<>();
@@ -32,23 +30,18 @@ public class RoutineServiceImpl implements RoutineService, CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         log.debug("Loading routine config JSON files into memory");
-        File routinesFilesDir = ResourceUtils.getFile(LOCATION_OF_ROUTINES_JSON_FILES);
-        if (!routinesFilesDir.isDirectory()) {
-            throw new IllegalStateException("Routines directory is not directory: " + routinesFilesDir.getAbsolutePath());
-        }
-        File[] routineFiles = routinesFilesDir.listFiles();
         ObjectMapper objectMapper = new ObjectMapper();
-        for (File routineFile : routineFiles) {
-            String fileName = routineFile.getName();
-            if (!fileName.equals(SCHEMA_FILE_NAME)) {
-                log.debug("Routine file name={}", fileName);
-                Routine routine = objectMapper.readValue(routineFile, Routine.class);
-                log.debug("Parsed routine={}", routine);
-                routineIdToRoutines.put(routine.getId(), routine);
-                allTags.addAll(routine.getTags());
-                for (String tag : routine.getTags()) {
-                    tagsToRoutines.computeIfAbsent(tag, k -> new HashSet<>()).add(routine);
-                }
+        AllRoutines allRoutines = objectMapper.readValue(new ClassPathResource(ALL_ROUTINES_JSON_FILE).getInputStream(),
+                AllRoutines.class);
+        List<String> routineFileNames = allRoutines.getRoutineFileNames();
+        for (String routineFileName : routineFileNames) {
+            log.debug("Routine file name={}", routineFileName);
+            Routine routine = objectMapper.readValue(new ClassPathResource(routineFileName).getInputStream(), Routine.class);
+            log.debug("Parsed routine={}", routine);
+            routineIdToRoutines.put(routine.getId(), routine);
+            allTags.addAll(routine.getTags());
+            for (String tag : routine.getTags()) {
+                tagsToRoutines.computeIfAbsent(tag, k -> new HashSet<>()).add(routine);
             }
         }
     }
