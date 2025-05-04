@@ -1,0 +1,114 @@
+{
+  "$id": "https://snookerup.com/routine.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Routine",
+  "description": "Defines all fields in a routine that users can attempt in SnookerUp",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "The ID of the routine, typically the title of the routine in lower case and kebab case.",
+      "type": "string"
+    },
+    "title": {
+      "description": "The title of the routine",
+      "type": "string"
+    },
+    "descriptionLines": {
+      "description": "A description of the routine, as an array of lines",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "variationsLinesEasier": {
+      "description": "A description of variations that could make the routine easier, as an array of lines",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "variationsLinesHarder": {
+      "description": "A description of variations that could make the routine harder, as an array of lines",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "titleImage": {
+      "description": "The headline image filename for the routine (matching the file in src/main/resources/static/), typically more of a thumbnail, smaller resolution image, in landscape",
+      "type": "string"
+    },
+    "otherImages": {
+      "description": "A collection of image filenames (matching files that exist in src/main/resources/static) that illustrate how to set up the routine, typically in portrait",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "tags": {
+      "description": "A collection of tags/labels that describe the routine and can be used by users to search",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "uniqueItems": true
+      }
+    },
+    "unit": {
+      "description": "The unit to use, when the routine supports configurable number of balls/reds",
+      "type": "string",
+      "enum": ["BALLS", "REDS"],
+      "default": "REDS"
+    },
+    "variations": {
+      "description": "An object containing all the possible ways a routine can be modified to vary the purpose or difficulty",
+      "type": "object",
+      "properties": {
+        "loop": {
+          "description": "Whether the routine supports looping, e.g. complete the routine then set up again and continue where you left off, where the score would be the number of completed loops.",
+          "type": "boolean",
+          "default": false
+        },
+        "cushionLimit": {
+          "description": "Whether a cushion limit can be applied to the routine, e.g. complete the routine with a maximum number of times the white can hit the cushion.",
+          "type": "boolean",
+          "default": false
+        },
+        "unitNumbers": {
+          "description": "If the routine supports a configurable unit (reds/balls), define them here.",
+          "type": "object",
+          "properties": {
+            "min": {
+              "description": "The minimum unit allowed. Inclusive.",
+              "type": "integer"
+            },
+            "max": {
+              "description": "The maximum unit allowed. Inclusive.",
+              "type": "integer"
+            }
+          },
+          "required": ["min", "max"]
+        },
+        "potInOrder": {
+          "description": "Whether this routine supports the balls being potted in a specific order, where the order is up to the user.",
+          "type": "boolean",
+          "default": false
+        },
+        "stayOnOneSideOfTable": {
+          "description": "Whether this routine supports a requirement for the white to always stop on one side of the table (typically left/right rather than top/bottom).",
+          "type": "boolean",
+          "default": false
+        },
+        "ballStriking": {
+          "description": "The different types of ball striking supported by this routine. If not specified, the player can decide.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["DEEP_SCREW", "SCREW", "STUN", "STUN_RUN_THROUGH", "TOP"]
+          }
+        }
+      }
+    }
+  },
+  "required": ["title", "descriptionLines", "titleImage"]
+}

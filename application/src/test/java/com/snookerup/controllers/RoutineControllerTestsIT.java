@@ -34,7 +34,7 @@ class RoutineControllerTestsIT extends BaseTestcontainersIT {
     @Test
     void getRoutineById() throws Exception {
         this.mockMvc
-                .perform(get("/routines/1"))
+                .perform(get("/routines/the-line-up"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

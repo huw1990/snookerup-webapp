@@ -1,0 +1,37 @@
+{
+  "id": "the-line-up",
+  "title": "The Line Up",
+  "descriptionLines": [
+    "Arrange all reds in a line up the middle of the table, in line with the blue, pink, and black spots.",
+    "Pot the balls in order (i.e. red, colour, red, and so on), trying to make as high a break as possible.",
+    "Placement of the reds is up to you. Typically they are evenly spaced, including one or two above the blue, but advanced players often like to bunch the reds as much around the black as possible."
+  ],
+  "variationsLinesEasier": [
+    "For beginner and intermediate levels, don't use all 15 reds. Start with 3 reds, try to clear the table, and work your way up to the full 15."
+ ],
+  "variationsLinesHarder": [
+    "Once you can clear a certain number of reds and all the colours, try to loop through the routine, i.e. complete the routine, then set it up and try to complete it again, playing the white on the first red from where it finished after the last black on the previous routine.",
+    "Add self-imposed positional restrictions, such as limiting the number of cushions you're allowed to hit, potting the reds in a specific order, or only allowing the white to be on one side of the table."
+  ],
+  "titleImage": "/images/routines/the-line-up-normal-ls.png",
+  "otherImages": [
+    "/images/routines/the-line-up-normal.png",
+    "/images/routines/the-line-up-by-black.png",
+    "/images/routines/the-line-up-seven-reds.png",
+    "/images/routines/the-line-up-three-reds.png"
+  ],
+  "tags": [
+    "break-building",
+    "positional-play"
+  ],
+  "variations": {
+    "loop": true,
+    "cushionLimit": true,
+    "unitNumbers": {
+      "min": 3,
+      "max": 15
+    },
+    "potInOrder": true,
+    "stayOnOneSideOfTable": true
+  }
+}

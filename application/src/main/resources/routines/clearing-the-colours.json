@@ -1,0 +1,23 @@
+{
+  "id": "clearing-the-colours",
+  "title": "Clearing the Colours",
+  "descriptionLines": [
+    "Put all colours on their spots, then try to clear them in order, i.e. yellow, green, brown, blue, pink, black."
+  ],
+  "variationsLinesHarder": [
+    "Limiting the number of cushions the white is allowed to hit.",
+    "Looping through the routine, i.e. pot yellow to black, but on the black play for position on the yellow, then replace the balls and try to clear again. With this configuration, your score is the number of completed loops."
+  ],
+  "titleImage": "/images/routines/clearing-the-colours-ls.png",
+  "otherImages": [
+    "/images/routines/clearing-the-colours.png"
+  ],
+  "tags": [
+    "match-situations",
+    "positional-play"
+  ],
+  "variations": {
+    "loop": true,
+    "cushionLimit": true
+  }
+}

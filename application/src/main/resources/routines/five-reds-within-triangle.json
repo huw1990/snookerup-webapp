@@ -1,0 +1,17 @@
+{
+  "id": "five-reds-within-triangle",
+  "title": "Five Reds Within Triangle",
+  "descriptionLines": [
+    "A more advanced break building and positional routine, the aim here is simple: pot five reds with five blacks, but there are some difficult restrictions and the setup is key.",
+    "The reds should be arranged in a \"V\" or triangle, but with the middle reds in each line slightly further out, to give the shape a \"bulge\"",
+    "Throughout the routine, each red should be potted with the white within (or near enough) the triangle formed by the reds, to make required position more difficult, and to reduce the distance the white will travel."
+  ],
+  "titleImage": "/images/routines/5-reds-within-triangle-ls.png",
+  "otherImages": [
+    "/images/routines/5-reds-within-triangle.png"
+  ],
+  "tags": [
+    "break-building",
+    "positional-play"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "straight-pots-along-blue-spot",
+  "title": "Straight Pots Along Middle",
+  "descriptionLines": [
+    "Practise long potting and good cueing by placing a number of balls in the line of the middle pockets and blue spot, then on each shot line the white up with your hand so the shot is dead straight, then try to pot as many as you can"
+  ],
+  "variationsLinesEasier": [
+    "Starting with less balls to pot, such as 3, then working your way up to all 21 balls (15 reds and 6 colours)"
+  ],
+  "variationsLinesHarder": [
+    "Restricting every pot to the same type of ball striking, e.g. stun, screw, deep screw, top, etc."
+  ],
+  "titleImage": "/images/routines/straight-pots-along-blue-spot-ls.png",
+  "otherImages": [
+    "/images/routines/straight-pots-along-blue-spot.png",
+    "/images/routines/straight-pots-along-blue-spot-3.png"
+  ],
+  "tags": [
+    "straight-cueing",
+    "long-potting"
+  ],
+  "unit": "BALLS",
+  "variations": {
+    "unitNumbers": {
+      "min": 3,
+      "max": 21
+    },
+    "ballStriking": ["SCREW", "DEEP_SCREW", "STUN", "STUN_RUN_THROUGH", "TOP"]
+  }
+}

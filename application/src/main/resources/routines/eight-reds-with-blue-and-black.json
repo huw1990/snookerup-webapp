@@ -1,0 +1,22 @@
+{
+  "id": "eight-reds-with-blue-and-black",
+  "title": "Eight Reds with Blue and Black",
+  "descriptionLines": [
+    "Place eight reds in the top half of the table (between blue and black), all in the open, as indicated in the diagram.",
+    "Make a break, using only the blue and black as colours (all others aren't even on the table)."
+  ],
+  "variationsLinesHarder": [
+    "Limiting the number of cushions the white is allowed to hit."
+  ],
+  "titleImage": "/images/routines/8-reds-between-blue-and-black-ls.png",
+  "otherImages": [
+    "/images/routines/8-reds-between-blue-and-black.png"
+  ],
+  "tags": [
+    "break-building",
+    "positional-play"
+  ],
+  "variations": {
+    "cushionLimit": true
+  }
+}

@@ -1,9 +1,16 @@
 package com.snookerup.controllers;
 
+import com.snookerup.model.Routine;
+import com.snookerup.services.RoutineService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.ui.Model;
+
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for the RoutineController class.
@@ -12,38 +19,109 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class RoutineControllerTests {
 
+    private static final String ROUTINES_PAGE = "routines";
+    private static final String ROUTINE_PAGE = "routine";
+    private static final String ROUTINE_ID = "the-line-up";
+
+    RoutineService mockRoutineService;
+    Model mockModel;
+    Routine routineOne;
+    Routine routineTwo;
+
     RoutineController routineController;
 
     @BeforeEach
     public void beforeEach() {
-        routineController = new RoutineController();
+        mockRoutineService = mock(RoutineService.class);
+        mockModel = mock(Model.class);
+        routineOne = mock(Routine.class);
+        routineTwo = mock(Routine.class);
+
+        routineController = new RoutineController(mockRoutineService);
     }
 
     @Test
-    public void getAllRoutines_Should_ReturnRoutines() {
+    public void getAllRoutines_Should_ReturnRoutinesPageWithAllRoutinesFromService_When_NoTagIncluded() {
         // Define variables
-        String expectedReturn = "routines";
+        List<Routine> allRoutines = List.of(routineOne, routineTwo);
 
         // Set mock expectations
+        when(mockRoutineService.getAllRoutines()).thenReturn(allRoutines);
 
         // Execute method under test
-        String returnedPage = routineController.getAllRoutines();
+        String returnedPage = routineController.getAllRoutines(mockModel, Optional.empty());
 
         // Verify
-        assertEquals(expectedReturn, returnedPage);
+        assertEquals(ROUTINES_PAGE, returnedPage);
+        verify(mockRoutineService).getAllRoutines();
+        verify(mockModel).addAttribute("routines", allRoutines);
+        verify(mockModel).addAttribute("selectedTag", "all");
     }
 
     @Test
-    public void getRoutineById_Should_ReturnRoutine() {
+    public void getAllRoutines_Should_ReturnRoutinesPageWithAllRoutinesFromService_When_AllTagIncluded() {
         // Define variables
-        String expectedReturn = "routine";
+        List<Routine> allRoutines = List.of(routineOne, routineTwo);
 
         // Set mock expectations
+        when(mockRoutineService.getAllRoutines()).thenReturn(allRoutines);
 
         // Execute method under test
-        String returnedPage = routineController.getRoutineById("1");
+        String returnedPage = routineController.getAllRoutines(mockModel, Optional.empty());
 
         // Verify
-        assertEquals(expectedReturn, returnedPage);
+        assertEquals(ROUTINES_PAGE, returnedPage);
+        verify(mockRoutineService).getAllRoutines();
+        verify(mockModel).addAttribute("routines", allRoutines);
+        verify(mockModel).addAttribute("selectedTag", "all");
+    }
+
+    @Test
+    public void getAllRoutines_Should_ReturnRoutinesPageWithOnlyRoutinesMatchingTagFromService_When_TagIncluded() {
+        // Define variables
+        List<Routine> allRoutines = List.of(routineOne, routineTwo);
+        String tag = "break-building";
+
+        // Set mock expectations
+        when(mockRoutineService.getRoutinesForTag(tag)).thenReturn(allRoutines);
+
+        // Execute method under test
+        String returnedPage = routineController.getAllRoutines(mockModel, Optional.of(tag));
+
+        // Verify
+        assertEquals(ROUTINES_PAGE, returnedPage);
+        verify(mockRoutineService).getRoutinesForTag(tag);
+        verify(mockModel).addAttribute("routines", allRoutines);
+        verify(mockModel).addAttribute("selectedTag", tag);
+    }
+
+    @Test
+    public void getRoutineById_Should_ReturnRoutinePageWithRoutine_When_RoutineExists() {
+        // Define variables
+
+        // Set mock expectations
+        when(mockRoutineService.getRoutineById(ROUTINE_ID)).thenReturn(routineOne);
+
+        // Execute method under test
+        String returnedPage = routineController.getRoutineById(ROUTINE_ID, mockModel);
+
+        // Verify
+        assertEquals(ROUTINE_PAGE, returnedPage);
+        verify(mockModel).addAttribute("routine", routineOne);
+    }
+
+    @Test
+    public void getRoutineById_Should_ReturnRoutinePageWithNullRoutine_When_RoutineDoesntExist() {
+        // Define variables
+
+        // Set mock expectations
+        when(mockRoutineService.getRoutineById(ROUTINE_ID)).thenReturn(null);
+
+        // Execute method under test
+        String returnedPage = routineController.getRoutineById(ROUTINE_ID, mockModel);
+
+        // Verify
+        assertEquals(ROUTINE_PAGE, returnedPage);
+        verify(mockModel).addAttribute("routine", null);
     }
 }

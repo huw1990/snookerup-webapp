@@ -1,0 +1,37 @@
+{
+  "id": "the-y-line-up",
+  "title": "The Y Line Up",
+  "descriptionLines": [
+    "A variation on the traditional Line Up routine, the Y Line Up is so called because rather than the reds being arranged in one line up the table, it instead resembles a \"Y\" shape.",
+    "Pot the balls in order (i.e. red, colour, red, and so on), trying to make as high a break as possible.",
+    "The typical placement sees 5 reds in a line between pink and black, then five reds each in a line either side of the pink to the middle pocket.",
+    "Alternative placements of the reds include placing some below the black instead of on the \"wings\".",
+    "This is similar to the T Line Up, but slightly more difficult in that the pink is typically out of commission, so you need to focus more on blacks."
+  ],
+  "variationsLinesEasier": [
+    "For beginner and intermediate levels, don't use all 15 reds. Start with 3 reds, try to clear the table, and work your way up to the full 15."
+  ],
+  "variationsLinesHarder": [
+    "Once you can clear a certain number of reds and all the colours, try to loop through the routine, i.e. complete the routine, then set it up and try to complete it again, playing the white on the first red from where it finished after the last black on the previous routine.",
+    "Add self-imposed positional restrictions, such as limiting the number of cushions you're allowed to hit, or potting the reds in a specific order."
+  ],
+  "titleImage": "/images/routines/y-line-up-normal-ls.png",
+  "otherImages": [
+    "/images/routines/y-line-up-normal.png",
+    "/images/routines/y-line-up-more-around-black.png",
+    "/images/routines/y-line-up-10-reds.png"
+  ],
+  "tags": [
+    "break-building",
+    "positional-play"
+  ],
+  "variations": {
+    "loop": true,
+    "cushionLimit": true,
+    "unitNumbers": {
+      "min": 3,
+      "max": 15
+    },
+    "potInOrder": true
+  }
+}
