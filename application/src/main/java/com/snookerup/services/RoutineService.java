@@ -36,4 +36,10 @@ public interface RoutineService {
      * @return A list of routines containing the provided tag
      */
     List<Routine> getRoutinesForTag(String tag);
+
+    /**
+     * Get a random routine from the routines loaded from config. Used to display a sample routine on the homepage.
+     * @return A random routine from those loaded
+     */
+    Routine getRandomRoutine();
 }

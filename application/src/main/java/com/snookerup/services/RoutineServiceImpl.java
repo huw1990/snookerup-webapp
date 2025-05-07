@@ -26,18 +26,21 @@ public class RoutineServiceImpl implements RoutineService, CommandLineRunner {
     private final Map<String, Routine> routineIdToRoutines = new HashMap<>();
     private final Set<String> allTags = new HashSet<>();
     private final Map<String, Set<Routine>> tagsToRoutines = new HashMap<>();
+    private final List<Routine> allRoutines = new ArrayList<>();
+    private final Random randomGenerator = new Random();
 
     @Override
     public void run(String... args) throws Exception {
         log.debug("Loading routine config JSON files into memory");
         ObjectMapper objectMapper = new ObjectMapper();
-        AllRoutines allRoutines = objectMapper.readValue(new ClassPathResource(ALL_ROUTINES_JSON_FILE).getInputStream(),
+        AllRoutines allRoutinesFromFile = objectMapper.readValue(new ClassPathResource(ALL_ROUTINES_JSON_FILE).getInputStream(),
                 AllRoutines.class);
-        List<String> routineFileNames = allRoutines.getRoutineFileNames();
+        List<String> routineFileNames = allRoutinesFromFile.getRoutineFileNames();
         for (String routineFileName : routineFileNames) {
             log.debug("Routine file name={}", routineFileName);
             Routine routine = objectMapper.readValue(new ClassPathResource(routineFileName).getInputStream(), Routine.class);
             log.debug("Parsed routine={}", routine);
+            allRoutines.add(routine);
             routineIdToRoutines.put(routine.getId(), routine);
             allTags.addAll(routine.getTags());
             for (String tag : routine.getTags()) {
@@ -48,7 +51,7 @@ public class RoutineServiceImpl implements RoutineService, CommandLineRunner {
 
     @Override
     public List<Routine> getAllRoutines() {
-        return routineIdToRoutines.values().stream().collect(Collectors.toList());
+        return allRoutines;
     }
 
     @Override
@@ -68,5 +71,11 @@ public class RoutineServiceImpl implements RoutineService, CommandLineRunner {
             return Collections.emptyList();
         }
         return routines.stream().collect(Collectors.toList());
+    }
+
+    @Override
+    public Routine getRandomRoutine() {
+        int random = randomGenerator.nextInt(allRoutines.size());
+        return allRoutines.get(random);
     }
 }

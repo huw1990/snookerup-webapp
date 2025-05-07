@@ -67,20 +67,36 @@
             </div>
         </div>
     </section>
-    <section class="px-4 py-10">
+    <section th:if="${routine}" class="px-4 py-10">
         <div class="container-xl lg:container m-auto">
             <h2 class="text-3xl font-bold text-green-800 mb-6 text-center font-ubuntu">
                 SAMPLE ROUTINE
             </h2>
-            <div class="bg-green-100 bg-texture-faded grid grid-cols-1 md:grid-cols-2 gap-6 bg-white max-w-4xl m-auto p-6 rounded-lg shadow-md border-solid border-2 border-neutral-500">
-                <img class="h-routine w-auto m-auto" src="images/clearing-the-colours.png"/>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl m-auto p-6 rounded-lg shadow-md border-solid border-2 border-neutral-500">
+                <img th:if="${routine.otherImages.size() == 1}" class="h-routine w-auto mt-0 m-auto" th:src="${routine.otherImages.get(0)}"/>
+                <div th:if="${routine.otherImages.size() > 1}" class="routine-image-slider h-routine w-auto mt-0 m-auto">
+                    <div class="slider">
+
+                        <button th:each="otherImage,iter : ${routine.otherImages}" class="slideNumberButton">[[${iter.index + 1}]]</button>
+
+                        <div class="slides" id="slidesContainer">
+                            <div th:each="otherImage,iter : ${routine.otherImages}" class="slide">
+                                <img th:src="${routine.otherImages.get(iter.index)}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-green-800 mb-4 font-ubuntu">Clearing the Colours</h1>
-                    <p class="text-m text-green-700 m-6 ml-2 mr-2">Put all colours on their spots, then try to clear them in order, i.e. yellow, green, brown, blue, pink, black.</p>
-                    <p class="text-m text-green-700 m-6 ml-2 mr-2">Try a variation to change the difficulty of this routine:</p>
-                    <ul class="text-m text-green-700 m-4 mb-6">
-                        <li class="m-2"><strong>As a loop:</strong> Complete the routine, but with your last shot of the routine, play position for the first shot again, then carry on.</li>
-                        <li class="m-2"><strong>Limit the number of cushions you can hit:</strong> Try to complete the routine either without hitting a routine at all, or with at most a fixed number of cushions, e.g. 3, 5, or 7.</li>
+                    <h1 class="text-2xl font-bold text-green-800 mb-4 font-ubuntu">[[${routine.title}]]</h1>
+                    <span th:each="tag : ${routine.tags}" class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset mx-1">[[${tag}]]</span>
+                    <p th:each="descriptionLine : ${routine.descriptionLines}" class="text-m text-green-700 m-6 ml-2 mr-2">[[${descriptionLine}]]</p>
+                    <p th:if="${!routine.variationsLinesEasier.isEmpty()}" class="text-m text-green-700 m-6 ml-2 mr-2">Make the routine easier by:</p>
+                    <ul th:if="${!routine.variationsLinesEasier.isEmpty()}" class="list-disc text-m text-green-700 m-4 mb-6">
+                        <li th:each="variationsLineEasier : ${routine.variationsLinesEasier}" class="m-2">[[${variationsLineEasier}]]</li>
+                    </ul>
+                    <p th:if="${!routine.variationsLinesHarder.isEmpty()}" class="text-m text-green-700 m-6 ml-2 mr-2">Make the routine harder by:</p>
+                    <ul  th:if="${!routine.variationsLinesHarder.isEmpty()}" class="list-disc text-m text-green-700 m-4 mb-6">
+                        <li th:each="variationsLineHarder : ${routine.variationsLinesHarder}" class="m-2">[[${variationsLineHarder}]]</li>
                     </ul>
                 </div>
             </div>

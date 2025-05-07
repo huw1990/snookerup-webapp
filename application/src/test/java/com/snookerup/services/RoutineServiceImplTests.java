@@ -39,6 +39,8 @@ class RoutineServiceImplTests {
         Set<String> allTags = (Set<String>) ReflectionTestUtils.getField(routineService, "allTags");
         Map<String, Set<Routine>> tagsToRoutines = (Map<String, Set<Routine>>) ReflectionTestUtils
                 .getField(routineService, "tagsToRoutines");
+        List<Routine> allRoutines = (List<Routine>) ReflectionTestUtils.getField(routineService, "allRoutines");
+        assertEquals(9, allRoutines.size());
         assertEquals(9, routineIdToRoutines.size());
         assertEquals(5, allTags.size());
         assertTrue(allTags.contains("break-building"));
@@ -66,8 +68,7 @@ class RoutineServiceImplTests {
         List<Routine> allRoutines = routineService.getAllRoutines();
 
         // Verify
-        List<Routine> allRoutinesInService = (List<Routine>) ((Map<String, Routine>) ReflectionTestUtils
-                .getField(routineService, "routineIdToRoutines")).values().stream().collect(Collectors.toList());
+        List<Routine> allRoutinesInService = (List<Routine>) ReflectionTestUtils.getField(routineService, "allRoutines");
         assertTrue(allRoutines.size() == allRoutinesInService.size());
         assertTrue(allRoutines.containsAll(allRoutinesInService));
     }
@@ -156,6 +157,21 @@ class RoutineServiceImplTests {
 
         // Verify
         assertTrue(routinesForTag.isEmpty());
+    }
+
+    @Test
+    public void getRandomRoutine_Should_ReturnRoutine() throws Exception {
+        // Define variables
+
+        // Set mock expectations
+
+        // First call the run() method
+        routineService.run();
+        // Then execute method under test
+        Routine randomRoutine = routineService.getRandomRoutine();
+
+        // Verify
+        assertNotNull(randomRoutine);
     }
 }
 

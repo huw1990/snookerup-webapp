@@ -4,7 +4,7 @@ module.exports = {
     theme: {
         extend: {
             height: {
-                'routine': '30rem'
+                'routine': '32rem'
             },
             backgroundImage: {
                 'up-arrows-sparse': "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23d4cfcb' fill-opacity='0.2'%3E%3Cpath d='M8 6L14 18h-12zm75 75l6 12h-12z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\");",
