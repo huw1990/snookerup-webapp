@@ -10,7 +10,7 @@
                 Routines
             </h2>
             <div class="md:w-2/3 2xl:w-1/2 m-auto">
-                <form class="flex flex-row justify-center gap-3 p-10">
+                <form id="routineFilterByTagForm" class="flex flex-row justify-center gap-3 p-10">
                     <select id="tag" name="tag"
                             class="w-32 md:w-56 h-10 border-2 border-green-700 focus:outline-none focus:border-green-700 text-green-700 rounded px-2 md:px-3 py-0 md:py-1 tracking-wider">
                         <option value="all" th:selected="${selectedTag.equals('all')}">all</option>
@@ -19,17 +19,8 @@
                     <button type="submit" class="bg-green-700 text-white rounded-r px-2 md:px-3 py-0 md:py-1">Search</button>
                 </form>
             </div>
-            <div th:if="${routines.isEmpty()}">
-                <h2 class="text-lg text-green-800 text-center">No routines found</h2>
-            </div>
-            <div class="flex flex-wrap justify-center">
-                <div th:each="routine : ${routines}" class="bg-green-50 flex-none min-w-full md:min-w-min max-w-full md:max-w-none m-auto md:mx-1 p-8 rounded-lg shadow-md mb-6 drop-shadow-xl border-solid border-4 border-brown">
-                    <a th:href="@{/routines/{id}(id=${routine.id})}">
-                        <h1 class="text-2xl font-bold text-green-800 mb-4 font-ubuntu">[[${routine.title}]]</h1>
-                        <span th:each="tag : ${routine.tags}" class="inline-flex items-center rounded-md bg-green-200 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset mx-1 mb-2">[[${tag}]]</span>
-                        <img class="h-[10rem] w-auto m-auto" th:src="${routine.titleImage}"/>
-                    </a>
-                </div>
+            <div id="routinesHolder" class="show">
+                <div th:replace="~{fragments/routinelist :: routineList}"></div>
             </div>
         </div>
     </section>

@@ -94,3 +94,12 @@ routine-image-slider {
     width: auto;
     margin: auto;
 }
+
+#routinesHolder {
+    opacity: 0;
+    transition: opacity 600ms;
+}
+
+#routinesHolder.show {
+    opacity: 1;
+}

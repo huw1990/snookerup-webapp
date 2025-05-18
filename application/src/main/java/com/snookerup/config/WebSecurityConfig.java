@@ -34,7 +34,13 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(httpRequests -> httpRequests
                         .requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/", "/login*", "/routines", "/routines/**", "/register*").permitAll()
+                        .requestMatchers("/",
+                                "/login*",
+                                "/routines",
+                                "/routines/**",
+                                "/routines-frag",
+                                "/register*")
+                        .permitAll()
                         .anyRequest().authenticated())
                 .logout(logout -> logout.logoutSuccessHandler(logoutSuccessHandler));
 

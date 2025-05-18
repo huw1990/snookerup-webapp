@@ -1,5 +1,6 @@
 package com.snookerup.controllers;
 
+import com.snookerup.model.Routine;
 import com.snookerup.services.RoutineService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,6 @@ import java.util.Optional;
  * @author Huw
  */
 @Controller
-@RequestMapping("/routines")
 @RequiredArgsConstructor
 @Slf4j
 public class RoutineController {
@@ -29,23 +29,34 @@ public class RoutineController {
     /** Service to get routines from. */
     private final RoutineService routineService;
 
-    @GetMapping()
+    @GetMapping("/routines")
     public String getAllRoutines(Model model, @RequestParam Optional<String> tag) {
         log.debug("getAllRoutines tag={}", tag);
-        if (tag.isPresent() && !tag.get().equals(ALL_TAG)) {
-            model.addAttribute("routines", routineService.getRoutinesForTag(tag.get()));
-        } else {
-            model.addAttribute("routines", routineService.getAllRoutines());
-        }
+        addRoutinesToModel(model, tag);
         model.addAttribute("tags", routineService.getAllTags());
         String selectedTag = tag.orElse(ALL_TAG);
         model.addAttribute("selectedTag", selectedTag);
         return "routines";
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/routines-frag")
+    public String getRoutinesByTagFragment(Model model, @RequestParam Optional<String> tag) {
+        log.debug("getRoutinesByTagFragment tag={}", tag);
+        addRoutinesToModel(model, tag);
+        return "fragments/routinelist :: routineList";
+    }
+
+    @GetMapping("/routines/{id}")
     public String getRoutineById(@PathVariable("id") String id, Model model) {
         model.addAttribute("routine", routineService.getRoutineById(id));
         return "routine";
+    }
+
+    private void addRoutinesToModel(Model model, Optional<String> tag) {
+        if (tag.isPresent() && !tag.get().equals(ALL_TAG)) {
+            model.addAttribute("routines", routineService.getRoutinesForTag(tag.get()));
+        } else {
+            model.addAttribute("routines", routineService.getAllRoutines());
+        }
     }
 }

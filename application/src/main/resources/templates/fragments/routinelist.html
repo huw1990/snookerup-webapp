@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="routineList">
+    <div th:if="${routines.isEmpty()}">
+        <h2 class="text-lg text-green-800 text-center">No routines found</h2>
+    </div>
+    <div class="flex flex-wrap justify-center">
+        <div th:each="routine : ${routines}" class="bg-green-50 flex-none min-w-full md:min-w-min max-w-full md:max-w-none m-auto md:mx-1 p-8 rounded-lg shadow-md mb-6 drop-shadow-xl border-solid border-4 border-brown">
+            <a th:href="@{/routines/{id}(id=${routine.id})}">
+                <h1 class="text-2xl font-bold text-green-800 mb-4 font-ubuntu">[[${routine.title}]]</h1>
+                <span th:each="tag : ${routine.tags}" class="inline-flex items-center rounded-md bg-green-200 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset mx-1 mb-2">[[${tag}]]</span>
+                <img class="h-[10rem] w-auto m-auto" th:src="${routine.titleImage}"/>
+            </a>
+        </div>
+    </div>
+</div>
+</html>

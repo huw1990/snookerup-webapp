@@ -21,6 +21,7 @@ class RoutineControllerTests {
 
     private static final String ROUTINES_PAGE = "routines";
     private static final String ROUTINE_PAGE = "routine";
+    private static final String ROUTINE_LIST_FRAGMENT = "fragments/routinelist :: routineList";
     private static final String ROUTINE_ID = "the-line-up";
 
     RoutineService mockRoutineService;
@@ -93,6 +94,41 @@ class RoutineControllerTests {
         verify(mockRoutineService).getRoutinesForTag(tag);
         verify(mockModel).addAttribute("routines", allRoutines);
         verify(mockModel).addAttribute("selectedTag", tag);
+    }
+
+    @Test
+    public void getRoutinesByTagFragment_Should_ReturnRoutinesPageWithAllRoutinesFromService_When_AllTagIncluded() {
+        // Define variables
+        List<Routine> allRoutines = List.of(routineOne, routineTwo);
+
+        // Set mock expectations
+        when(mockRoutineService.getAllRoutines()).thenReturn(allRoutines);
+
+        // Execute method under test
+        String returnedPage = routineController.getRoutinesByTagFragment(mockModel, Optional.empty());
+
+        // Verify
+        assertEquals(ROUTINE_LIST_FRAGMENT, returnedPage);
+        verify(mockRoutineService).getAllRoutines();
+        verify(mockModel).addAttribute("routines", allRoutines);
+    }
+
+    @Test
+    public void getRoutinesByTagFragment_Should_ReturnRoutinesPageWithOnlyRoutinesMatchingTagFromService_When_TagIncluded() {
+        // Define variables
+        List<Routine> allRoutines = List.of(routineOne, routineTwo);
+        String tag = "break-building";
+
+        // Set mock expectations
+        when(mockRoutineService.getRoutinesForTag(tag)).thenReturn(allRoutines);
+
+        // Execute method under test
+        String returnedPage = routineController.getRoutinesByTagFragment(mockModel, Optional.of(tag));
+
+        // Verify
+        assertEquals(ROUTINE_LIST_FRAGMENT, returnedPage);
+        verify(mockRoutineService).getRoutinesForTag(tag);
+        verify(mockModel).addAttribute("routines", allRoutines);
     }
 
     @Test

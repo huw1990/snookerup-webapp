@@ -32,6 +32,20 @@ class RoutineControllerTestsIT extends BaseTestcontainersIT {
     }
 
     @Test
+    void getRoutinesByTagFragment() throws Exception {
+        this.mockMvc
+                .perform(get("/routines-frag"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    void getRoutinesByTagFragment_When_TagIncluded() throws Exception {
+        this.mockMvc
+                .perform(get("/routines-frag?tag=break-building"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
     void getRoutineById() throws Exception {
         this.mockMvc
                 .perform(get("/routines/the-line-up"))
