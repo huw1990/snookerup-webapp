@@ -143,7 +143,7 @@ class RoutineControllerTests {
 
         // Verify
         assertEquals(ROUTINE_PAGE, returnedPage);
-        verify(mockModel).addAttribute("routine", Optional.of(routineOne));
+        verify(mockModel).addAttribute("routine", routineOne);
     }
 
     @Test
@@ -151,13 +151,13 @@ class RoutineControllerTests {
         // Define variables
 
         // Set mock expectations
-        when(mockRoutineService.getRoutineById(ROUTINE_ID)).thenReturn(null);
+        when(mockRoutineService.getRoutineById(ROUTINE_ID)).thenReturn(Optional.empty());
 
         // Execute method under test
         String returnedPage = routineController.getRoutineById(ROUTINE_ID, mockModel);
 
         // Verify
         assertEquals(ROUTINE_PAGE, returnedPage);
-        verify(mockModel).addAttribute("routine", null);
+        verifyNoInteractions(mockModel);
     }
 }
