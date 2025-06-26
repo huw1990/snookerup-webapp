@@ -46,7 +46,9 @@ public class DatabaseApp {
                 "Database",
                 awsEnvironment,
                 applicationEnvironment,
-                new PostgresDatabase.DatabaseInputParameters().withPostgresVersion("17.4"));
+                new PostgresDatabase.DatabaseInputParameters()
+                        .withPostgresVersion("17.4")
+                        .withInstanceClass("db.t4g.micro"));
 
         app.synth();
     }
