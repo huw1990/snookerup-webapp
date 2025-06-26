@@ -2,6 +2,7 @@ package com.snookerup.cdk;
 
 import dev.stratospheric.cdk.ApplicationEnvironment;
 import dev.stratospheric.cdk.Network;
+import dev.stratospheric.cdk.PostgresDatabase;
 import dev.stratospheric.cdk.Service;
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.Environment;
@@ -9,14 +10,11 @@ import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.iam.Effect;
 import software.amazon.awscdk.services.iam.PolicyStatement;
+import software.amazon.awscdk.services.secretsmanager.ISecret;
+import software.amazon.awscdk.services.secretsmanager.Secret;
 import software.constructs.Construct;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Collections.emptyList;
+import java.util.*;
 
 /**
  * CDK app for deploying an ECS service with a task containing our application.
@@ -73,8 +71,15 @@ public class ServiceApp {
                 .env(awsEnvironment)
                 .build());
 
+        PostgresDatabase.DatabaseOutputParameters databaseOutputParameters =
+                PostgresDatabase.getOutputParametersFromParameterStore(parametersStack, applicationEnvironment);
+
         CognitoStack.CognitoOutputParameters cognitoOutputParameters =
                 CognitoStack.getOutputParametersFromParameterStore(parametersStack, applicationEnvironment);
+
+        List<String> securityGroupIdsToGrantIngressFromEcs = Arrays.asList(
+                databaseOutputParameters.getDatabaseSecurityGroupId()
+        );
 
         new Service(
                 serviceStack,
@@ -83,9 +88,10 @@ public class ServiceApp {
                 applicationEnvironment,
                 new Service.ServiceInputParameters(
                         new Service.DockerImageSource(dockerRepositoryName, dockerImageTag),
-                        emptyList(),
+                        securityGroupIdsToGrantIngressFromEcs,
                         environmentVariables(
                                 serviceStack,
+                                databaseOutputParameters,
                                 cognitoOutputParameters,
                                 springProfile,
                                 environmentName))
@@ -116,12 +122,26 @@ public class ServiceApp {
 
     static Map<String, String> environmentVariables(
             Construct scope,
+            PostgresDatabase.DatabaseOutputParameters databaseOutputParameters,
             CognitoStack.CognitoOutputParameters cognitoOutputParameters,
             String springProfile,
             String environmentName
     ) {
         Map<String, String> vars = new HashMap<>();
+
+        String databaseSecretArn = databaseOutputParameters.getDatabaseSecretArn();
+        ISecret databaseSecret = Secret.fromSecretCompleteArn(scope, "databaseSecret", databaseSecretArn);
+
         vars.put("SPRING_PROFILES_ACTIVE", springProfile);
+        vars.put("SPRING_DATASOURCE_URL",
+                String.format("jdbc:postgresql://%s:%s/%s",
+                        databaseOutputParameters.getEndpointAddress(),
+                        databaseOutputParameters.getEndpointPort(),
+                        databaseOutputParameters.getDbName()));
+        vars.put("SPRING_DATASOURCE_USERNAME",
+                databaseSecret.secretValueFromJson("username").unsafeUnwrap());
+        vars.put("SPRING_DATASOURCE_PASSWORD",
+                databaseSecret.secretValueFromJson("password").unsafeUnwrap());
         vars.put("COGNITO_CLIENT_ID", cognitoOutputParameters.getUserPoolClientId());
         vars.put("COGNITO_CLIENT_SECRET", cognitoOutputParameters.getUserPoolClientSecret());
         vars.put("COGNITO_USER_POOL_ID", cognitoOutputParameters.getUserPoolId());
