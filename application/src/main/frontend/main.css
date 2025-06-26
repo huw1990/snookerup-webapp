@@ -95,11 +95,11 @@ routine-image-slider {
     margin: auto;
 }
 
-#routinesHolder {
+.changing-content {
     opacity: 0;
     transition: opacity 600ms;
 }
 
-#routinesHolder.show {
+.changing-content.show {
     opacity: 1;
 }

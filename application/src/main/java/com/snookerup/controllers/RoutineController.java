@@ -48,7 +48,10 @@ public class RoutineController {
 
     @GetMapping("/routines/{id}")
     public String getRoutineById(@PathVariable("id") String id, Model model) {
-        model.addAttribute("routine", routineService.getRoutineById(id));
+        Optional<Routine> routineOpt = routineService.getRoutineById(id);
+        routineOpt.ifPresent((routine) -> {
+            model.addAttribute("routine", routineOpt.get());
+        });
         return "routine";
     }
 

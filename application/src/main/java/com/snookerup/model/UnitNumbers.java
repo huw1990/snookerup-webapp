@@ -12,8 +12,8 @@ import lombok.Data;
 public class UnitNumbers {
 
     /** The minimum unit number allowed. */
-    private String min;
+    private Integer min;
 
     /** The maximum unit number allowed. */
-    private String max;
+    private Integer max;
 }

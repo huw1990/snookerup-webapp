@@ -1,10 +1,12 @@
 package com.snookerup;
 
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -18,6 +20,13 @@ import org.testcontainers.utility.DockerImageName;
 @ActiveProfiles("dev")
 @Testcontainers
 public abstract class BaseTestcontainersIT {
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> DATABASE = new PostgreSQLContainer<>("postgres:17.4")
+            .withDatabaseName("snookerup")
+            .withUsername("snookerup")
+            .withPassword("snookerup");
 
     @Container
     static GenericContainer KEYCLOAK = new GenericContainer(DockerImageName.parse(
@@ -39,6 +48,7 @@ public abstract class BaseTestcontainersIT {
     }
 
     static {
+        DATABASE.start();
         KEYCLOAK.start();
     }
 }

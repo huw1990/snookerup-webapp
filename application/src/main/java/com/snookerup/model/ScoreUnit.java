@@ -4,20 +4,20 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 /**
- * Models the unit of a routine, when the unit is configurable.
+ * Models the score unit of a routine.
  *
  * @author Huw
  */
 @Getter
-public enum Unit {
+public enum ScoreUnit {
 
-    BALLS("balls"),
-    REDS("reds");
+    BREAK("Break"),
+    POTS("Pots");
 
     @JsonValue
     private final String value;
 
-    Unit(String value) {
+    ScoreUnit(String value) {
         this.value = value;
     }
 }

@@ -5,45 +5,45 @@
       layout:decorate="~{layout/layout}">
 <div layout:fragment="page-content">
 <section class="py-4">
-    <div class="flex min-h-full flex-col justify-center px-2 py-12 lg:px-8">
-        <h2 class="text-3xl font-bold text-green-800 text-center font-ubuntu">
+    <div class="flex min-h-full flex-col justify-center px-2 py-2 lg:px-8">
+        <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
             Add Score
         </h2>
-        <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-lg">
-            <form class="space-y-6" action="#" method="POST">
+        <div class="sm:mx-auto sm:w-full sm:max-w-lg">
+            <form
+                    id="add-score-form"
+                    th:action="@{/addscore}"
+                    th:object="${score}"
+                    method="post"
+                    class="space-y-6">
                 <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
-                    <label for="routine" class="block text-sm font-medium leading-6 text-gray-900">Routine</label>
+                    <label for="scoreRoutineSelector" class="block text-sm font-medium leading-6 text-gray-900">Routine</label>
                     <div class="mt-2">
-                        <input id="routine" name="routine" type="text" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <select th:field="*{routineId}" name="routineNames" id="scoreRoutineSelector" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <option th:each="routine : ${routines}" th:value="${routine.id}" th:text="${routine.title}" th:selected="${routine.id.equals(selectedRoutineId)}">[[ ${routine.title} ]]</option>
+                        </select>
+                    </div>
+                </div>
+                <input type="hidden" th:field="*{playerUsername}" id="playerUsername">
+                <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
+                    <label for="scoreDateTime" class="block text-sm font-medium leading-6 text-gray-900">Date & time</label>
+                    <div class="mt-2">
+                        <input th:field="*{dateOfAttempt}" id="scoreDateTime" name="score-date-time" type="datetime-local" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div id="variationsHolder" class="changing-content show">
+                    <div th:replace="~{fragments/addScoreVariations :: scoreVariations}"></div>
+                </div>
+                <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
+                    <label for="scoreNotes" class="block text-sm font-medium leading-6 text-gray-900">Notes/Comments</label>
+                    <div class="mt-2">
+                        <input th:field="*{note}" id="scoreNotes" name="note" type="text" placeholder="e.g. which pot did you miss?" class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
                 </div>
                 <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
-                    <label for="date_time" class="block text-sm font-medium leading-6 text-gray-900">Date & time</label>
+                    <label id="scoreUnitLabel" for="scoreValue" class="block text-sm font-medium leading-6 text-gray-900">Score</label>
                     <div class="mt-2">
-                        <input id="date_time" name="date_time" type="text" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
-                    <p class="block text-sm font-medium leading-6 text-gray-900">Variations</p>
-                    <div class="py-4 flex items-center mb-4">
-                        <input id="loop" type="checkbox" value="" class="w-5 h-5 accent-green-700">
-                        <label for="loop" class="px-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">In a loop?</label>
-                    </div>
-                    <div class="pb-4 flex items-center mb-4">
-                        <input id="cushion_limit" type="checkbox" value="" class="w-5 h-5 accent-green-700">
-                        <label for="cushion_limit" class="px-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Cushion limit?</label>
-                    </div>
-                    <div class="">
-                        <label for="cushions" class="block text-sm font-medium leading-6 text-gray-900">Max number of cushions</label>
-                        <div class="mt-2">
-                            <input id="cushions" name="cushions" type="number" required class="px-4 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        </div>
-                    </div>
-                </div>
-                <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
-                    <label for="date_time" class="block text-sm font-medium leading-6 text-gray-900">Number of loops</label>
-                    <div class="mt-2">
-                        <input id="loops_completed" name="loops_completed" type="text" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <input id="scoreValue" min="0" name="scoreValue" type="number" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
                 </div>
                 <div>

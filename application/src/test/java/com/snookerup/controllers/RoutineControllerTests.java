@@ -136,14 +136,14 @@ class RoutineControllerTests {
         // Define variables
 
         // Set mock expectations
-        when(mockRoutineService.getRoutineById(ROUTINE_ID)).thenReturn(routineOne);
+        when(mockRoutineService.getRoutineById(ROUTINE_ID)).thenReturn(Optional.of(routineOne));
 
         // Execute method under test
         String returnedPage = routineController.getRoutineById(ROUTINE_ID, mockModel);
 
         // Verify
         assertEquals(ROUTINE_PAGE, returnedPage);
-        verify(mockModel).addAttribute("routine", routineOne);
+        verify(mockModel).addAttribute("routine", Optional.of(routineOne));
     }
 
     @Test

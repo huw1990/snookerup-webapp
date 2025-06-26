@@ -55,8 +55,8 @@ public class RoutineServiceImpl implements RoutineService, CommandLineRunner {
     }
 
     @Override
-    public Routine getRoutineById(String id) {
-        return routineIdToRoutines.get(id);
+    public Optional<Routine> getRoutineById(String id) {
+        return Optional.ofNullable(routineIdToRoutines.get(id));
     }
 
     @Override

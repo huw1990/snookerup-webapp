@@ -3,6 +3,7 @@ package com.snookerup.services;
 import com.snookerup.model.Routine;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service for all operations related to routines.
@@ -20,9 +21,9 @@ public interface RoutineService {
     /**
      * Get a routine by its ID.
      * @param id The ID of the routine
-     * @return The routine with the matching ID
+     * @return An optional containing the routine with the matching ID, if found
      */
-    Routine getRoutineById(String id);
+    Optional<Routine> getRoutineById(String id);
 
     /**
      * Get all tags used across all loaded routines.

@@ -1,4 +1,10 @@
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/snookerup
+    username: snookerup
+    password: snookerup
+  jpa:
+    show-sql: true
   cloud:
     aws:
       credentials:

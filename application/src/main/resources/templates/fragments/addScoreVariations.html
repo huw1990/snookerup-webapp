@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="scoreVariations" th:if="${selectedRoutine != null}" id="variationsDiv" th:attr="data-score-unit=${selectedRoutine.scoreUnit.value}">
+    <div th:if="${selectedRoutine.variations.hasVariations()}" class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
+        <p class="block py-2 text-sm font-medium leading-6 text-gray-900">Variations</p>
+        <div th:if="${selectedRoutine.variations.loop}" class="py-1 flex items-center mb-4">
+            <input name="loop" id="loop" type="checkbox" class="w-5 h-5 accent-green-700">
+            <label for="loop" class="px-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">In a loop?</label>
+        </div>
+        <div th:if="${selectedRoutine.variations.cushionLimit}" class="pb-1 flex items-center mb-4">
+            <input id="cushionLimit" type="checkbox" value="" class="w-5 h-5 accent-green-700">
+            <label for="cushionLimit" class="px-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Cushion limit?</label>
+            <input name="cushionLimit" id="cushionsNumber" min="0" disabled type="number" required class="ml-10 block w-16 rounded-md border-0 px-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            <label class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">cushions</label>
+        </div>
+        <div th:if="${selectedRoutine.variations.potInOrder}" class="py-1 flex items-center mb-4">
+            <input name="potInOrder" id="potInOrder" type="checkbox" class="w-5 h-5 accent-green-700">
+            <label for="potInOrder" class="px-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Pot in order?</label>
+        </div>
+        <div th:if="${selectedRoutine.variations.stayOnOneSideOfTable}" class="py-1 flex items-center mb-4">
+            <input name="stayOnOneSideOfTable" id="stayOnOneSideOfTable" type="checkbox" class="w-5 h-5 accent-green-700">
+            <label for="stayOnOneSideOfTable" class="px-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Stay on one side of table?</label>
+        </div>
+        <div th:if="${selectedRoutine.variations.unitNumbers}" class="py-1 flex items-center mb-4">
+            <input id="varyUnit" type="checkbox" value="" class="w-5 h-5 accent-green-700">
+            <label for="varyUnit" class="px-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Vary [[ ${selectedRoutine.unit.value} ]]?</label>
+            <input name="unitNumber" id="unit" disabled th:min="${selectedRoutine.variations.unitNumbers.min}" th:max="${selectedRoutine.variations.unitNumbers.max}" th:value="${selectedRoutine.variations.unitNumbers.max}" type="number" required class="ml-10 block w-16 rounded-md border-0 px-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            <label class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">[[ ${selectedRoutine.unit.value} ]]</label>
+        </div>
+        <div th:if="${selectedRoutine.variations.ballStriking != null && !selectedRoutine.variations.ballStriking.isEmpty()}" class="py-1 flex items-center mb-4">
+            <input id="fixedBallStriking" type="checkbox" class="w-5 h-5 accent-green-700">
+            <label for="fixedBallStriking" class="px-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Specific ball striking?</label>
+            <select name="ballStriking" disabled id="ballStrikingSelector" required class="block w-32 rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                <option th:each="ballStriking : ${selectedRoutine.variations.ballStriking}" th:value="${ballStriking.value}">[[ ${ballStriking.value} ]]</option>
+            </select>
+        </div>
+    </div>
+</div>
+</html>

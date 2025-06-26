@@ -19,12 +19,13 @@
     "straight-cueing",
     "long-potting"
   ],
-  "unit": "BALLS",
+  "scoreUnit": "Pots",
+  "unit": "balls",
   "variations": {
     "unitNumbers": {
       "min": 3,
       "max": 21
     },
-    "ballStriking": ["SCREW", "DEEP_SCREW", "STUN", "STUN_RUN_THROUGH", "TOP"]
+    "ballStriking": ["Screw", "Deep screw", "Stun", "Stun run through", "Top"]
   }
 }

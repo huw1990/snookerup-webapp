@@ -82,13 +82,14 @@ class RoutineServiceImplTests {
         // First call the run() method
         routineService.run();
         // Then execute method under test
-        Routine routine = routineService.getRoutineById("the-line-up");
+        Optional<Routine> routine = routineService.getRoutineById("the-line-up");
 
         // Verify
-        assertNotNull(routine);
-        Routine routineInService = (Routine) ((Map<String, Routine>) ReflectionTestUtils
+        assertTrue(routine.isPresent());
+        Routine routineInService = ((Map<String, Routine>) ReflectionTestUtils
                 .getField(routineService, "routineIdToRoutines")).get("the-line-up");
-        assertEquals(routine, routineInService);
+        Optional<Routine> routineInServiceOpt = Optional.of(routineInService);
+        assertEquals(routine, routineInServiceOpt);
     }
 
     @Test
@@ -100,10 +101,10 @@ class RoutineServiceImplTests {
         // First call the run() method
         routineService.run();
         // Then execute method under test
-        Routine routine = routineService.getRoutineById("invalid-id");
+        Optional<Routine> routine = routineService.getRoutineById("invalid-id");
 
         // Verify
-        assertNull(routine);
+        assertTrue(routine.isEmpty());
     }
 
     @Test

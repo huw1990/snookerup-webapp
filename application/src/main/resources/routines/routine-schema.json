@@ -57,8 +57,14 @@
     "unit": {
       "description": "The unit to use, when the routine supports configurable number of balls/reds",
       "type": "string",
-      "enum": ["BALLS", "REDS"],
-      "default": "REDS"
+      "enum": ["balls", "reds"],
+      "default": "reds"
+    },
+    "scoreUnit": {
+      "description": "The typical unit for scores on this routine",
+      "type": "string",
+      "enum": ["Break", "Pots"],
+      "default": "Break"
     },
     "variations": {
       "description": "An object containing all the possible ways a routine can be modified to vary the purpose or difficulty",
@@ -104,11 +110,11 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": ["DEEP_SCREW", "SCREW", "STUN", "STUN_RUN_THROUGH", "TOP"]
+            "enum": ["Screw", "Deep screw", "Stun", "Stun run through", "Top"]
           }
         }
       }
     }
   },
-  "required": ["title", "descriptionLines", "titleImage"]
+  "required": ["title", "descriptionLines", "titleImage", "variations"]
 }

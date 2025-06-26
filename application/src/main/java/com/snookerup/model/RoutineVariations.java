@@ -47,4 +47,17 @@ public class RoutineVariations {
      * what they want.
      */
     private List<BallStriking> ballStriking;
+
+    /**
+     * A convenience method to say whether there are any active variations.
+     * @return true if any variations apply, false otherwise
+     */
+    public boolean hasVariations() {
+        return loop
+                || cushionLimit
+                || unitNumbers != null
+                || potInOrder
+                || stayOnOneSideOfTable
+                || (ballStriking != null && !ballStriking.isEmpty());
+    }
 }
