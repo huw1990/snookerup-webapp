@@ -1,10 +1,14 @@
 package com.snookerup.services;
 
 import com.snookerup.model.Routine;
+import com.snookerup.model.ScoreWithRoutineContext;
+import com.snookerup.model.db.Score;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -173,6 +177,33 @@ class RoutineServiceImplTests {
 
         // Verify
         assertNotNull(randomRoutine);
+    }
+
+    @Test
+    public void addRoutineContextToScore_Should_ReturnCreatedScoreWithRoutineContext() throws Exception {
+        // Define variables
+        Score score = new Score();
+        score.setId(1L);
+        score.setPlayerUsername("willo");
+        score.setDateOfAttempt(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+        score.setRoutineId("the-line-up");
+        score.setScoreValue(50);
+
+        // Set mock expectations
+
+        // First call the run() method
+        routineService.run();
+        // Then execute method under test
+        ScoreWithRoutineContext scoreWithRoutineContext = routineService.addRoutineContextToScore(score);
+
+        // Verify
+        assertNotNull(scoreWithRoutineContext);
+        assertEquals(score.getId(), scoreWithRoutineContext.getId());
+        assertEquals(score.getPlayerUsername(), scoreWithRoutineContext.getPlayerUsername());
+        assertEquals(score.getRoutineId(), scoreWithRoutineContext.getRoutineId());
+        assertEquals(score.getDateOfAttempt(), scoreWithRoutineContext.getDateAndTimeOfAttempt());
+        assertEquals(score.getScoreValue(), scoreWithRoutineContext.getScoreValue());
+        assertNotNull(scoreWithRoutineContext.getRoutineTitle());
     }
 }
 

@@ -37,6 +37,13 @@
                         >
                     </li>
                     <li sec:authorize="isAuthenticated()">
+                        <a
+                                th:href="@{/scores}"
+                                class="block my-1 md:my-0 text-white hover:bg-green-950 hover:text-white rounded-md px-3 py-2"
+                        >Scores</a
+                        >
+                    </li>
+                    <li sec:authorize="isAuthenticated()">
                         <p class="block my-1 md:my-0 text-white rounded-md px-3 py-2 border-solid border-2 border-green-800">[[${#authentication.principal.attributes.name}]]</p>
                     </li>
                     <li sec:authorize="isAuthenticated()">

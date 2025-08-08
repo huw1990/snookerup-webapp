@@ -3,6 +3,8 @@ package com.snookerup.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snookerup.model.AllRoutines;
 import com.snookerup.model.Routine;
+import com.snookerup.model.ScoreWithRoutineContext;
+import com.snookerup.model.db.Score;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
@@ -77,5 +79,14 @@ public class RoutineServiceImpl implements RoutineService, CommandLineRunner {
     public Routine getRandomRoutine() {
         int random = randomGenerator.nextInt(allRoutines.size());
         return allRoutines.get(random);
+    }
+
+    @Override
+    public ScoreWithRoutineContext addRoutineContextToScore(Score score) {
+        Routine routineForScore = routineIdToRoutines.get(score.getRoutineId());
+        return ScoreWithRoutineContext.builder()
+                .score(score)
+                .routineForScore(routineForScore)
+                .build();
     }
 }

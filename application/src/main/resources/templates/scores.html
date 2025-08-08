@@ -4,27 +4,31 @@
       xmlns:th="http://www.thymeleaf.org"
       layout:decorate="~{layout/layout}">
 <div layout:fragment="page-content">
-    <section class="px-4 py-10">
+    <section class="pt-6 pb-4">
         <div class="container-xl lg:container m-auto">
-            <h2 class="text-3xl font-bold text-green-800 mb-5 text-center font-ubuntu">
+            <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
                 Scores
             </h2>
             <div class="text-center text-xs flex flex-col md:flex-row justify-center">
-                <div class="m-2 text-center py-6 border-solid border-2 rounded-md border-green-800">
+                <div class="m-2 text-center py-4 border-solid border-2 rounded-md border-green-800">
                     <p class="inline ml-4">Routine:</p>
-                    <p class="inline border-solid border-2 rounded-md border-gray-300 p-2 px-4 mx-4">Clearing the Colours</p>
+                    <select id="routineIdSelector" name="routineNames" class="text-xs inline rounded-md border-0 py-2 md:py-0.5 px-4 mx-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <option value="all"th:selected="${selectedRoutineId == null}">All routines</option>
+                        <option th:each="routine : ${routines}" th:value="${routine.id}" th:text="${routine.title}" th:selected="${routine.id.equals(selectedRoutineId)}">[[ ${routine.title} ]]</option>
+                    </select>
                 </div>
-                <div class="m-2 flex flex-col md:flex-row text-center py-2 md:py-6 border-solid border-2 rounded-md border-green-800">
+                <div class="items-center m-2 flex flex-col md:flex-row text-center py-2 md:py-4 border-solid border-2 rounded-md border-green-800">
                     <div class="pb-2 md:pb-0">
                         <p class="inline ml-4">From:</p>
-                        <input class="mx-1 text-lg md:text-xs" type="datetime-local" id="from-date-time" name="meeting-time" value="2018-06-12T19:30" min="2018-06-07T00:00" max="2018-06-14T00:00" />
+                        <input class="mx-1 text-lg md:text-xs" type="datetime-local" id="fromDateTime" />
                     </div>
                     <div>
                         <p class="inline">To:</p>
-                        <input class="mx-1 text-lg md:text-xs" type="datetime-local" id="to-date-time" name="meeting-time" value="2018-06-12T19:30" min="2018-06-07T00:00" max="2018-06-14T00:00" />
+                        <input class="mx-1 text-lg md:text-xs" type="datetime-local" id="toDateTime" />
                     </div>
                 </div>
                 <button id="showHideVariationsButton" class="m-4 p-2 px-4 mx-4 text-white bg-green-800 hover:bg-green-950 hover:text-white rounded-md px-3 py-2 border-solid border-2 border-green-800">Show/Hide Variations</button>
+                <button id="searchButton" class="m-4 p-2 px-4 mx-4 text-white bg-green-800 hover:bg-green-950 hover:text-white rounded-md px-3 py-2 border-solid border-2 border-green-800">Search</button>
             </div>
             <div id="variationsBlock" class="hidden flex flex-wrap px-6 py-6 mx-4 border-solid border-2 rounded-md border-green-800">
                 <div class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
@@ -32,12 +36,12 @@
                     <label for="loop" class="ml-1 font-medium text-gray-900 dark:text-gray-300">In a loop?</label>
                 </div>
                 <div class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
-                    <input id="cushion-limit" type="checkbox" value="" class="align-middle w-4 h-4 accent-green-700">
+                    <input id="cushionLimit" type="checkbox" value="" class="align-middle w-4 h-4 accent-green-700">
                     <label for="cushions" class="ml-1 mr-2 font-medium leading-6 text-gray-900">Cushion limit?</label>
                     <input id="cushions" name="cushions" value="0" type="number" class="inline px-4 w-20 rounded-md border-0 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                 </div>
                 <div class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
-                    <input id="redballs-limit" type="checkbox" value="" class="align-middle w-4 h-4 accent-green-700">
+                    <input id="redballsLimit" type="checkbox" value="" class="align-middle w-4 h-4 accent-green-700">
                     <label for="redballs" class="ml-1 mr-2 font-medium leading-6 text-gray-900">Reds/Balls limit?</label>
                     <input id="redballs" name="cushions" value="0" type="number" class="inline px-4 w-20 rounded-md border-0 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                 </div>
@@ -50,52 +54,84 @@
                     <label for="stayononeside" class="ml-1 font-medium text-gray-900 dark:text-gray-300">Stay on one side of table?</label>
                 </div>
             </div>
-            <p class="text-lg p-2 mt-10 mb-4 text-left font-bold text-green-900">Thursday 29th August 2024</p>
-            <div class="m-2 p-4 border-solid border-4 rounded-md border-green-800 bg-green-200/20 drop-shadow-xl">
-                <div class="flex flex-row">
-                    <div class="flex flex-col md:flex-row flex-auto">
-                        <p class="text-xl flex-auto">The Line Up</p>
-                        <p class="flex-auto">17:15</p>
-                    </div>
-                    <p class="text-xl flex-auto text-right font-bold">70 points</p>
-                </div>
-                <div class="flex flex-wrap px-6 py-2">
-                    <div class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
-                        <p>Reds: 15</p>
-                    </div>
-                    <div class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
-                        <p>Max cushions: 5</p>
+            <div th:if="${pageOfScores.scoresForDays.isEmpty()}">
+                <p class="text-center my-10">No scores to display. Please try again with different search terms.</p>
+            </div>
+            <div th:each="scoresForDay : ${pageOfScores.getScoresForDays()}">
+                <p class="text-lg p-2 mt-10 mb-4 text-left font-bold text-green-900">[[ ${scoresForDay.date}]]</p>
+                <div th:each="score : ${scoresForDay.getScores()}">
+                    <div class="m-2 p-4 border-solid border-4 rounded-md border-green-800 bg-green-200/20 drop-shadow-xl">
+                        <div class="flex flex-row">
+                            <div class="flex flex-col md:flex-row flex-auto">
+                                <p class="text-xl flex-auto">[[ ${score.routineTitle }]]</p>
+                                <p class="flex-auto">[[ ${score.timeOfDay} ]]</p>
+                            </div>
+                            <p class="text-xl flex-auto text-right font-bold">[[ ${score.scoreValue + " " + score.scoreUnit}]]</p>
+                        </div>
+                        <div class="flex flex-wrap px-6 py-2">
+                            <div th:if="${score.loop}" class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                                <p>Loop</p>
+                            </div>
+                            <div th:if="${score.unitNumber != null}" class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                                <p>[[ ${score.unitNumber + " " + score.routineUnit}]]</p>
+                            </div>
+                            <div th:if="${score.cushionLimit != null}" class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                                <p th:if="${score.cushionLimit == 1}">[[ ${"Max " + score.cushionLimit + " cushion"} ]]</p>
+                                <p th:if="${score.cushionLimit != 1}">[[ ${"Max " + score.cushionLimit + " cushions"} ]]</p>
+                            </div>
+                            <div th:if="${score.potInOrder}" class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                                <p>Pot in order</p>
+                            </div>
+                            <div th:if="${score.stayOnOneSideOfTable}" class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                                <p>Stay on one side of the table</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap px-2 py-2">
+                            <div th:if="${score.note != null}" class="my-1 md:my-0 bg-gray-100 border-2 border-gray-100 mx-2 py-1 px-2">
+                                <p>[[ ${"Note: " + score.note}]]</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="m-2 p-4 border-solid border-4 rounded-md border-green-800 bg-green-200/20 drop-shadow-xl">
-                <div class="flex flex-row">
-                    <div class="flex flex-col md:flex-row flex-auto">
-                        <p class="text-xl flex-auto">The Line Up</p>
-                        <p class="flex-auto">17:15</p>
-                    </div>
-                    <p class="text-xl flex-auto text-right font-bold">70 points</p>
-                </div>
-            </div>
-            <p class="text-lg p-2 mt-10 mb-4 text-left font-bold text-green-900">Friday 30th August 2024</p>
-            <div class="m-2 p-4 border-solid border-4 rounded-md border-green-800 bg-green-200/20 drop-shadow-xl">
-                <div class="flex flex-row">
-                    <div class="flex flex-col md:flex-row flex-auto">
-                        <p class="text-xl flex-auto">The Line Up</p>
-                        <p class="flex-auto">17:15</p>
-                    </div>
-                    <p class="text-xl flex-auto text-right font-bold">70 points</p>
-                </div>
-            </div>
-            <p class="text-lg p-2 mt-10 mb-4 text-left font-bold text-green-900">Saturday 31st August 2024</p>
-            <div class="m-2 p-4 border-solid border-4 rounded-md border-green-800 bg-green-200/20 drop-shadow-xl">
-                <div class="flex flex-row">
-                    <div class="flex flex-col md:flex-row flex-auto">
-                        <p class="text-xl flex-auto">The Line Up</p>
-                        <p class="flex-auto">17:15</p>
-                    </div>
-                    <p class="text-xl flex-auto text-right font-bold">70 points</p>
-                </div>
+            <div class="flex flex-row justify-center items-center">
+                <button th:disabled="${pageOfScores.currentPageNumber == 1}" id="firstPageButton" class="pageControlButton flex items-center justify-center m-4 mx-2 text-white bg-green-800 hover:bg-green-950 hover:text-white rounded-md border-solid border-2 border-green-800 disabled:bg-gray-400 disabled:border-gray-500">
+                    <svg fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <g stroke-width="0"></g>
+                        <g stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g>
+                            <path d="m16.293 17.707 1.414-1.414L13.414 12l4.293-4.293-1.414-1.414L10.586 12zM7 6h2v12H7z"></path>
+                        </g>
+                    </svg>
+                </button>
+                <button th:disabled="${pageOfScores.currentPageNumber == 1}" id="prevPageButton" class="pageControlButton flex items-center justify-center m-4 mx-2 text-white bg-green-800 hover:bg-green-950 hover:text-white rounded-md border-solid border-2 border-green-800 disabled:bg-gray-400 disabled:border-gray-500">
+                    <svg fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <g stroke-width="0"></g>
+                        <g stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g>
+                            <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path>
+                        </g>
+                    </svg>
+                </button>
+                <p class="mx-6">Page <span id="currentPageNumber">[[ ${pageOfScores.currentPageNumber} ]]</span> of <span id="totalPages">[[ ${pageOfScores.totalPages} ]]</span></p>
+                <button th:disabled="${pageOfScores.currentPageNumber >= pageOfScores.totalPages}" id="nextPageButton" class="pageControlButton flex items-center justify-center m-4 mx-2 text-white bg-green-800 hover:bg-green-950 hover:text-white rounded-md border-solid border-2 border-green-800 disabled:bg-gray-400 disabled:border-gray-500">
+                    <svg fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <g stroke-width="0"></g>
+                        <g stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g>
+                            <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path>
+                        </g>
+                    </svg>
+                </button>
+                <button th:disabled="${pageOfScores.currentPageNumber >= pageOfScores.totalPages}" id="lastPageButton" th:attr="data-lastPageNum=${pageOfScores.totalPages}" class="pageControlButton flex items-center justify-center m-4 mx-2 text-white bg-green-800 hover:bg-green-950 hover:text-white rounded-md border-solid border-2 border-green-800 disabled:bg-gray-400 disabled:border-gray-500">
+                    <svg fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <g stroke-width="0"></g>
+                        <g stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g>
+                            <path d="M7.707 17.707 13.414 12 7.707 6.293 6.293 7.707 10.586 12l-4.293 4.293zM15 6h2v12h-2z"></path>
+                        </g>
+                    </svg>
+                </button>
             </div>
         </div>
     </section>

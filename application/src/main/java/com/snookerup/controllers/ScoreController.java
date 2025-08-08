@@ -1,13 +1,14 @@
 package com.snookerup.controllers;
 
 import com.snookerup.errorhandling.InvalidScoreException;
-import com.snookerup.model.Routine;
+import com.snookerup.model.*;
 import com.snookerup.model.db.Score;
 import com.snookerup.services.RoutineService;
 import com.snookerup.services.ScoreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 /**
@@ -29,6 +32,13 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class ScoreController {
+
+    /** The value provided as a routine ID when looking to search across all routines, not a specific one. */
+    public static final String DEFAULT_ROUTINE_ID = "all";
+
+    /** A String format for the redirect when mandatory score params are missing. */
+    protected static final String VIEW_SCORES_DEFAULT_REDIRECT =
+            "redirect:/scores?routineId=%1$s&pageNumber=%2$s&from=%3$s&to=%4$s";
 
     /** Redirect to use when handling a new score submitted by the user. */
     protected static final String ADD_SCORE_REDIRECT = "redirect:/addscore?routineId=";
@@ -46,8 +56,66 @@ public class ScoreController {
     /** Routine service, used for getting information about routines. */
     private final RoutineService routineService;
 
+    /**
+     * Gets scores for a user, with filters applied based on request params. Note that of all parameters, routineId,
+     * pageNumber, from, and to are required, and force a redirect with default values (of routine ID "all", page number
+     * 1, and the previous week as a date range).
+     * @param model The model, to add context
+     * @param routineId Optional routine ID to search for. If not included, defaults to "all".
+     * @param pageNumber Optional page number. If not included, defaults to 1.
+     * @param from Optional from date. If not included, defaults to 1 week ago.
+     * @param to Optional to date. If not included, defaults to now.
+     * @param loop Optional param to search for scores with loop enabled.
+     * @param cushionLimit Optional param to search for scores with set cushion limit.
+     * @param unitNumber Optional param to search for scores with set unit number.
+     * @param potInOrder Optional param to search for scores with pot in order enabled.
+     * @param stayOnOneSideOfTable Optional param to search for scores with stay on one side of the table enabled.
+     * @param ballStriking Optional param to search for scores with set ball striking.
+     * @param user The current logged-in user
+     * @return The view to load
+     */
     @GetMapping("/scores")
-    public String getAllScores() {
+    public String getScores(Model model,
+                            @RequestParam Optional<String> routineId,
+                            @RequestParam Optional<Integer> pageNumber,
+                            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Optional<LocalDateTime> from,
+                            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Optional<LocalDateTime> to,
+                            @RequestParam Optional<Boolean> loop,
+                            @RequestParam Optional<Integer> cushionLimit,
+                            @RequestParam Optional<Integer> unitNumber,
+                            @RequestParam Optional<Boolean> potInOrder,
+                            @RequestParam Optional<Boolean> stayOnOneSideOfTable,
+                            @RequestParam Optional<String> ballStriking,
+                            @AuthenticationPrincipal OidcUser user) {
+        Optional<Routine> routineFromId = Optional.empty();
+        if (routineId.isPresent()) {
+            routineFromId = routineService.getRoutineById(routineId.get());
+        };
+        if (routineId.isEmpty() || (!DEFAULT_ROUTINE_ID.equals(routineId.get()) && routineFromId.isEmpty())
+                || pageNumber.isEmpty() || from.isEmpty() || to.isEmpty()) {
+            log.debug("Getting scores with no params, redirecting with default params");
+            // Get the required params as entered, or defaults if not provided
+            String routineIdForRedirect = routineId.orElse(DEFAULT_ROUTINE_ID);
+            Integer pageNumberForRedirect = pageNumber.orElse(1);
+            LocalDateTime fromDateTimeForRedirect = from.orElse(LocalDateTime.now().minusWeeks(1).truncatedTo(ChronoUnit.MINUTES));
+            LocalDateTime toDateTimeForRedirect = to.orElse(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+            String redirect = String.format(VIEW_SCORES_DEFAULT_REDIRECT,
+                    routineIdForRedirect, pageNumberForRedirect, fromDateTimeForRedirect, toDateTimeForRedirect);
+            log.debug("Redirecting to {}", redirect);
+            return redirect;
+        }
+        routineFromId.ifPresent((routine) -> {
+            log.debug("selectedRoutineId={}", routine.getId());
+            model.addAttribute("selectedRoutineId", routine.getId());
+            model.addAttribute("selectedRoutine", routine);
+        });
+        model.addAttribute("routines", routineService.getAllRoutines());
+        ScorePageRequestParams params = new ScorePageRequestParams(user.getName(), routineId.get(),
+                pageNumber.orElse(1), from.get(), to.get(), loop.orElse(null), cushionLimit.orElse(null),
+                unitNumber.orElse(null), potInOrder.orElse(null), stayOnOneSideOfTable.orElse(null),
+                ballStriking.orElse(null));
+        ScorePage scorePage = scoreService.getScorePageForParams(params);
+        model.addAttribute("pageOfScores", scorePage);
         return "scores";
     }
 
@@ -111,6 +179,9 @@ public class ScoreController {
         } else {
             boolean addedScoreSuccessfully = false;
             if (user.getName().equals(scoreToBeAdded.getPlayerUsername())) {
+                if (scoreToBeAdded.getNote() != null && scoreToBeAdded.getNote().isBlank()) {
+                    scoreToBeAdded.setNote(null);
+                }
                 try {
                     Score savedScore = scoreService.saveNewScore(scoreToBeAdded);
                     addedScoreSuccessfully = true;

@@ -11,12 +11,14 @@ import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
+import static com.snookerup.controllers.ScoreControllerTests.failIfNotValidScoresPageRedirect;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -37,6 +39,8 @@ class ScoreControllerTestsIT extends BaseTestcontainersIT {
 
     private static final String ADD_SCORE_REDIRECT_URL = "/addscore?routineId=the-line-up";
 
+    private static final String ROUTINE_ID = "the-line-up";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -44,7 +48,7 @@ class ScoreControllerTestsIT extends BaseTestcontainersIT {
     private ObjectMapper objectMapper;
 
     @Test
-    void getAllScores_Should_RedirectToLogin_When_NotAuthed() throws Exception {
+    void getScores_Should_RedirectToLogin_When_NotAuthed() throws Exception {
         this.mockMvc
                 .perform(get("/scores"))
                 .andExpect(status().is3xxRedirection())
@@ -52,10 +56,28 @@ class ScoreControllerTestsIT extends BaseTestcontainersIT {
     }
 
     @Test
-    void getAllScores_Should_Return200OK_When_CorrectlyAuthed() throws Exception {
+    void getScores_Should_RedirectToLogin_When_AuthedButMissingMandatoryParams() throws Exception {
+        OidcUser user = createOidcUser("willo@snookerup.com", "willo");
+        MvcResult result = this.mockMvc
+                .perform(get("/scores")
+                        .with(oidcLogin().oidcUser(user)))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        failIfNotValidScoresPageRedirect(result.getResponse().getRedirectedUrl(), false);
+    }
+
+    @Test
+    void getScores_Should_Return200OK_When_CorrectlyAuthedAndMandatoryParamsProvided() throws Exception {
+        int pageNumber = 1;
+        LocalDateTime from = LocalDateTime.now().minusWeeks(1).truncatedTo(ChronoUnit.MINUTES);
+        LocalDateTime to = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         OidcUser user = createOidcUser("willo@snookerup.com", "willo");
         this.mockMvc
                 .perform(get("/scores")
+                        .queryParam("routineId", ROUTINE_ID)
+                        .queryParam("pageNumber", String.valueOf(pageNumber))
+                        .queryParam("from", from.toString())
+                        .queryParam("to", to.toString())
                         .with(oidcLogin().oidcUser(user)))
                 .andExpect(status().isOk());
     }

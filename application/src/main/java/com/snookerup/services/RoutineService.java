@@ -1,6 +1,8 @@
 package com.snookerup.services;
 
 import com.snookerup.model.Routine;
+import com.snookerup.model.ScoreWithRoutineContext;
+import com.snookerup.model.db.Score;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,4 +45,13 @@ public interface RoutineService {
      * @return A random routine from those loaded
      */
     Routine getRandomRoutine();
+
+    /**
+     * Adds routine context, e.g. what the score unit and variable unit is, to an existing score from the DB, when
+     * displayed in the UI. Note that since the score is already in the DB, we can be sure the routine ID is correct
+     * and exists in the list of available routines.
+     * @param score The score to add context to
+     * @return The score with added routine context
+     */
+    ScoreWithRoutineContext addRoutineContextToScore(Score score);
 }
