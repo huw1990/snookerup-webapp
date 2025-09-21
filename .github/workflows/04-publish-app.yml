@@ -8,12 +8,14 @@ env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
 
 on:
-  push:
-    paths:
-      - 'application/**'
-      - 'cdk/**/*Service*'
-      - 'cdk/pom.xml'
-      - '.github/workflows/04-publish-app.yml'
+# Disable running this workflow when a new commit is made to the application
+# (since we've recently manually deleted all the CloudFormation stacks, so this will fail anyway)
+#  push:
+#    paths:
+#      - 'application/**'
+#      - 'cdk/**/*Service*'
+#      - 'cdk/pom.xml'
+#      - '.github/workflows/04-publish-app.yml'
   workflow_dispatch:
 jobs:
   build-and-publish:
