@@ -15,6 +15,7 @@ module.exports = {
                 "sigmar": ["Sigmar", "serif"],
                 "poppins": ["Poppins", "serif"],
                 "ubuntu": ["Ubuntu", "serif"],
+                "shrikhand": ["Shrikhand", "serif"],
             },
             dropShadow: {
                 "crisp": "0 1.2px 1.2px rgba(0,0,0,0.8)"

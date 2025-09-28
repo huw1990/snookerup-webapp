@@ -4,7 +4,12 @@ import com.snookerup.controllers.ScoreController;
 import com.snookerup.errorhandling.InvalidScoreException;
 import com.snookerup.model.*;
 import com.snookerup.model.db.Score;
+import com.snookerup.model.stats.ScoreNote;
+import com.snookerup.model.stats.ScoreStatInfo;
+import com.snookerup.model.stats.ScoreStats;
+import com.snookerup.model.stats.ScoreStatsEntry;
 import com.snookerup.repositories.ScoreRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -12,7 +17,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Handles all operations related to scores.
@@ -30,6 +39,8 @@ public class ScoreServiceImpl implements ScoreService {
     private final ScoreRepository scoreRepository;
 
     private final RoutineService routineService;
+
+    private final ScoreStatsGeneratorService scoreStatsGeneratorService;
 
     @Override
     public Score saveNewScore(Score scoreToBeAdded) throws InvalidScoreException {
@@ -107,4 +118,28 @@ public class ScoreServiceImpl implements ScoreService {
         log.debug("Returning scorePage={}", scorePage);
         return scorePage;
     }
+
+    @Override
+    @Transactional
+    public void deleteScoreForIdAndPlayerUsername(Long scoreId, String playerUsername) {
+        /*
+         * Transactional annotation required because although this is a single repository call, under the covers it
+         * will fail with an error "No EntityManager with actual transaction available for current thread", adding the
+         * annotation fixes it.
+         */
+        log.debug("deleteScoreForIdAndPlayerUsername scoreId={}, playerUsername={}", scoreId, playerUsername);
+        scoreRepository.deleteByIdAndPlayerUsername(scoreId, playerUsername);
+    }
+
+    @Override
+    public ScoreStats getStatsForParams(ScoreStatsRequestParams params) {
+        List<Score> scores = scoreRepository
+                .findAllByPlayerUsernameAndDateOfAttemptBetweenAndOptionalRoutineIdAndVariationParamsWithoutPaging(
+                        params.playerUsername(), params.from(), params.to(), params.routineId(), params.loop(),
+                        params.cushionLimit(), params.unitNumber(), params.potInOrder(), params.stayOnOneSideOfTable(),
+                        params.ballStriking()
+                );
+        return scoreStatsGeneratorService.generateScoreStatsFromScores(params, scores);
+    }
+
 }

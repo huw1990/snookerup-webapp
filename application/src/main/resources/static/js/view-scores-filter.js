@@ -103,6 +103,10 @@ window.addEventListener('load', function() {
             // Get the current search params - we'll modify these before sending the request
             const searchParams = new URLSearchParams(window.location.search);
 
+            // Set new dates
+            searchParams.set("from", fromDate);
+            searchParams.set("to", toDate);
+
             // Default values for routine variations. If these don't change, we won't add these params
             let loopUrlVal = false;
             let cushionLimitUrlVal = -1;

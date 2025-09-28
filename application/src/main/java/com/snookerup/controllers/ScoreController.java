@@ -3,6 +3,7 @@ package com.snookerup.controllers;
 import com.snookerup.errorhandling.InvalidScoreException;
 import com.snookerup.model.*;
 import com.snookerup.model.db.Score;
+import com.snookerup.model.stats.ScoreStats;
 import com.snookerup.services.RoutineService;
 import com.snookerup.services.ScoreService;
 import jakarta.validation.Valid;
@@ -40,6 +41,10 @@ public class ScoreController {
     protected static final String VIEW_SCORES_DEFAULT_REDIRECT =
             "redirect:/scores?routineId=%1$s&pageNumber=%2$s&from=%3$s&to=%4$s";
 
+    /** A String format for the redirect when mandatory score params are missing. */
+    protected static final String VIEW_STATS_DEFAULT_REDIRECT =
+            "redirect:/scores/stats?routineId=%1$s&from=%2$s&to=%3$s";
+
     /** Redirect to use when handling a new score submitted by the user. */
     protected static final String ADD_SCORE_REDIRECT = "redirect:/addscore?routineId=";
 
@@ -49,6 +54,11 @@ public class ScoreController {
 
     /** Success message to display in a banner when a user's score is saved to the DB. */
     protected static final String SUCCESSFUL_SAVE_SCORE_MESSAGE = "Great job! Your score was added successfully.";
+
+    protected static final String NO_ROUTINE_PROVIDED_ERROR = "No routine provided. Stats can only be shown for a " +
+            "specific routine and specific variations";
+
+    private static final int NUM_OF_MONTHS_OF_SCORES_TO_SHOW = 3;
 
     /** Score service, used for adding and retrieving scores. */
     private final ScoreService scoreService;
@@ -97,7 +107,7 @@ public class ScoreController {
             // Get the required params as entered, or defaults if not provided
             String routineIdForRedirect = routineId.orElse(DEFAULT_ROUTINE_ID);
             Integer pageNumberForRedirect = pageNumber.orElse(1);
-            LocalDateTime fromDateTimeForRedirect = from.orElse(LocalDateTime.now().minusWeeks(1).truncatedTo(ChronoUnit.MINUTES));
+            LocalDateTime fromDateTimeForRedirect = from.orElse(LocalDateTime.now().minusMonths(NUM_OF_MONTHS_OF_SCORES_TO_SHOW).truncatedTo(ChronoUnit.MINUTES));
             LocalDateTime toDateTimeForRedirect = to.orElse(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
             String redirect = String.format(VIEW_SCORES_DEFAULT_REDIRECT,
                     routineIdForRedirect, pageNumberForRedirect, fromDateTimeForRedirect, toDateTimeForRedirect);
@@ -116,6 +126,8 @@ public class ScoreController {
                 ballStriking.orElse(null));
         ScorePage scorePage = scoreService.getScorePageForParams(params);
         model.addAttribute("pageOfScores", scorePage);
+        model.addAttribute("fromTime", String.valueOf(from.get()));
+        model.addAttribute("toTime", String.valueOf(to.get()));
         return "scores";
     }
 
@@ -205,6 +217,69 @@ public class ScoreController {
 
         // Always redirect back to the add score page, regardless of success or failure
         return ADD_SCORE_REDIRECT + scoreToBeAdded.getRoutineId();
+    }
+
+    @GetMapping("/scores/stats")
+    public String getScoreStats(Model model,
+                                @RequestParam Optional<String> routineId,
+                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Optional<LocalDateTime> from,
+                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Optional<LocalDateTime> to,
+                                @RequestParam Optional<Boolean> loop,
+                                @RequestParam Optional<Integer> cushionLimit,
+                                @RequestParam Optional<Integer> unitNumber,
+                                @RequestParam Optional<Boolean> potInOrder,
+                                @RequestParam Optional<Boolean> stayOnOneSideOfTable,
+                                @RequestParam Optional<String> ballStriking,
+                                @AuthenticationPrincipal OidcUser user) {
+        if (routineId.isEmpty()) {
+            model.addAttribute("noRoutineProvidedError", NO_ROUTINE_PROVIDED_ERROR);
+            return "stats";
+        }
+        if (from.isEmpty() || to.isEmpty()) {
+            LocalDateTime fromParam = null;
+            LocalDateTime toParam = null;
+            if (from.isEmpty() && to.isEmpty()) {
+                // No dates provided, so just look at the last few months
+                fromParam = LocalDateTime.now().minusMonths(NUM_OF_MONTHS_OF_SCORES_TO_SHOW).truncatedTo(ChronoUnit.MINUTES);
+                toParam = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+            } else if (from.isPresent() && to.isEmpty()) {
+                // Have From but no To, so set To to now
+                fromParam = from.get();
+                toParam = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+            } else if (from.isEmpty() && to.isPresent()) {
+                // Have To but no From, so set From to few months before To
+                toParam = to.get();
+                fromParam = to.get().minusMonths(NUM_OF_MONTHS_OF_SCORES_TO_SHOW).truncatedTo(ChronoUnit.MINUTES);
+            }
+            String redirect = String.format(VIEW_STATS_DEFAULT_REDIRECT, routineId.get(), fromParam, toParam);
+            if (loop.isPresent()) {
+                redirect = redirect + "&loop=" + loop.get();
+            }
+            if (cushionLimit.isPresent()) {
+                redirect = redirect + "&cushionLimit=" + cushionLimit.get();
+            }
+            if (unitNumber.isPresent()) {
+                redirect = redirect + "&unitNumber=" + unitNumber.get();
+            }
+            if (potInOrder.isPresent()) {
+                redirect = redirect + "&potInOrder=" + potInOrder.get();
+            }
+            if (stayOnOneSideOfTable.isPresent()) {
+                redirect = redirect + "&stayOnOneSideOfTable=" + stayOnOneSideOfTable.get();
+            }
+            if (ballStriking.isPresent()) {
+                redirect = redirect + "&ballStriking=" + ballStriking.get();
+            }
+            log.debug("Redirecting to {}", redirect);
+            return redirect;
+        }
+        ScoreStatsRequestParams params = new ScoreStatsRequestParams(user.getName(), routineId.get(),
+                from.get(), to.get(), loop.orElse(null), cushionLimit.orElse(null),
+                unitNumber.orElse(null), potInOrder.orElse(null), stayOnOneSideOfTable.orElse(null),
+                ballStriking.orElse(null));
+        ScoreStats scoreStats = scoreService.getStatsForParams(params);
+        model.addAttribute("stats", scoreStats);
+        return "stats";
     }
 
     /**

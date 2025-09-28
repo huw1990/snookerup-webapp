@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/layout}">
+<div layout:fragment="page-content">
+    <section class="pt-6 pb-4">
+        <div class="container-xl lg:container m-auto">
+            <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
+                Stats
+            </h2>
+            <p th:if="${noRoutineProvidedError != null}" class="mx-auto my-8 text-center">[[ ${noRoutineProvidedError} ]]</p>
+            <div th:if="${stats != null}">
+                <div class="bg-green-50 max-w-4xl m-2 md:m-auto p-2 rounded-lg shadow-md mb-6 drop-shadow-xl border-solid border-4 border-brown">
+                    <p class="font-ubuntu text-green-800 font-bold">Stats for:  <span class="font-poppins italic text-stone-600 font-normal">[[ ${stats.title} ]]</span>. <span class="font-poppins italic text-stone-600 font-normal">[[ ${stats.timePeriod} ]]</span></p>
+                </div>
+                <div th:if="${!stats.scoreEntries.isEmpty()}">
+                    <div id="scoresGraph" class="w-full md:w-[800px] m-auto mb-4">
+                        <canvas id="scoresGraphCanvas">
+                            <p>Graph of scores</p>
+                        </canvas>
+                    </div>
+                    <p class="mx-auto mb-2 text-center text-xs text-gray-400">Note the bars for the highest scores in <span style="color:gold; font-weight: bold;">gold</span> and lowest scores in <span style="color:red; font-weight: bold;">red</span>.</p>
+                </div>
+                <p th:if="${stats.scoreEntries.isEmpty()}" class="mx-auto mb-2 text-center">No scores found for requested parameters.</p>
+                <div class="flex flex-col md:flex-row justify-center flex-wrap m-2">
+                    <div th:each="stat : ${stats.stats}" class="bg-green-50 flex-none min-w-full md:min-w-80 max-w-full md:max-w-none m-auto md:mx-3 p-4 rounded-lg shadow-md mb-6 drop-shadow-xl border-solid border-4 border-brown">
+                        <p class="uppercase text-xs text-gray-400">[[ ${stat.title} ]]</p>
+                        <p class="p-4 font-shrikhand text-6xl text-right text-green-700">[[ ${stat.value} ]]</p>
+                        <p th:if="${stat.trend.value.equals('No trend')}" class="inline-flex items-center rounded-lg bg-gray-200 py-1 px-2 text-xs font-medium text-gray-700 ring-1 ring-gray-600/20 ring-inset m-1">
+                            <svg fill="#000000" class="inline mr-2" width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <g stroke-width="0"/>
+                                <g stroke-linecap="round" stroke-linejoin="round"/>
+                                <g>
+                                    <path d="M5 11h14v2H5z"/>
+                                </g>
+                            </svg>[[ ${stat.trend.value} ]]
+                        </p>
+                        <p th:if="${stat.trend.value.equals('Trending up')}" class="inline-flex items-center rounded-lg bg-green-200 py-1 px-2 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset m-1">
+                            <svg fill="#000000" class="inline mr-2" width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="m10 10.414 4 4 5.707-5.707L22 11V5h-6l2.293 2.293L14 11.586l-4-4-7.707 7.707 1.414 1.414z"/>
+                            </svg>[[ ${stat.trend.value} ]]
+                        </p>
+                        <p th:if="${stat.trend.value.equals('Trending down')}" class="inline-flex items-center rounded-lg bg-red-100 py-1 px-2 text-xs font-medium text-red-700 ring-1 ring-red-600/20 ring-inset m-1">
+                            <svg fill="#000000" class="inline mr-2" width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="m14 9.586-4 4-6.293-6.293-1.414 1.414L10 16.414l4-4 4.293 4.293L16 19h6v-6l-2.293 2.293z"/>
+                            </svg>[[ ${stat.trend.value} ]]
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

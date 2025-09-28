@@ -4,6 +4,7 @@ import com.snookerup.controllers.ScoreController;
 import com.snookerup.errorhandling.InvalidScoreException;
 import com.snookerup.model.*;
 import com.snookerup.model.db.Score;
+import com.snookerup.model.stats.ScoreStats;
 import com.snookerup.repositories.ScoreRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,7 @@ public class ScoreServiceImplTests {
 
     private ScoreRepository mockScoreRepository;
     private RoutineService mockRoutineService;
+    private ScoreStatsGeneratorService mockStatsGeneratorService;
 
     private Score mockScore;
     private Routine mockRoutine;
@@ -55,6 +57,7 @@ public class ScoreServiceImplTests {
     public void beforeEach() {
         mockScoreRepository = mock(ScoreRepository.class);
         mockRoutineService = mock(RoutineService.class);
+        mockStatsGeneratorService = mock(ScoreStatsGeneratorService.class);
         mockScore = mock(Score.class);
         mockRoutine = mock(Routine.class);
         mockAddedScore = mock(Score.class);
@@ -70,7 +73,7 @@ public class ScoreServiceImplTests {
         when(mockRoutineService.addRoutineContextToScore(mockRetrievedScore1)).thenReturn(mockRetrievedScoreWithContext1);
         when(mockRoutineService.addRoutineContextToScore(mockRetrievedScore2)).thenReturn(mockRetrievedScoreWithContext2);
 
-        scoreService = new ScoreServiceImpl(mockScoreRepository, mockRoutineService);
+        scoreService = new ScoreServiceImpl(mockScoreRepository, mockRoutineService, mockStatsGeneratorService);
     }
 
     @Test
@@ -336,5 +339,58 @@ public class ScoreServiceImplTests {
         assertEquals(2, scoresForDay1.getScores().size());
         assertEquals(mockRetrievedScoreWithContext1, scoresForDay1.getScores().get(0));
         assertEquals(mockRetrievedScoreWithContext2, scoresForDay1.getScores().get(1));
+    }
+
+    @Test
+    public void deleteScoreForIdAndPlayerUsername_Should_InvokeScoreRepository() {
+        // Define variables
+        Long scoreId = 10L;
+
+        // Set mock expectations
+
+        // Execute method under test
+        scoreService.deleteScoreForIdAndPlayerUsername(scoreId, USERNAME);
+
+        // Verify
+        verify(mockScoreRepository).deleteByIdAndPlayerUsername(scoreId, USERNAME);
+    }
+
+    @Test
+    public void getStatsForParams_Should_GetScoresFromDbThenConstructStats() {
+        // Define variables
+        String playerUsername = USERNAME;
+        String routineId = ROUTINE_ID;
+        LocalDateTime from = LocalDateTime.now().minusWeeks(10);
+        LocalDateTime to = LocalDateTime.now().minusWeeks(2);
+        Boolean loop = null;
+        Integer cushionLimit = null;
+        Integer unitNumber = null;
+        Boolean potInOrder = null;
+        Boolean stayOnOneSideOfTable = null;
+        String ballStriking = null;
+        ScoreStatsRequestParams params = new ScoreStatsRequestParams(playerUsername, routineId, from, to, loop,
+                cushionLimit, unitNumber, potInOrder, stayOnOneSideOfTable, ballStriking);
+        List<Score> retrievedScores = List.of(mockRetrievedScore1, mockRetrievedScore2);
+        ScoreStats mockStats = mock(ScoreStats.class);
+
+        // Set mock expectations
+        when(mockScoreRepository
+                .findAllByPlayerUsernameAndDateOfAttemptBetweenAndOptionalRoutineIdAndVariationParamsWithoutPaging(
+                        playerUsername, from, to, routineId, loop, cushionLimit, unitNumber, potInOrder,
+                        stayOnOneSideOfTable, ballStriking
+                )).thenReturn(retrievedScores);
+        when(mockStatsGeneratorService.generateScoreStatsFromScores(params, retrievedScores)).thenReturn(mockStats);
+
+        // Execute method under test
+        ScoreStats returnedStats = scoreService.getStatsForParams(params);
+
+        // Verify
+        assertEquals(mockStats, returnedStats);
+        verify(mockScoreRepository)
+                .findAllByPlayerUsernameAndDateOfAttemptBetweenAndOptionalRoutineIdAndVariationParamsWithoutPaging(
+                        playerUsername, from, to, routineId, loop, cushionLimit, unitNumber, potInOrder,
+                        stayOnOneSideOfTable, ballStriking
+                );
+        verify(mockStatsGeneratorService).generateScoreStatsFromScores(params, retrievedScores);
     }
 }

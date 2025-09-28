@@ -19,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 import static com.snookerup.controllers.ScoreControllerTests.failIfNotValidScoresPageRedirect;
+import static com.snookerup.controllers.ScoreControllerTests.failIfNotValidStatsPageRedirect;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -161,6 +162,65 @@ class ScoreControllerTestsIT extends BaseTestcontainersIT {
                         .with(oidcLogin().oidcUser(user)))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl(ADD_SCORE_REDIRECT_URL));
+    }
+
+    @Test
+    void getScoreStats_Should_RedirectToLogin_When_RoutineIdNotProvidedAndNotAuthed() throws Exception {
+        this.mockMvc
+                .perform(get("/scores/stats"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(LOGIN_REDIRECT_URL));
+    }
+
+    @Test
+    void getScoreStats_Should_RedirectToLogin_When_InvalidRoutineIdProvidedAndNotAuthed() throws Exception {
+        this.mockMvc
+                .perform(get("/scores/stats")
+                        .queryParam("routineId", "invalid-routine-id"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(LOGIN_REDIRECT_URL));
+    }
+
+    @Test
+    void getScoreStats_Should_RedirectToLogin_When_ValidRoutineIdProvidedAndNotAuthed() throws Exception {
+        this.mockMvc
+                .perform(get("/scores/stats")
+                        .queryParam("routineId", "the-line-up"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(LOGIN_REDIRECT_URL));
+    }
+
+    @Test
+    void getScoreStats_Should_Return200OK_When_RoutineIdNotProvidedAndCorrectlyAuthed() throws Exception {
+        OidcUser user = createOidcUser("willo@snookerup.com", "willo");
+        this.mockMvc
+                .perform(get("/scores/stats")
+                        .with(oidcLogin().oidcUser(user)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getScoreStats_Should_RedirectToSamePageWithParams_When_RoutineProvidedButNoFromOrToDateAndCorrectlyAuthed() throws Exception {
+        OidcUser user = createOidcUser("willo@snookerup.com", "willo");
+        MvcResult result = this.mockMvc
+                .perform(get("/scores/stats")
+                        .queryParam("routineId", ROUTINE_ID)
+                        .with(oidcLogin().oidcUser(user)))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        failIfNotValidStatsPageRedirect(result.getResponse().getRedirectedUrl(), false);
+    }
+
+    @Test
+    void getScoreStats_Should_Return200OK_When_RequiredParamsProvidedAndCorrectlyAuthed() throws Exception {
+        OidcUser user = createOidcUser("willo@snookerup.com", "willo");
+        this.mockMvc
+                .perform(get("/scores/stats")
+                        .queryParam("routineId", "the-line-up")
+                        .queryParam("from", String.valueOf(LocalDateTime.now().minusWeeks(6).truncatedTo(ChronoUnit.MINUTES)))
+                        .queryParam("to", String.valueOf(LocalDateTime.now().minusWeeks(2).truncatedTo(ChronoUnit.MINUTES)))
+                        .with(oidcLogin().oidcUser(user)))
+                .andExpect(status().isOk());
     }
 
     @Test

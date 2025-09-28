@@ -114,6 +114,16 @@ routine-image-slider {
     height: 25px;
 }
 
+.scoreControlButton {
+    width: 30px;
+    height: 30px;
+}
+
+.scoreControlButton svg {
+    width: 18px;
+    height: 18px;
+}
+
 .date-error {
     animation: shake 0.5s;
     border: 2px solid oklch(44.4% 0.177 26.899);

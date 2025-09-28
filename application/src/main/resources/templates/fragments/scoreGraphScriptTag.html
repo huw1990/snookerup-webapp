@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+
+    <!-- To display a graph of stats we use the Chart.js library, but the inputs (i.e. the scores to display) are passed
+    to the frontend as model attributes to Thymeleaf, and these can only be rendered in inline JavaScript, rather than
+    external JavaScript files like are used elsewhere. -->
+    <script th:if="${stats != null}" th:inline="javascript" th:fragment="statsGraphScript">
+        window.addEventListener('load', function() {
+            const graphCanvas = document.getElementById("scoresGraphCanvas");
+            if (graphCanvas) {
+                // Retrieve the scores from the model
+                const scores = /*[[${stats.scoreEntries}]]*/ {}
+
+                let delayed;
+                const barChart = new Chart(
+                    graphCanvas,
+                    {
+                        type: 'bar',
+                        options: {
+                            animation: {
+                                onComplete: () => {
+                                    delayed = true;
+                                },
+                                delay: (context) => {
+                                    let delay = 0;
+                                    if (context.type === 'data' && context.mode === 'default' && !delayed) {
+                                        delay = context.dataIndex * 10 + context.datasetIndex * 100;
+                                    }
+                                    return delay;
+                                },
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    usePointStyle: true,
+                                    callbacks: {}
+                                }
+                            }
+                        },
+                        data: {
+                            labels: scores.map(row => row.dateTime),
+                            datasets: [
+                                {
+                                    label: 'Score',
+                                    minBarLength: 5,
+                                    data: scores.map(row => row.scoreValue),
+                                    backgroundColor: function(context) {
+                                        const index = context.dataIndex;
+                                        const value = context.dataset.data[index];
+                                        const scoreNote = scores[index].note;
+                                        if (scoreNote != null && scoreNote === 'Highest') {
+                                            return 'gold';
+                                        } else if (scoreNote != null && scoreNote === 'Lowest') {
+                                            return 'red';
+                                        }
+                                        return 'rgba(152, 181, 150, 0.5)';
+                                    },
+                                    borderColor: function(context, options) {
+                                        const index = context.dataIndex;
+                                        const value = context.dataset.data[index];
+                                        const scoreNote = scores[index].note;
+                                        if (scoreNote != null && scoreNote === 'Highest') {
+                                            return 'gold';
+                                        } else if (scoreNote != null && scoreNote === 'Lowest') {
+                                            return 'red';
+                                        }
+                                        return 'rgba(152, 181, 150, 1)';
+                                    },
+                                    borderWidth: 2,
+                                    borderRadius: 2,
+                                    borderSkipped: false
+                                }
+                            ]
+                        }
+                    }
+                );
+            }
+        });
+    </script>
+</head>
+<body>
+
+</body>
+</html>

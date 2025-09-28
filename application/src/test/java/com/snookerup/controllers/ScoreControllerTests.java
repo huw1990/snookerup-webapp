@@ -1,11 +1,9 @@
 package com.snookerup.controllers;
 
 import com.snookerup.errorhandling.InvalidScoreException;
-import com.snookerup.model.BallStriking;
-import com.snookerup.model.Routine;
-import com.snookerup.model.ScorePage;
-import com.snookerup.model.ScorePageRequestParams;
+import com.snookerup.model.*;
 import com.snookerup.model.db.Score;
+import com.snookerup.model.stats.ScoreStats;
 import com.snookerup.services.RoutineService;
 import com.snookerup.services.ScoreService;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +33,9 @@ class ScoreControllerTests {
     private static final String USERNAME = "joe.bloggs";
     private static final String REDIRECT_PREFIX = "redirect:";
     private static final String SCORES_PAGE_URL_START = "/scores?";
+    private static final String STATS_PAGE_URL_START = "/scores/stats?";
     private static final String SCORES_PAGE = "scores";
+    private static final String STATS_PAGE = "stats";
 
     private ScoreService mockScoreService;
     private RoutineService mockRoutineService;
@@ -46,6 +46,7 @@ class ScoreControllerTests {
     private BindingResult mockBindingResult;
     private RedirectAttributes mockRedirectAttributes;
     private ScorePage mockScorePage;
+    private ScoreStats mockScoreStats;
 
     private List<Routine> allRoutines;
 
@@ -62,6 +63,7 @@ class ScoreControllerTests {
         mockBindingResult = mock(BindingResult.class);
         mockRedirectAttributes = mock(RedirectAttributes.class);
         mockScorePage = mock(ScorePage.class);
+        mockScoreStats = mock(ScoreStats.class);
 
         scoreController = new ScoreController(mockScoreService, mockRoutineService);
 
@@ -366,6 +368,115 @@ class ScoreControllerTests {
     }
 
     @Test
+    public void getScoreStats_Should_DisplayPageWithErrorText_When_RoutineNotProvided() {
+        // Define variables
+        String routineId = null;
+        LocalDateTime from = null;
+        LocalDateTime to = null;
+        Boolean loop = null;
+        Integer cushionLimit = null;
+        Integer unitNumber = null;
+        Boolean potInOrder = null;
+        Boolean stayOnOneSideOfTable = null;
+        String ballStriking = null;
+
+        // Set mock expectations
+
+        // Execute method under test
+        String returnedPage = scoreController.getScoreStats(mockModel, Optional.ofNullable(routineId),
+                Optional.ofNullable(from), Optional.ofNullable(to), Optional.ofNullable(loop),
+                Optional.ofNullable(cushionLimit), Optional.ofNullable(unitNumber), Optional.ofNullable(potInOrder),
+                Optional.ofNullable(stayOnOneSideOfTable), Optional.ofNullable(ballStriking), mockOidcUser);
+
+        // Verify
+        assertEquals(STATS_PAGE, returnedPage);
+        verify(mockModel).addAttribute("noRoutineProvidedError", NO_ROUTINE_PROVIDED_ERROR);
+        verifyNoInteractions(mockScoreService);
+    }
+
+    @Test
+    public void getScoreStats_Should_RedirectWithDates_When_FromDateNotProvided() {
+        // Define variables
+        String routineId = ROUTINE_ID;
+        LocalDateTime from = null;
+        LocalDateTime to = LocalDateTime.now();
+        Boolean loop = null;
+        Integer cushionLimit = null;
+        Integer unitNumber = null;
+        Boolean potInOrder = null;
+        Boolean stayOnOneSideOfTable = null;
+        String ballStriking = null;
+
+        // Set mock expectations
+
+        // Execute method under test
+        String returnedPage = scoreController.getScoreStats(mockModel, Optional.ofNullable(routineId),
+                Optional.ofNullable(from), Optional.ofNullable(to), Optional.ofNullable(loop),
+                Optional.ofNullable(cushionLimit), Optional.ofNullable(unitNumber), Optional.ofNullable(potInOrder),
+                Optional.ofNullable(stayOnOneSideOfTable), Optional.ofNullable(ballStriking), mockOidcUser);
+
+        // Verify
+        failIfNotValidStatsPageRedirect(returnedPage, true);
+        verifyNoInteractions(mockScoreService);
+    }
+
+    @Test
+    public void getScoreStats_Should_RedirectWithDates_When_ToDateNotProvided() {
+        // Define variables
+        String routineId = ROUTINE_ID;
+        LocalDateTime from = LocalDateTime.now();
+        LocalDateTime to = null;
+        Boolean loop = null;
+        Integer cushionLimit = null;
+        Integer unitNumber = null;
+        Boolean potInOrder = null;
+        Boolean stayOnOneSideOfTable = null;
+        String ballStriking = null;
+
+        // Set mock expectations
+
+        // Execute method under test
+        String returnedPage = scoreController.getScoreStats(mockModel, Optional.ofNullable(routineId),
+                Optional.ofNullable(from), Optional.ofNullable(to), Optional.ofNullable(loop),
+                Optional.ofNullable(cushionLimit), Optional.ofNullable(unitNumber), Optional.ofNullable(potInOrder),
+                Optional.ofNullable(stayOnOneSideOfTable), Optional.ofNullable(ballStriking), mockOidcUser);
+
+        // Verify
+        failIfNotValidStatsPageRedirect(returnedPage, true);
+        verifyNoInteractions(mockScoreService);
+    }
+
+    @Test
+    public void getScoreStats_Should_DisplayStatsPage_When_AllRequiredParamsProvided() {
+        // Define variables
+        String routineId = ROUTINE_ID;
+        LocalDateTime from = LocalDateTime.now().minusWeeks(2);
+        LocalDateTime to = LocalDateTime.now().minusWeeks(1);
+        Boolean loop = null;
+        Integer cushionLimit = null;
+        Integer unitNumber = null;
+        Boolean potInOrder = null;
+        Boolean stayOnOneSideOfTable = null;
+        String ballStriking = null;
+        ScoreStatsRequestParams requestParams = new ScoreStatsRequestParams(USERNAME, ROUTINE_ID,
+                from, to, loop, cushionLimit, unitNumber, potInOrder, stayOnOneSideOfTable, ballStriking);
+
+        // Set mock expectations
+        when(mockScoreService.getStatsForParams(requestParams)).thenReturn(mockScoreStats);
+
+        // Execute method under test
+        String returnedPage = scoreController.getScoreStats(mockModel, Optional.ofNullable(routineId),
+                Optional.ofNullable(from), Optional.ofNullable(to), Optional.ofNullable(loop),
+                Optional.ofNullable(cushionLimit), Optional.ofNullable(unitNumber), Optional.ofNullable(potInOrder),
+                Optional.ofNullable(stayOnOneSideOfTable), Optional.ofNullable(ballStriking), mockOidcUser);
+
+        // Verify
+        assertEquals(STATS_PAGE, returnedPage);
+        verify(mockModel).addAttribute("stats", mockScoreStats);
+        verify(mockScoreService).getStatsForParams(requestParams);
+    }
+
+    @Test
     public void getVariationsForRoutineFragment_Should_LoadWithoutSelectedRoutine_When_RoutineNotFound() {
         // Define variables
         String invalidRoutineId = "invalid-routine-id";
@@ -403,36 +514,48 @@ class ScoreControllerTests {
      * prefix) or "/scores?routineId=<ROUTINE_ID>&pageNumber=<PAGE_NO>&from=<FROM>&to=<TO>" (when not expecting the
      * prefix).
      * @param returnedPage The returned page to validate
+     * @param expectRedirectPrefix Whether the returned page should have the "redirect:" prefix
      */
     static void failIfNotValidScoresPageRedirect(String returnedPage, boolean expectRedirectPrefix) {
+        failIfNotValidPageRedirect(returnedPage, SCORES_PAGE_URL_START, expectRedirectPrefix,
+                List.of("routineId", "pageNumber", "from", "to"));
+    }
+
+    /**
+     * Takes in the provided returned page, fails the test if it's not in the format
+     * "redirect:/scores/stats?routineId=<ROUTINE_ID>&from=<FROM>&to=<TO>" (when expecting a redirect prefix) or
+     * "/scores?routineId=<ROUTINE_ID>&from=<FROM>&to=<TO>" (when not expecting the prefix).
+     * @param returnedPage The returned page to validate
+     * @param expectRedirectPrefix Whether the returned page should have the "redirect:" prefix
+     */
+    static void failIfNotValidStatsPageRedirect(String returnedPage, boolean expectRedirectPrefix) {
+        failIfNotValidPageRedirect(returnedPage, STATS_PAGE_URL_START, expectRedirectPrefix,
+                List.of("routineId", "from", "to"));
+    }
+
+    static void failIfNotValidPageRedirect(String returnedPage, String expectedUrl, boolean expectRedirectPrefix,
+                                                 List<String> paramNamesInOrder) {
         if (returnedPage == null) {
             fail("Returned page is null");
         }
         String expectedScoresPageStart;
         if (expectRedirectPrefix) {
-            expectedScoresPageStart = REDIRECT_PREFIX + SCORES_PAGE_URL_START;
+            expectedScoresPageStart = REDIRECT_PREFIX + expectedUrl;
         } else {
-            expectedScoresPageStart = SCORES_PAGE_URL_START;
+            expectedScoresPageStart = expectedUrl;
         }
         if (!returnedPage.startsWith(expectedScoresPageStart)) {
             fail("Returned page doesn't start with redirect to scores page");
         }
         String justParams = returnedPage.substring(expectedScoresPageStart.length());
         String[] paramKeyValues = justParams.split("&");
-        if (paramKeyValues.length != 4) {
-            fail("Found " + paramKeyValues.length + " request params, expected 4");
+        if (paramKeyValues.length < paramNamesInOrder.size()) {
+            fail("Found " + paramKeyValues.length + " request params, expected " + paramNamesInOrder.size());
         }
-        if (!paramKeyValues[0].startsWith("routineId=")) {
-            fail("First param isn't routineId");
-        }
-        if (!paramKeyValues[1].startsWith("pageNumber=")) {
-            fail("First param isn't pageNumber");
-        }
-        if (!paramKeyValues[2].startsWith("from=")) {
-            fail("First param isn't from");
-        }
-        if (!paramKeyValues[3].startsWith("to=")) {
-            fail("First param isn't to");
+        for (int i = 0; i < paramKeyValues.length; i++) {
+            if (!paramKeyValues[i].startsWith(paramNamesInOrder.get(i))) {
+                fail("Param " + i + " isn't " + paramNamesInOrder.get(i));
+            }
         }
     }
 }

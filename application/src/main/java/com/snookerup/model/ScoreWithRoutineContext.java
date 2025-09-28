@@ -18,12 +18,6 @@ import java.util.Date;
 @Getter
 public class ScoreWithRoutineContext {
 
-    /** Long-form date, e.g. "Friday, 1 August 2025". */
-    private static final SimpleDateFormat LONG_FORM_DATE_FORMAT = new SimpleDateFormat("EEEE, d MMMM yyyy");
-
-    /** Time format, e.g. "18:30". */
-    private static final SimpleDateFormat JUST_TIME_FORMAT = new SimpleDateFormat("HH:mm");
-
     private final Long id;
 
     private final String routineId;
@@ -57,6 +51,8 @@ public class ScoreWithRoutineContext {
     private final Integer scoreValue;
 
     private final String scoreUnit;
+
+    private final String statsUrl;
 
     @Builder
     public ScoreWithRoutineContext(Score score, Routine routineForScore) {
@@ -105,7 +101,31 @@ public class ScoreWithRoutineContext {
         }
         // Convert date/time of score into a more user-friendly format
         Date scoreDate = Timestamp.valueOf(dateAndTimeOfAttempt);
-        this.timeOfDay = JUST_TIME_FORMAT.format(scoreDate);
-        this.longFormDate = LONG_FORM_DATE_FORMAT.format(scoreDate);
+        this.timeOfDay = DateTimeFormats.JUST_TIME_FORMAT.format(scoreDate);
+        this.longFormDate = DateTimeFormats.LONG_FORM_DATE_FORMAT.format(scoreDate);
+
+        // Create the URL to view stats for scores with the same values
+        StringBuilder builder = new StringBuilder();
+        builder.append("scores/stats?");
+        builder.append("routineId=").append(routineId);
+        if (loop) {
+            builder.append("&loop=true");
+        }
+        if (cushionLimit != null) {
+            builder.append("&cushionLimit=").append(cushionLimit);
+        }
+        if (unitNumber != null) {
+            builder.append("&unitNumber=").append(unitNumber);
+        }
+        if (potInOrder) {
+            builder.append("&potInOrder=true");
+        }
+        if (stayOnOneSideOfTable) {
+            builder.append("&stayOnOneSideOfTable=true");
+        }
+        if (ballStriking != null) {
+            builder.append("&ballStriking=").append(ballStriking);
+        }
+        statsUrl = builder.toString();
     }
 }
