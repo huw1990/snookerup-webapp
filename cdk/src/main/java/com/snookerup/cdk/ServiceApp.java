@@ -16,6 +16,8 @@ import software.constructs.Construct;
 
 import java.util.*;
 
+import static java.util.Collections.singletonList;
+
 /**
  * CDK app for deploying an ECS service with a task containing our application.
  *
@@ -108,6 +110,12 @@ public class ServiceApp {
                                         .actions(List.of(
                                                 "cognito-idp:AdminCreateUser"
                                         ))
+                                        .build(),
+                                PolicyStatement.Builder.create()
+                                        .sid("AllowSendingMetricsToCloudWatch")
+                                        .effect(Effect.ALLOW)
+                                        .resources(singletonList("*")) // CloudWatch does not have any resource-level permissions, see https://stackoverflow.com/a/38055068/9085273
+                                        .actions(singletonList("cloudwatch:PutMetricData"))
                                         .build()
                         ))
                         .withStickySessionsEnabled(true)

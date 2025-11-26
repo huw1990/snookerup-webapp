@@ -6,6 +6,7 @@ import com.snookerup.model.db.Score;
 import com.snookerup.model.stats.ScoreStats;
 import com.snookerup.services.RoutineService;
 import com.snookerup.services.ScoreService;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,6 +66,9 @@ public class ScoreController {
 
     /** Routine service, used for getting information about routines. */
     private final RoutineService routineService;
+
+    /** Micrometer registry for tracking metrics. */
+    private final MeterRegistry meterRegistry;
 
     /**
      * Gets scores for a user, with filters applied based on request params. Note that of all parameters, routineId,
@@ -196,6 +200,7 @@ public class ScoreController {
                 }
                 try {
                     Score savedScore = scoreService.saveNewScore(scoreToBeAdded);
+                    meterRegistry.gauge("snookerup.score.created", 1);
                     addedScoreSuccessfully = true;
                     log.debug("Score added to DB successfully, score={}", savedScore);
                     redirectAttributes.addFlashAttribute("message", SUCCESSFUL_SAVE_SCORE_MESSAGE);

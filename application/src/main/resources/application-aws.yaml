@@ -12,5 +12,15 @@ spring:
           cognito:
             issuerUri: ${COGNITO_PROVIDER_URL}
 
+management:
+  cloudwatch:
+    metrics:
+      export:
+        enabled: true
+        namespace: snookerup
+        step: 1m
+      tags:
+        environment: ${ENVIRONMENT_NAME}
+
 custom:
   use-cognito-as-identity-provider: true

@@ -25,5 +25,11 @@ spring:
           cognito:
             issuerUri: http://localhost:8888/auth/realms/snookerup
 
+management:
+  cloudwatch:
+    metrics:
+      export:
+        enabled: false
+
 custom:
   use-cognito-as-identity-provider: false
