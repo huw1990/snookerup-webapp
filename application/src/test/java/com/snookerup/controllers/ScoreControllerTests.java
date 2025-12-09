@@ -6,6 +6,7 @@ import com.snookerup.model.db.Score;
 import com.snookerup.model.stats.ScoreStats;
 import com.snookerup.services.RoutineService;
 import com.snookerup.services.ScoreService;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -39,6 +40,7 @@ class ScoreControllerTests {
 
     private ScoreService mockScoreService;
     private RoutineService mockRoutineService;
+    private MeterRegistry mockMeterRegistry;
     private Model mockModel;
     private OidcUser mockOidcUser;
     private Routine mockRoutine1;
@@ -56,6 +58,7 @@ class ScoreControllerTests {
     public void beforeEach() {
         mockScoreService = mock(ScoreService.class);
         mockRoutineService = mock(RoutineService.class);
+        mockMeterRegistry = mock(MeterRegistry.class);
         mockModel = mock(Model.class);
         mockOidcUser = mock(OidcUser.class);
         mockRoutine1 = mock(Routine.class);
@@ -65,7 +68,7 @@ class ScoreControllerTests {
         mockScorePage = mock(ScorePage.class);
         mockScoreStats = mock(ScoreStats.class);
 
-        scoreController = new ScoreController(mockScoreService, mockRoutineService);
+        scoreController = new ScoreController(mockScoreService, mockRoutineService, mockMeterRegistry);
 
         allRoutines = List.of(mockRoutine1, mockRoutine2);
         when(mockRoutineService.getAllRoutines()).thenReturn(allRoutines);
