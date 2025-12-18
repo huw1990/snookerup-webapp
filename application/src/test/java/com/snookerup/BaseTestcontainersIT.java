@@ -1,5 +1,7 @@
 package com.snookerup;
 
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -8,6 +10,9 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
+
+import java.time.Instant;
+import java.util.Map;
 
 /**
  * Base class used for any integration tests, using Testcontainers to spin up any necessary containers.
@@ -46,5 +51,21 @@ public abstract class BaseTestcontainersIT {
     static {
         DATABASE.start();
         KEYCLOAK.start();
+    }
+
+    protected DefaultOidcUser createOidcUser(String email, String username) {
+        return new DefaultOidcUser(
+                null,
+                new OidcIdToken(
+                        "some-id",
+                        Instant.now(),
+                        Instant.MAX,
+                        Map.of(
+                                "email", email,
+                                "sub", "snookerup",
+                                "name", username
+                        )
+                )
+        );
     }
 }

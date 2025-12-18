@@ -6,17 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Map;
 
 import static com.snookerup.controllers.ScoreControllerTests.failIfNotValidScoresPageRedirect;
 import static com.snookerup.controllers.ScoreControllerTests.failIfNotValidStatsPageRedirect;
@@ -240,21 +236,5 @@ class ScoreControllerTestsIT extends BaseTestcontainersIT {
                         .queryParam("routineId", "the-line-up")
                         .with(oidcLogin().oidcUser(user)))
                 .andExpect(status().isOk());
-    }
-
-    private DefaultOidcUser createOidcUser(String email, String username) {
-        return new DefaultOidcUser(
-                null,
-                new OidcIdToken(
-                        "some-id",
-                        Instant.now(),
-                        Instant.MAX,
-                        Map.of(
-                                "email", email,
-                                "sub", "snookerup",
-                                "name", username
-                        )
-                )
-        );
     }
 }

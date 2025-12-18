@@ -18,11 +18,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.snookerup.services.ScoreServiceImpl.PAGE_SIZE;
 import static org.assertj.core.api.Fail.fail;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -37,6 +37,8 @@ public class ScoreServiceImplTests {
     private static final String LONG_FORM_DATE_1 = "Friday, 1 August 2025";
     private static final String LONG_FORM_DATE_2 = "Thursday, 31 July 2025";
     private static final Pageable PAGE_CONSTRAINTS = PageRequest.of(0, PAGE_SIZE);
+    private static final LocalDateTime NOW = LocalDateTime.now();
+    private static final LocalDateTime NOW_MINUS_30_DAYS = LocalDateTime.now().minusDays(30);
 
     private ScoreRepository mockScoreRepository;
     private RoutineService mockRoutineService;
@@ -73,7 +75,9 @@ public class ScoreServiceImplTests {
         when(mockRoutineService.addRoutineContextToScore(mockRetrievedScore1)).thenReturn(mockRetrievedScoreWithContext1);
         when(mockRoutineService.addRoutineContextToScore(mockRetrievedScore2)).thenReturn(mockRetrievedScoreWithContext2);
 
-        scoreService = new ScoreServiceImpl(mockScoreRepository, mockRoutineService, mockStatsGeneratorService);
+        scoreService = spy(new ScoreServiceImpl(mockScoreRepository, mockRoutineService, mockStatsGeneratorService));
+        when(scoreService.getNow()).thenReturn(NOW);
+        when(scoreService.getNowMinus30Days()).thenReturn(NOW_MINUS_30_DAYS);
     }
 
     @Test
@@ -392,5 +396,84 @@ public class ScoreServiceImplTests {
                         stayOnOneSideOfTable, ballStriking
                 );
         verify(mockStatsGeneratorService).generateScoreStatsFromScores(params, retrievedScores);
+    }
+
+    @Test
+    public void hasPlayerEverPostedScore_Should_DelegateToScoreRepositoryAndReturn() {
+        // Define variables
+
+        // Set mock expectations
+        when(mockScoreRepository.existsScoreByPlayerUsername(USERNAME)).thenReturn(true);
+
+        // Execute method under test
+        boolean returnValue = scoreService.hasPlayerEverPostedScore(USERNAME);
+
+        // Verify
+        assertTrue(returnValue);
+    }
+
+    @Test
+    public void hasPlayerPostedScoreInLast30Days_Should_DelegateToScoreRepositoryAndReturn() {
+        // Define variables
+
+        // Set mock expectations
+        when(mockScoreRepository.existsScoreByPlayerUsernameAndDateOfAttemptAfter(USERNAME, NOW_MINUS_30_DAYS)).thenReturn(true);
+
+        // Execute method under test
+        boolean returnValue = scoreService.hasPlayerPostedScoreInLast30Days(USERNAME);
+
+        // Verify
+        assertTrue(returnValue);
+    }
+
+    @Test
+    public void getLast30DaysStats_Should_QueryIndividualStatsFromScoreRepositoryAndReturn() {
+        // Define variables
+        int numberOfScores = 10;
+        double avgScoresPerSession = 3.5;
+        long daysSinceLastSession = 6;
+        LocalDateTime dateOfLastSession = NOW.minusDays(daysSinceLastSession);
+        Set<String> routineIds = Set.of(ROUTINE_ID);
+        Last30DaysStats expectedLast30DaysStats = new Last30DaysStats(numberOfScores, avgScoresPerSession,
+                daysSinceLastSession, routineIds);
+
+        // Set mock expectations
+        when(mockScoreRepository.getNumberOfScoresByPlayerUsernameAndSinceDate(USERNAME, NOW_MINUS_30_DAYS))
+                .thenReturn(numberOfScores);
+        when(mockScoreRepository.getAverageNumberOfScoresPerDayByPlayerUsernameAndSinceDate(USERNAME, NOW_MINUS_30_DAYS))
+                .thenReturn(avgScoresPerSession);
+        when(mockScoreRepository.getDateOfLastScoreForPlayerUsernameAndSinceDate(USERNAME, NOW_MINUS_30_DAYS))
+                .thenReturn(dateOfLastSession);
+        when(mockScoreRepository.getRoutineIdsAttemptedByPlayerUsernameAndSinceDate(USERNAME, NOW_MINUS_30_DAYS))
+                .thenReturn(routineIds);
+
+        // Execute method under test
+        Last30DaysStats last30DaysStats = scoreService.getLast30DaysStats(USERNAME);
+
+        // Verify
+        assertEquals(expectedLast30DaysStats, last30DaysStats);
+    }
+
+    @Test
+    public void getLastXScores_Should_DelegateToScoreRepositoryAndReturnScoresWithContext() {
+        // Define variables
+        int numberOfScoresToGet = 2;
+        Score mockScore1 = mock(Score.class);
+        Score mockScore2 = mock(Score.class);
+        ScoreWithRoutineContext mockScoreWithContext1 = mock(ScoreWithRoutineContext.class);
+        ScoreWithRoutineContext mockScoreWithContext2 = mock(ScoreWithRoutineContext.class);
+        List<ScoreWithRoutineContext> expectedScoresWithContext = List.of(mockScoreWithContext1, mockScoreWithContext2);
+
+        // Set mock expectations
+        when(mockScoreRepository.getLastXScoresForPlayerUsername(USERNAME, numberOfScoresToGet))
+                .thenReturn(List.of(mockScore1, mockScore2));
+        when(mockRoutineService.addRoutineContextToScore(mockScore1)).thenReturn(mockScoreWithContext1);
+        when(mockRoutineService.addRoutineContextToScore(mockScore2)).thenReturn(mockScoreWithContext2);
+
+        // Execute method under test
+        List<ScoreWithRoutineContext> scoresWithContext = scoreService.getLastXScores(USERNAME, numberOfScoresToGet);
+
+        // Verify
+        assertEquals(expectedScoresWithContext, scoresWithContext);
     }
 }

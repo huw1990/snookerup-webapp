@@ -32,6 +32,8 @@ public class ScoreWithRoutineContext {
 
     private final String timeOfDay;
 
+    private final String shortFormDateAndTime;
+
     private final boolean loop;
 
     private final Integer cushionLimit;
@@ -103,6 +105,7 @@ public class ScoreWithRoutineContext {
         Date scoreDate = Timestamp.valueOf(dateAndTimeOfAttempt);
         this.timeOfDay = DateTimeFormats.JUST_TIME_FORMAT.format(scoreDate);
         this.longFormDate = DateTimeFormats.LONG_FORM_DATE_FORMAT.format(scoreDate);
+        this.shortFormDateAndTime = DateTimeFormats.SHORT_FORM_DATE_AND_TIME_FORMAT.format(scoreDate);
 
         // Create the URL to view stats for scores with the same values
         StringBuilder builder = new StringBuilder();

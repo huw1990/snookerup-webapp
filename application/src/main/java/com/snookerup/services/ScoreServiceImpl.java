@@ -4,10 +4,7 @@ import com.snookerup.controllers.ScoreController;
 import com.snookerup.errorhandling.InvalidScoreException;
 import com.snookerup.model.*;
 import com.snookerup.model.db.Score;
-import com.snookerup.model.stats.ScoreNote;
-import com.snookerup.model.stats.ScoreStatInfo;
 import com.snookerup.model.stats.ScoreStats;
-import com.snookerup.model.stats.ScoreStatsEntry;
 import com.snookerup.repositories.ScoreRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +14,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.Month;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Handles all operations related to scores.
@@ -140,6 +135,53 @@ public class ScoreServiceImpl implements ScoreService {
                         params.ballStriking()
                 );
         return scoreStatsGeneratorService.generateScoreStatsFromScores(params, scores);
+    }
+
+    @Override
+    public boolean hasPlayerEverPostedScore(String playerUsername) {
+        return scoreRepository.existsScoreByPlayerUsername(playerUsername);
+    }
+
+    @Override
+    public boolean hasPlayerPostedScoreInLast30Days(String playerUsername) {
+        return scoreRepository.existsScoreByPlayerUsernameAndDateOfAttemptAfter(playerUsername, getNowMinus30Days());
+    }
+
+    @Override
+    public Last30DaysStats getLast30DaysStats(String playerUsername) {
+        LocalDateTime periodToSearchIn = getNowMinus30Days();
+        LocalDateTime now = getNow();
+        log.debug("getLast30DaysStats playerUsername={} periodToSearchIn={}", playerUsername, periodToSearchIn);
+        int numberOfScores = scoreRepository.getNumberOfScoresByPlayerUsernameAndSinceDate(playerUsername,
+                periodToSearchIn);
+        double averageScoresPerSession = scoreRepository.getAverageNumberOfScoresPerDayByPlayerUsernameAndSinceDate(
+                playerUsername, periodToSearchIn);
+        LocalDateTime lastScoreDateTime = scoreRepository.getDateOfLastScoreForPlayerUsernameAndSinceDate(
+                playerUsername, periodToSearchIn);
+        long daysSinceLastScore = ChronoUnit.DAYS.between(lastScoreDateTime, now);
+        Set<String> routinesAttempted = scoreRepository.getRoutineIdsAttemptedByPlayerUsernameAndSinceDate(
+                playerUsername, periodToSearchIn);
+        log.debug("stats created, numberOfScores={}, averageScoresPerSession={}, daysSinceLastScore={}, routinesAttempted={}",
+                numberOfScores, averageScoresPerSession, daysSinceLastScore, routinesAttempted);
+        return new Last30DaysStats(numberOfScores, averageScoresPerSession, daysSinceLastScore, routinesAttempted);
+    }
+
+    @Override
+    public List<ScoreWithRoutineContext> getLastXScores(String playerUsername, int numberOfScores) {
+        List<Score> scores = scoreRepository.getLastXScoresForPlayerUsername(playerUsername, numberOfScores);
+        return scores.stream().map(score -> routineService.addRoutineContextToScore(score)).toList();
+    }
+
+    /**
+     * Gets a LocalDateTime object for now minus 30 days, used for searching for stats.
+     * @return LocalDateTime of now minus 30 days
+     */
+    LocalDateTime getNowMinus30Days() {
+        return LocalDateTime.now().minusDays(30);
+    }
+
+    LocalDateTime getNow() {
+        return LocalDateTime.now();
     }
 
 }

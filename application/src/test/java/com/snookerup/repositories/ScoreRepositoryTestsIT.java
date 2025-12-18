@@ -13,8 +13,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Integration tests for the ScoreController class.
@@ -330,6 +331,232 @@ class ScoreRepositoryTestsIT extends BaseTestcontainersIT {
         assertEquals("Willo Session 2 Score 2", scorePageList.get(0).getNote());
         assertEquals("Willo Session 2 Score 3", scorePageList.get(1).getNote());
         assertEquals(2, scoresPage.getTotalElements());
+    }
+
+    /**
+     * Scenario 1: Get the number of scores for Willo since the start of Session 2 (Ronnie's session).
+     * Expected result: 3 (i.e. Willo submitted 3 scores in session 3)
+     */
+    @Test
+    public void getNumberOfScoresByPlayerUsernameAndSinceDate_Scenario1() {
+        // Define variables
+        LocalDateTime fromDateTime = LocalDateTime.of(2025, 1, 12, 18, 30);
+
+        // Set mock expectations
+
+        // Execute method under test
+        int numberOfScores = scoreRepository.getNumberOfScoresByPlayerUsernameAndSinceDate(WILLO_USERNAME, fromDateTime);
+
+        // Verify
+        assertEquals(3, numberOfScores);
+    }
+
+    /**
+     * Scenario 2: Get the number of scores for Willo since after the end of Session 3.
+     * Expected result: 0
+     */
+    @Test
+    public void getNumberOfScoresByPlayerUsernameAndSinceDate_Scenario2() {
+        // Define variables
+        LocalDateTime fromDateTime = LocalDateTime.of(2025, 1, 19, 0, 0);
+
+        // Set mock expectations
+
+        // Execute method under test
+        int numberOfScores = scoreRepository.getNumberOfScoresByPlayerUsernameAndSinceDate(WILLO_USERNAME, fromDateTime);
+
+        // Verify
+        assertEquals(0, numberOfScores);
+    }
+
+    /**
+     * Scenario 1: Get the average number of scores per session for Willo since the start of Session 2 (Ronnie's session).
+     * Expected result: 3 (i.e. 1 session with 3 scores)
+     */
+    @Test
+    public void getAverageNumberOfScoresPerDayByPlayerUsernameAndSinceDate_Scenario1() {
+        // Define variables
+        LocalDateTime fromDateTime = LocalDateTime.of(2025, 1, 12, 18, 30);
+
+        // Set mock expectations
+
+        // Execute method under test
+        double avg = scoreRepository.getAverageNumberOfScoresPerDayByPlayerUsernameAndSinceDate(WILLO_USERNAME, fromDateTime);
+
+        // Verify
+        assertEquals(3, avg);
+    }
+
+    /**
+     * Scenario 1: Get the average number of scores per session for Willo since before Session 1.
+     * Expected result: 5 (i.e. 2 sessions with 10 scores in total, 7 and 3)
+     */
+    @Test
+    public void getAverageNumberOfScoresPerDayByPlayerUsernameAndSinceDate_Scenario2() {
+        // Define variables
+        LocalDateTime fromDateTime = LocalDateTime.of(2025, 1, 9, 0, 0);
+
+        // Set mock expectations
+
+        // Execute method under test
+        double avg = scoreRepository.getAverageNumberOfScoresPerDayByPlayerUsernameAndSinceDate(WILLO_USERNAME, fromDateTime);
+
+        // Verify
+        assertEquals(5, avg);
+    }
+
+    /**
+     * Scenario 1: Get the date/time of the last score for Willo since the start of Session 2 (Ronnie's session).
+     * Expected result: 17/1/25, 19:10 (the date/time of sess3Score2, which was AFTER sess3Score3)
+     */
+    @Test
+    public void getDateOfLastScoreForPlayerUsernameAndSinceDate_Scenario1() {
+        // Define variables
+        LocalDateTime fromDateTime = LocalDateTime.of(2025, 1, 12, 18, 30);
+        LocalDateTime expectedDateTimeOfLastScore = LocalDateTime.of(2025, 1, 17, 19, 10);
+
+        // Set mock expectations
+
+        // Execute method under test
+        LocalDateTime dateTimeOfLastScore = scoreRepository.getDateOfLastScoreForPlayerUsernameAndSinceDate(WILLO_USERNAME, fromDateTime);
+
+        // Verify
+        assertEquals(expectedDateTimeOfLastScore, dateTimeOfLastScore);
+    }
+
+    /**
+     * Scenario 1: Get the IDs of all the routines attempted by Willo since the start of Session 2 (Ronnie's session).
+     * Expected result: A list of two, The Line Up and The T Line Up (both attempted in Willo's Session 3)
+     */
+    @Test
+    public void getRoutineIdsAttemptedByPlayerUsernameAndSinceDate_Scenario1() {
+        // Define variables
+        LocalDateTime fromDateTime = LocalDateTime.of(2025, 1, 12, 18, 30);
+
+        // Set mock expectations
+
+        // Execute method under test
+        Set<String> routineIds = scoreRepository.getRoutineIdsAttemptedByPlayerUsernameAndSinceDate(WILLO_USERNAME, fromDateTime);
+
+        // Verify
+        assertEquals(2, routineIds.size());
+        assertTrue(routineIds.contains(T_LINE_UP_ROUTINE_ID));
+        assertTrue(routineIds.contains(LINE_UP_ROUTINE_ID));
+    }
+
+    /**
+     * Scenario 1: Checks whether Willo has previous scores.
+     * Expected result: True (since Willo has many previous scores)
+     */
+    @Test
+    public void existsScoreByPlayerUsername_Scenario1() {
+        // Define variables
+
+        // Set mock expectations
+
+        // Execute method under test
+        boolean hasPreviousScore = scoreRepository.existsScoreByPlayerUsername(WILLO_USERNAME);
+
+        // Verify
+        assertTrue(hasPreviousScore);
+    }
+
+    /**
+     * Scenario 2: Checks whether a non-existent username has previous scores.
+     * Expected result: False (since the user doesn't exist)
+     */
+    @Test
+    public void existsScoreByPlayerUsername_Scenario2() {
+        // Define variables
+        String NONEXISTENT_USERNAME = "NONEXISTENT_USERNAME";
+
+        // Set mock expectations
+
+        // Execute method under test
+        boolean hasPreviousScore = scoreRepository.existsScoreByPlayerUsername(NONEXISTENT_USERNAME);
+
+        // Verify
+        assertFalse(hasPreviousScore);
+    }
+
+    /**
+     * Scenario 1: Checks whether Willo has previous scores since between Session 2 and 3.
+     * Expected result: True (Session 3 was Willo's)
+     */
+    @Test
+    public void existsScoreByPlayerUsernameAndDateOfAttemptAfter_Scenario1() {
+        // Define variables
+        LocalDateTime fromDateTime = LocalDateTime.of(2025, 1, 15, 0, 0);
+
+        // Set mock expectations
+
+        // Execute method under test
+        boolean hasPreviousScore = scoreRepository.existsScoreByPlayerUsernameAndDateOfAttemptAfter(WILLO_USERNAME, fromDateTime);
+
+        // Verify
+        assertTrue(hasPreviousScore);
+    }
+
+    /**
+     * Scenario 2: Checks whether Ronnie has previous scores since between Session 2 and 3.
+     * Expected result: False (Session 3 was Willo's)
+     */
+    @Test
+    public void existsScoreByPlayerUsernameAndDateOfAttemptAfter_Scenario2() {
+        // Define variables
+        LocalDateTime fromDateTime = LocalDateTime.of(2025, 1, 15, 0, 0);
+
+        // Set mock expectations
+
+        // Execute method under test
+        boolean hasPreviousScore = scoreRepository.existsScoreByPlayerUsernameAndDateOfAttemptAfter(RONNIE_USERNAME, fromDateTime);
+
+        // Verify
+        assertFalse(hasPreviousScore);
+    }
+
+    /**
+     * Scenario 1: Gets the last 2 scores for Willo.
+     * Expected result: Two scores returned, the last two scores from Session 3.
+     */
+    @Test
+    public void getLastXScoresForPlayerUsername_Scenario1() {
+        // Define variables
+        int numberOfScoresToGet = 2;
+        LocalDateTime score1Time = LocalDateTime.of(2025, 1, 17, 19, 10);
+        LocalDateTime score2Time = LocalDateTime.of(2025, 1, 17, 19, 5);
+
+        // Set mock expectations
+
+        // Execute method under test
+        List<Score> scores = scoreRepository.getLastXScoresForPlayerUsername(WILLO_USERNAME, numberOfScoresToGet);
+
+        // Verify
+        assertEquals(2, scores.size());
+        assertEquals(score1Time, scores.get(0).getDateOfAttempt());
+        assertEquals(score2Time, scores.get(1).getDateOfAttempt());
+    }
+
+    /**
+     * Scenario 1: Gets the last 2 scores for Ronnie.
+     * Expected result: Two scores returned, the last two scores from Session 2.
+     */
+    @Test
+    public void getLastXScoresForPlayerUsername_Scenario2() {
+        // Define variables
+        int numberOfScoresToGet = 2;
+        LocalDateTime score1Time = LocalDateTime.of(2025, 1, 12, 18, 40);
+        LocalDateTime score2Time = LocalDateTime.of(2025, 1, 12, 18, 35);
+
+        // Set mock expectations
+
+        // Execute method under test
+        List<Score> scores = scoreRepository.getLastXScoresForPlayerUsername(RONNIE_USERNAME, numberOfScoresToGet);
+
+        // Verify
+        assertEquals(2, scores.size());
+        assertEquals(score1Time, scores.get(0).getDateOfAttempt());
+        assertEquals(score2Time, scores.get(1).getDateOfAttempt());
     }
 
     private Score createScore(String routineId, String playerUsername, LocalDateTime dateOfAttempt, Boolean loop,

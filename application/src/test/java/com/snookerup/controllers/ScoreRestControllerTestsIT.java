@@ -5,14 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.time.Instant;
-import java.util.Map;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
@@ -58,21 +53,5 @@ class ScoreRestControllerTestsIT extends BaseTestcontainersIT {
                         .with(csrf())
                         .with(oidcLogin().oidcUser(user)))
                 .andExpect(status().isNoContent());
-    }
-
-    private DefaultOidcUser createOidcUser(String email, String username) {
-        return new DefaultOidcUser(
-                null,
-                new OidcIdToken(
-                        "some-id",
-                        Instant.now(),
-                        Instant.MAX,
-                        Map.of(
-                                "email", email,
-                                "sub", "snookerup",
-                                "name", username
-                        )
-                )
-        );
     }
 }
