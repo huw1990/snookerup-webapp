@@ -21,7 +21,9 @@ module.exports = {
                 "crisp": "0 1.2px 1.2px rgba(0,0,0,0.8)"
             },
             colors: {
-                "brown": "#855e0c"
+                "brown": "#855e0c",
+                "brown-200": "#d4b574",
+                "brown-600": "#8f691a"
             }
         }
     },

@@ -1,8 +1,10 @@
 package com.snookerup.services;
 
 import com.snookerup.model.Routine;
-import com.snookerup.model.ScoreWithRoutineContext;
+import com.snookerup.model.addedcontext.PracticeSessionRoutineWithRoutineContext;
+import com.snookerup.model.addedcontext.ScoreWithRoutineContext;
 import com.snookerup.model.db.Score;
+import com.snookerup.model.db.nosql.PracticeSessionRoutine;
 
 import java.util.List;
 import java.util.Optional;
@@ -54,4 +56,14 @@ public interface RoutineService {
      * @return The score with added routine context
      */
     ScoreWithRoutineContext addRoutineContextToScore(Score score);
+
+    /**
+     * Adds routine context, e.g. the routine title, to an existing practice session routine from the DB, when displayed
+     * in the UI. Note that since the practice session routine is already in the DB, we can be sure the routine ID is
+     * correct and exists in the list of available routines.
+     * @param routineWithVariations The practice session routine to add context to
+     * @return The practice session routine with added routine context
+     */
+    PracticeSessionRoutineWithRoutineContext addRoutineContextToPracticeSessionRoutine(
+            PracticeSessionRoutine routineWithVariations);
 }

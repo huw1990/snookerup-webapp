@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/layout}">
+<div layout:fragment="page-content">
+    <section class="pt-6 pb-4">
+        <div class="container-xl lg:container m-auto">
+            <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
+                Practice Sessions: [[ ${practiceSession.title} ]]
+            </h2>
+            <p th:if="${practiceSession.description}" class="my-4 m-auto text-center text-lg text-green-900">[[ ${practiceSession.description} ]]</p>
+            <div class="m-auto text-center">
+                <p class="inline-flex items-center rounded-md bg-yellow-200 px-2 py-1 text-xs font-medium text-yellow-700 ring-1 ring-yellow-600/20 ring-inset mx-1 mb-2">[[ ${practiceSession.getNumberOfRoutines()}]] [[ ${practiceSession.getNumberOfRoutines() == 1}? 'routine' : 'routines' ]]</p>
+                <p class="inline-flex items-center rounded-md bg-green-200 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset mx-1 mb-2">[[ ${practiceSession.getDistinctRoutinesAndVariations()}]]  [[ ${practiceSession.getDistinctRoutinesAndVariations() == 1}? 'distinct variation' : 'distinct variations' ]]</p>
+                <p class="inline-flex items-center rounded-md bg-brown-200 px-2 py-1 text-xs font-medium text-brown ring-1 ring-brown-600/20 ring-inset mx-1 mb-2">[[ ${practiceSession.getTotalAttempts()}]] [[ ${practiceSession.getTotalAttempts() == 1}? 'attempt' : 'attempts' ]]</p>
+            </div>
+            <div class="bg-gray-100 container-xl lg:container m-auto p-6 mt-8 rounded-lg shadow-md border-solid border-2 border-neutral-500">
+                <h4 class="text-xl font-bold text-green-800 mb-2 font-ubuntu">Routines</h4>
+                <p th:if="${practiceSession.routines == null || practiceSession.routines.isEmpty()}" class="my-4 m-auto text-center text-md text-green-900">There are no routines in this session yet.</p>
+                <div th:if="${practiceSession.routines}">
+                    <div th:each="routine : ${practiceSession.routines}">
+                        <div class="flex m-2 p-4 border-solid border-4 rounded-md border-green-800 bg-green-200/20 drop-shadow-xl">
+                            <div class="flex-1">
+                                <div class="flex flex-row">
+                                    <div class="flex flex-col md:flex-row flex-auto">
+                                        <p class="text-xl flex-auto">[[ ${routine.routineTitle }]]</p>
+                                    </div>
+                                    <p class="text-xl flex-auto text-right font-bold">[[ ${routine.numberOfAttempts} ]] attempts</p>
+                                </div>
+                                <div class="flex flex-wrap px-6 py-2">
+                                    <div th:if="${routine.loop}" class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                                        <p>Loop</p>
+                                    </div>
+                                    <div th:if="${routine.unitNumber != null}" class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                                        <p>[[ ${routine.unitNumber + " " + routine.routineUnit}]]</p>
+                                    </div>
+                                    <div th:if="${routine.cushionLimit != null}" class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                                        <p th:if="${routine.cushionLimit == 1}">[[ ${"Max " + routine.cushionLimit + " cushion"} ]]</p>
+                                        <p th:if="${routine.cushionLimit != 1}">[[ ${"Max " + routine.cushionLimit + " cushions"} ]]</p>
+                                    </div>
+                                    <div th:if="${routine.potInOrder}" class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                                        <p>Pot in order</p>
+                                    </div>
+                                    <div th:if="${routine.stayOnOneSideOfTable}" class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                                        <p>Stay on one side of the table</p>
+                                    </div>
+                                    <div class="flex flex-wrap px-2 py-2">
+                                        <div th:if="${routine.note != null}" class="my-1 md:my-0 bg-gray-100 border-2 border-gray-100 mx-2 py-1 px-2">
+                                            <p>[[ ${"Note: " + routine.note}]]</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

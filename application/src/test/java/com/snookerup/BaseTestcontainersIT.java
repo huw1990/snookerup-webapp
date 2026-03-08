@@ -22,7 +22,9 @@ import java.util.Map;
 @ActiveProfiles("dev")
 public abstract class BaseTestcontainersIT {
 
-    static PostgreSQLContainer<?> DATABASE = new PostgreSQLContainer<>("postgres:17.4")
+    public static final String LOGIN_REDIRECT_URL = "http://localhost/oauth2/authorization/cognito";
+
+    static PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17.4")
             .withDatabaseName("snookerup")
             .withUsername("snookerup")
             .withPassword("snookerup");
@@ -39,17 +41,30 @@ public abstract class BaseTestcontainersIT {
             .withEnv("KEYCLOAK_PASSWORD", "keycloak")
             .waitingFor(Wait.forHttp("/auth").forStatusCode(200));
 
+    static GenericContainer MONGO = new GenericContainer(DockerImageName.parse("mongo:8.2.3"))
+            .withExposedPorts(27017)
+            .withEnv("MONGO_INITDB_ROOT_USERNAME", "snookerup")
+            .withEnv("MONGO_INITDB_ROOT_PASSWORD", "snookerup")
+            .withEnv("MONGO_INITDB_DATABASE", "snookerup");
+
+    @DynamicPropertySource
+    static void containersProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.data.mongodb.host", MONGO::getHost);
+        registry.add("spring.data.mongodb.port", MONGO::getFirstMappedPort);
+    }
+
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
         registry.add("spring.security.oauth2.client.provider.cognito.issuerUri", () -> "http://localhost:" +
                 KEYCLOAK.getMappedPort(8080) + "/auth/realms/snookerup");
-        registry.add("spring.datasource.username", DATABASE::getUsername);
-        registry.add("spring.datasource.password", DATABASE::getPassword);
-        registry.add("spring.datasource.url",  DATABASE::getJdbcUrl);
+        registry.add("spring.datasource.username", POSTGRES::getUsername);
+        registry.add("spring.datasource.password", POSTGRES::getPassword);
+        registry.add("spring.datasource.url",  POSTGRES::getJdbcUrl);
     }
 
     static {
-        DATABASE.start();
+        POSTGRES.start();
+        MONGO.start();
         KEYCLOAK.start();
     }
 

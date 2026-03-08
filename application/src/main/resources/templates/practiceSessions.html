@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/layout}">
+<div layout:fragment="page-content">
+    <section class="pt-6 pb-4">
+        <div class="container-xl lg:container m-auto">
+            <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
+                Practice Sessions
+            </h2>
+            <p class="my-10 m-auto text-center text-lg text-green-900">Plan your practice sessions in advance, using one of your five slots:</p>
+            <div th:if="${practiceSessions}">
+                <div class="flex flex-wrap justify-center mx-2 md:mx-auto">
+                    <a th:href="@{/practicesessions/{id}(id=${practiceSession.id})}" th:each="practiceSession : ${practiceSessions}" class="bg-green-50 flex-none min-h-[12rem] self-stretch min-w-full md:min-w-min max-w-full md:max-w-none m-auto md:mx-1 p-8 mb-6 rounded-lg shadow-md drop-shadow-xl border-solid border-4 border-brown">
+                        <h1 class="text-2xl font-bold text-green-800 mb-4 font-ubuntu">[[${practiceSession.title}]]</h1>
+                        <p class="text-md mb-6 text-green-900">[[ ${practiceSession.description} ]]</p>
+                        <p class="inline-flex items-center rounded-md bg-yellow-200 px-2 py-1 text-xs font-medium text-yellow-700 ring-1 ring-yellow-600/20 ring-inset mx-1 mb-2">[[ ${practiceSession.getNumberOfRoutines()}]] [[ ${practiceSession.getNumberOfRoutines() == 1}? 'routine' : 'routines' ]]</p>
+                        <p class="inline-flex items-center rounded-md bg-green-200 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset mx-1 mb-2">[[ ${practiceSession.getDistinctRoutinesAndVariations()}]]  [[ ${practiceSession.getDistinctRoutinesAndVariations() == 1}? 'distinct variation' : 'distinct variations' ]]</p>
+                        <p class="inline-flex items-center rounded-md bg-brown-200 px-2 py-1 text-xs font-medium text-brown ring-1 ring-brown-600/20 ring-inset mx-1 mb-2">[[ ${practiceSession.getTotalAttempts()}]] [[ ${practiceSession.getTotalAttempts() == 1}? 'attempt' : 'attempts' ]]</p>
+                    </a>
+                    <div th:each="i: ${#numbers.sequence(0, 5 - practiceSessions.size() - 1)}" class="flex justify-center items-center bg-green-50 flex-none min-h-[12rem] self-stretch min-w-full md:min-w-min max-w-full md:max-w-none m-auto md:mx-1 p-8 mb-6 rounded-lg shadow-md drop-shadow-xl border-dashed border-4 border-brown">
+                        <div>
+                            <h1 class="text-2xl mb-4 font-bold text-green-800 font-ubuntu">AVAILABLE TO USE</h1>
+                            <a
+                                    th:href="@{/addpracticesession}"
+                                    class="text-sm block bg-green-800 text-white text-center py-2 px-2 rounded-xl hover:bg-gray-700  rounded-lg shadow-md drop-shadow-xl border-solid border-4 border-green-800"
+                            >Create New Session</a
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${practiceSessions == null}">
+                <div class="flex flex-wrap justify-center mx-2 md:mx-auto">
+                    <div th:each="i: ${#numbers.sequence(0, 4)}" class="flex justify-center items-center bg-green-50 flex-none min-h-[12rem] self-stretch min-w-full md:min-w-min max-w-full md:max-w-none m-auto md:mx-1 p-8 mb-6 rounded-lg shadow-md drop-shadow-xl border-dashed border-4 border-brown">
+                        <div>
+                            <h1 class="text-2xl mb-4 font-bold text-green-800 font-ubuntu">AVAILABLE TO USE</h1>
+                            <a
+                                    th:href="@{/addpracticesession}"
+                                    class="text-sm block bg-green-800 text-white text-center py-2 px-2 rounded-xl hover:bg-gray-700  rounded-lg shadow-md drop-shadow-xl border-solid border-4 border-green-800"
+                            >Create New Session</a
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

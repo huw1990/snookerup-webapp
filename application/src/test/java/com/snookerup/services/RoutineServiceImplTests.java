@@ -1,8 +1,11 @@
 package com.snookerup.services;
 
+import com.snookerup.model.BallStriking;
 import com.snookerup.model.Routine;
-import com.snookerup.model.ScoreWithRoutineContext;
+import com.snookerup.model.addedcontext.PracticeSessionRoutineWithRoutineContext;
+import com.snookerup.model.addedcontext.ScoreWithRoutineContext;
 import com.snookerup.model.db.Score;
+import com.snookerup.model.db.nosql.PracticeSessionRoutine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -204,6 +207,43 @@ class RoutineServiceImplTests {
         assertEquals(score.getDateOfAttempt(), scoreWithRoutineContext.getDateAndTimeOfAttempt());
         assertEquals(score.getScoreValue(), scoreWithRoutineContext.getScoreValue());
         assertNotNull(scoreWithRoutineContext.getRoutineTitle());
+    }
+
+    @Test
+    public void addRoutineContextToPracticeSessionRoutine_Should_ReturnCreatedPracticeSessionRoutineWithRoutineContext() throws Exception {
+        // Define variables
+        PracticeSessionRoutine routine = new PracticeSessionRoutine();
+        routine.setRoutineId("the-line-up");
+        routine.setLoop(true);
+        routine.setCushionLimit(3);
+        routine.setUnitNumber(10);
+        routine.setPotInOrder(true);
+        routine.setStayOnOneSideOfTable(true);
+        routine.setBallStriking(BallStriking.STUN);
+        routine.setNumberOfAttempts(5);
+        routine.setNote("Test note");
+
+        // Set mock expectations
+
+        // First call the run() method
+        routineService.run();
+        // Then execute method under test
+        PracticeSessionRoutineWithRoutineContext routineWithRoutineContext =
+                routineService.addRoutineContextToPracticeSessionRoutine(routine);
+
+        // Verify
+        assertNotNull(routineWithRoutineContext);
+        assertEquals(routine.getRoutineId(), routineWithRoutineContext.getRoutineId());
+        assertEquals(routine.isLoop(), routineWithRoutineContext.isLoop());
+        assertEquals(routine.getCushionLimit(), routineWithRoutineContext.getCushionLimit());
+        assertEquals(routine.getUnitNumber(), routineWithRoutineContext.getUnitNumber());
+        assertEquals(routine.isPotInOrder(), routineWithRoutineContext.isPotInOrder());
+        assertEquals(routine.isStayOnOneSideOfTable(), routineWithRoutineContext.isStayOnOneSideOfTable());
+        assertEquals(routine.getBallStriking(), routineWithRoutineContext.getBallStriking());
+        assertEquals(routine.getNumberOfAttempts(), routineWithRoutineContext.getNumberOfAttempts());
+        assertEquals(routine.getNote(), routineWithRoutineContext.getNote());
+        assertNotNull(routineWithRoutineContext.getRoutineTitle());
+        assertNotNull(routineWithRoutineContext.getRoutineUnit());
     }
 }
 

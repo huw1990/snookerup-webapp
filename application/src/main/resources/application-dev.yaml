@@ -1,4 +1,12 @@
 spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: snookerup
+      username: snookerup
+      password: snookerup
+      authentication-database: admin
   datasource:
     url: jdbc:postgresql://localhost:5432/snookerup
     username: snookerup

@@ -18,3 +18,11 @@ services:
       - JAVA_OPTS=-Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/tmp/snookerup-realm.json
     volumes:
       - ./src/test/resources/keycloak/snookerup-realm.json:/tmp/snookerup-realm.json
+  mongo:
+    image: mongo:8.2.3
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=snookerup
+      - MONGO_INITDB_ROOT_PASSWORD=snookerup
+      - MONGO_INITDB_DATABASE=snookerup

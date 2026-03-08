@@ -2,7 +2,7 @@ package com.snookerup.controllers;
 
 import com.snookerup.model.Last30DaysStats;
 import com.snookerup.model.Routine;
-import com.snookerup.model.ScoreWithRoutineContext;
+import com.snookerup.model.addedcontext.ScoreWithRoutineContext;
 import com.snookerup.services.RoutineService;
 import com.snookerup.services.ScoreService;
 import org.junit.jupiter.api.BeforeEach;

@@ -709,6 +709,10 @@ video {
   margin-top: 1.25rem;
 }
 
+.mt-8 {
+  margin-top: 2rem;
+}
+
 .block {
   display: block;
 }
@@ -759,6 +763,10 @@ video {
 
 .h-routine {
   height: 32rem;
+}
+
+.min-h-\[12rem\] {
+  min-height: 12rem;
 }
 
 .min-h-full {
@@ -903,6 +911,10 @@ video {
   margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
 }
 
+.self-stretch {
+  align-self: stretch;
+}
+
 .rounded {
   border-radius: 0.25rem;
 }
@@ -952,6 +964,10 @@ video {
   border-style: solid;
 }
 
+.border-dashed {
+  border-style: dashed;
+}
+
 .border-brown {
   --tw-border-opacity: 1;
   border-color: rgb(133 94 12 / var(--tw-border-opacity, 1));
@@ -990,6 +1006,11 @@ video {
 .border-neutral-500 {
   --tw-border-opacity: 1;
   border-color: rgb(115 115 115 / var(--tw-border-opacity, 1));
+}
+
+.bg-brown-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(212 181 116 / var(--tw-bg-opacity, 1));
 }
 
 .bg-gray-100 {
@@ -1054,6 +1075,11 @@ video {
 .bg-stone-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(245 245 244 / var(--tw-bg-opacity, 1));
+}
+
+.bg-yellow-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 240 138 / var(--tw-bg-opacity, 1));
 }
 
 .bg-texture {
@@ -1310,6 +1336,11 @@ video {
   letter-spacing: 0.05em;
 }
 
+.text-brown {
+  --tw-text-opacity: 1;
+  color: rgb(133 94 12 / var(--tw-text-opacity, 1));
+}
+
 .text-gray-400 {
   --tw-text-opacity: 1;
   color: rgb(156 163 175 / var(--tw-text-opacity, 1));
@@ -1370,6 +1401,11 @@ video {
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
 
+.text-yellow-700 {
+  --tw-text-opacity: 1;
+  color: rgb(161 98 7 / var(--tw-text-opacity, 1));
+}
+
 .accent-green-700 {
   accent-color: #15803d;
 }
@@ -1396,6 +1432,10 @@ video {
   --tw-ring-inset: inset;
 }
 
+.ring-brown-600\/20 {
+  --tw-ring-color: rgb(143 105 26 / 0.2);
+}
+
 .ring-gray-300 {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(209 213 219 / var(--tw-ring-opacity, 1));
@@ -1411,6 +1451,10 @@ video {
 
 .ring-red-600\/20 {
   --tw-ring-color: rgb(220 38 38 / 0.2);
+}
+
+.ring-yellow-600\/20 {
+  --tw-ring-color: rgb(202 138 4 / 0.2);
 }
 
 .drop-shadow-crisp {
@@ -1819,6 +1863,11 @@ routine-image-slider {
   .md\:mx-3 {
     margin-left: 0.75rem;
     margin-right: 0.75rem;
+  }
+
+  .md\:mx-auto {
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .md\:my-0 {

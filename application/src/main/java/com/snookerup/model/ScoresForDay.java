@@ -1,5 +1,6 @@
 package com.snookerup.model;
 
+import com.snookerup.model.addedcontext.ScoreWithRoutineContext;
 import lombok.Data;
 
 import java.util.List;

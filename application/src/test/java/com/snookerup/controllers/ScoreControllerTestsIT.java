@@ -32,8 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class ScoreControllerTestsIT extends BaseTestcontainersIT {
 
-    private static final String LOGIN_REDIRECT_URL = "http://localhost/oauth2/authorization/cognito";
-
     private static final String ADD_SCORE_REDIRECT_URL = "/addscore?routineId=the-line-up";
 
     private static final String ROUTINE_ID = "the-line-up";

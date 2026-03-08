@@ -3,6 +3,7 @@ package com.snookerup.services;
 import com.snookerup.controllers.ScoreController;
 import com.snookerup.errorhandling.InvalidScoreException;
 import com.snookerup.model.*;
+import com.snookerup.model.addedcontext.ScoreWithRoutineContext;
 import com.snookerup.model.db.Score;
 import com.snookerup.model.stats.ScoreStats;
 import com.snookerup.repositories.ScoreRepository;

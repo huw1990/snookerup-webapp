@@ -3,8 +3,10 @@ package com.snookerup.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snookerup.model.AllRoutines;
 import com.snookerup.model.Routine;
-import com.snookerup.model.ScoreWithRoutineContext;
+import com.snookerup.model.addedcontext.PracticeSessionRoutineWithRoutineContext;
+import com.snookerup.model.addedcontext.ScoreWithRoutineContext;
 import com.snookerup.model.db.Score;
+import com.snookerup.model.db.nosql.PracticeSessionRoutine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
@@ -87,6 +89,16 @@ public class RoutineServiceImpl implements RoutineService, CommandLineRunner {
         return ScoreWithRoutineContext.builder()
                 .score(score)
                 .routineForScore(routineForScore)
+                .build();
+    }
+
+    @Override
+    public PracticeSessionRoutineWithRoutineContext addRoutineContextToPracticeSessionRoutine(
+            PracticeSessionRoutine practiceSessionRoutine) {
+        Routine routineForScore = routineIdToRoutines.get(practiceSessionRoutine.getRoutineId());
+        return PracticeSessionRoutineWithRoutineContext.builder()
+                .routineWithVariations(practiceSessionRoutine)
+                .routineContext(routineForScore)
                 .build();
     }
 }
