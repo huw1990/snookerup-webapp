@@ -5,11 +5,11 @@
       layout:decorate="~{layout/layout}">
 <div layout:fragment="page-content">
     <section class="pt-6 pb-4">
-        <div th:if="${practiceSession != null}" class="container-xl lg:container m-auto">
+        <div th:if="${practiceSession == null}" class="sm:mx-auto sm:w-full sm:max-w-lg">
             <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
                 Practice Sessions: Not Found
             </h2>
-            <p class="my-4 m-auto text-center text-md text-green-900">We couldn't find this routine.</p>
+            <p class="my-4 m-auto text-center text-md text-green-900">We couldn't find this practice session.</p>
             <a
                     th:href="@{/practicesessions}"
                     class="text-sm block bg-green-800 text-white text-center py-2 px-2 rounded-xl hover:bg-gray-700  rounded-lg shadow-md drop-shadow-xl border-solid border-4 border-green-800"
