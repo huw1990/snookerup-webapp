@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -82,5 +84,29 @@ public class PracticeSessionServiceImplTests {
         assertEquals(practiceSessionTitle, practiceSessionWithContext.getTitle());
         assertEquals(practiceSessionDesc, practiceSessionWithContext.getDescription());
         assertEquals(List.of(mockRoutineWithContext1, mockRoutineWithContext2), practiceSessionWithContext.getRoutines());
+    }
+
+    @Test
+    public void saveNewPracticeSession_Should_CreateNewIdAndSaveToDb() {
+        // Define variables
+        String practiceSessionTitle = "Break Building";
+        String practiceSessionDesc = "Session of break building routines";
+        String username = "willo";
+        PracticeSession practiceSession = new PracticeSession();
+        practiceSession.setTitle(practiceSessionTitle);
+        practiceSession.setDescription(practiceSessionDesc);
+        practiceSession.setPlayerUsername(username);
+
+        // Set mock expectations
+        when(mockPracticeSessionRepository.save(any())).thenReturn(practiceSession);
+
+        // Execute method under test
+        PracticeSession addedPracticeSession = practiceSessionService.saveNewPracticeSession(practiceSession);
+
+        // Verify
+        assertEquals(practiceSessionTitle, practiceSession.getTitle());
+        assertEquals(practiceSessionDesc, practiceSession.getDescription());
+        assertEquals(username, practiceSession.getPlayerUsername());
+        assertNotNull(addedPracticeSession.getId());
     }
 }

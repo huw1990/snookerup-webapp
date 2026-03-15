@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/layout}">
+<div layout:fragment="page-content">
+    <section class="py-4">
+        <div class="flex min-h-full flex-col justify-center px-2 py-2 lg:px-8">
+            <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
+                Add Practice Session
+            </h2>
+            <div class="sm:mx-auto sm:w-full sm:max-w-lg">
+                <form
+                        id="add-session-form"
+                        th:action="@{/addpracticesession}"
+                        th:object="${practiceSession}"
+                        method="post"
+                        class="space-y-6">
+                    <input type="hidden" th:field="*{playerUsername}" id="playerUsername">
+                    <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
+                        <label for="sessionTitle" class="block text-sm font-medium leading-6 text-gray-900">Title</label>
+                        <div class="mt-2">
+                            <input th:field="*{title}" id="sessionTitle" name="session-title" type="text" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        </div>
+                    </div>
+                    <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
+                        <label for="sessionDescription" class="block text-sm font-medium leading-6 text-gray-900">Description</label>
+                        <div class="mt-2">
+                            <input th:field="*{description}" id="sessionDescription" name="session-description" type="text" class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        </div>
+                    </div>
+                    <p class="my-10 m-auto text-center text-lg text-green-900">Routines and variations can be added once the practice session is created</p>
+                    <div>
+                        <button type="submit" class="flex w-full justify-center rounded-md bg-green-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Create practice session</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>

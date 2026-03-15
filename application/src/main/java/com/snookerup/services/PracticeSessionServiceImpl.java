@@ -1,5 +1,6 @@
 package com.snookerup.services;
 
+import com.snookerup.model.Id;
 import com.snookerup.model.addedcontext.PracticeSessionRoutineWithRoutineContext;
 import com.snookerup.model.addedcontext.PracticeSessionWithRoutineContext;
 import com.snookerup.model.db.nosql.PracticeSession;
@@ -40,5 +41,13 @@ public class PracticeSessionServiceImpl implements PracticeSessionService {
             return new PracticeSessionWithRoutineContext(practiceSession, routinesWithContext);
         }
         return null;
+    }
+
+    @Override
+    public PracticeSession saveNewPracticeSession(PracticeSession practiceSessionToBeAdded) {
+        String practiceSessionId = Id.generateId();
+        log.debug("Setting ID of new practice session to be={}", practiceSessionId);
+        practiceSessionToBeAdded.setId(practiceSessionId);
+        return practiceSessionRepository.save(practiceSessionToBeAdded);
     }
 }

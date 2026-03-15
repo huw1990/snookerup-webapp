@@ -27,4 +27,11 @@ public interface PracticeSessionService {
      * @return A practice session matching the provided parameters, or null if none is found
      */
     PracticeSessionWithRoutineContext getPracticeSessionByIdAndPlayerUsername(String sessionId, String playerUsername);
+
+    /**
+     * Adds a new practice session.
+     * @param practiceSessionToBeAdded The practice session to add
+     * @return The saved practice session
+     */
+    PracticeSession saveNewPracticeSession(PracticeSession practiceSessionToBeAdded);
 }
