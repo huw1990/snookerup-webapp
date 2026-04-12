@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/layout}">
+<div layout:fragment="page-content">
+    <section class="pt-6 pb-4">
+        <div th:if="${practiceSession == null}" class="sm:mx-auto sm:w-full sm:max-w-lg">
+            <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
+                Delete Practice Session: Not Found
+            </h2>
+            <p class="my-4 m-auto text-center text-md text-green-900">We couldn't find this practice session.</p>
+            <a
+                    th:href="@{/practicesessions}"
+                    class="text-sm block bg-green-800 text-white text-center py-2 px-2 rounded-xl hover:bg-gray-700  rounded-lg shadow-md drop-shadow-xl border-solid border-4 border-green-800"
+            >View practice sessions</a
+            >
+        </div>
+        <div th:if="${practiceSession}" class="container-xl lg:container m-auto">
+            <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
+                Delete Practice Session: [[ ${practiceSession.title} ]]
+            </h2>
+            <p th:if="${practiceSession.description}" class="my-4 m-auto text-center text-lg text-green-900">[[ ${practiceSession.description} ]]</p>
+            <div class="m-auto text-center">
+                <p class="inline-flex items-center rounded-md bg-yellow-200 px-2 py-1 text-xs font-medium text-yellow-700 ring-1 ring-yellow-600/20 ring-inset mx-1 mb-2">[[ ${practiceSession.getNumberOfRoutines()}]] [[ ${practiceSession.getNumberOfRoutines() == 1}? 'routine' : 'routines' ]]</p>
+                <p class="inline-flex items-center rounded-md bg-green-200 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset mx-1 mb-2">[[ ${practiceSession.getDistinctRoutinesAndVariations()}]]  [[ ${practiceSession.getDistinctRoutinesAndVariations() == 1}? 'distinct variation' : 'distinct variations' ]]</p>
+                <p class="inline-flex items-center rounded-md bg-brown-200 px-2 py-1 text-xs font-medium text-brown ring-1 ring-brown-600/20 ring-inset mx-1 mb-2">[[ ${practiceSession.getTotalAttempts()}]] [[ ${practiceSession.getTotalAttempts() == 1}? 'attempt' : 'attempts' ]]</p>
+            </div>
+            <p class="my-14 m-auto text-center text-lg text-green-900">Are you sure you want to delete this practice session?</p>
+            <section class="m-auto max-w-lg mt-4 mb-10 px-6">
+                <a
+                        th:href="@{/practicesessions/{id}/delete/confirm(id=${practiceSession.id})}"
+                        class="block bg-green-800 text-white text-center py-4 px-6 rounded-xl hover:bg-gray-700"
+                >Confirm Deletion</a
+                >
+            </section>
+        </div>
+    </section>
+</div>

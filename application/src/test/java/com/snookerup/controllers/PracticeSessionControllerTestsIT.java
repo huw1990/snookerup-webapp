@@ -263,6 +263,41 @@ class PracticeSessionControllerTestsIT extends BaseTestcontainersIT {
                 .andExpect(redirectedUrl(expectedRedirect));
     }
 
+    @Test
+    void getPracticeSessionDeleteById_Should_RedirectToLogin_When_NotAuthed() throws Exception {
+        this.mockMvc
+                .perform(get("/practicesessions/1234/delete"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(LOGIN_REDIRECT_URL));
+    }
+
+    @Test
+    void getPracticeSessionDeleteById_Should_Return200OK_When_CorrectlyAuthed() throws Exception {
+        OidcUser user = createOidcUser("willo@snookerup.com", "willo");
+        this.mockMvc
+                .perform(get("/practicesessions/1234/delete")
+                        .with(oidcLogin().oidcUser(user)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getConfirmPracticeSessionDeleteById_Should_RedirectToLogin_When_NotAuthed() throws Exception {
+        this.mockMvc
+                .perform(get("/practicesessions/1234/delete/confirm"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(LOGIN_REDIRECT_URL));
+    }
+
+    @Test
+    void getConfirmPracticeSessionDeleteById_Should_Return200OK_When_CorrectlyAuthed() throws Exception {
+        OidcUser user = createOidcUser("willo@snookerup.com", "willo");
+        this.mockMvc
+                .perform(get("/practicesessions/1234/delete/confirm")
+                        .with(oidcLogin().oidcUser(user)))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/practicesessions"));
+    }
+
     private PracticeSession createPracticeSession() {
         return createPracticeSession("");
     }

@@ -36,6 +36,7 @@ class PracticeSessionControllerTests {
     private static final String USERNAME = "willo";
     private static final String PRACTICE_SESSIONS_PAGE = "practiceSessions";
     private static final String PRACTICE_SESSION_PAGE = "practiceSession";
+    private static final String DELETE_PRACTICE_SESSION_PAGE = "deletePracticeSession";
     private static final String ADD_PRACTICE_SESSION_PAGE = "addPracticeSession";
     private static final String ADD_TO_PRACTICE_SESSION_PAGE = "addToPracticeSession";
     private static final String SESSION_ID = "1234";
@@ -430,5 +431,59 @@ class PracticeSessionControllerTests {
         verify(mockPracticeSessionService).addRoutineToPracticeSession(practiceSessionAddition, USERNAME);
         verify(mockRedirectAttributes).addFlashAttribute("message", SUCCESSFUL_SAVE_PRACTICE_SESSION_ADDITION_MESSAGE);
         verify(mockRedirectAttributes).addFlashAttribute("messageType", "success");
+    }
+
+    @Test
+    public void getPracticeSessionDeleteById_Should_DelegateToService() {
+        // Define variables
+        PracticeSessionWithRoutineContext mockPracticeSession = mock(PracticeSessionWithRoutineContext.class);
+
+        // Set mock expectations
+        when(mockPracticeSessionService.getPracticeSessionByIdAndPlayerUsername(SESSION_ID, USERNAME)).thenReturn(mockPracticeSession);
+
+        // Execute method under test
+        String returnedPage = practiceSessionController.getPracticeSessionDeleteById(SESSION_ID, mockModel, mockOidcUser);
+
+        // Verify
+        assertEquals(DELETE_PRACTICE_SESSION_PAGE, returnedPage);
+        verify(mockPracticeSessionService).getPracticeSessionByIdAndPlayerUsername(SESSION_ID, USERNAME);
+        verify(mockModel).addAttribute("practiceSession", mockPracticeSession);
+    }
+
+    @Test
+    public void getConfirmPracticeSessionDeleteById_Should_DeletePracticeSessionAndRedirectWithSuccessBannerMessage_When_PracticeSessionExists() {
+        // Define variables
+        PracticeSession mockPracticeSession = mock(PracticeSession.class);
+
+        // Set mock expectations
+        when(mockPracticeSessionService.deletePracticeSession(SESSION_ID, USERNAME)).thenReturn(mockPracticeSession);
+
+        // Execute method under test
+        String returnedPage = practiceSessionController.getConfirmPracticeSessionDeleteById(SESSION_ID, mockOidcUser,
+                mockRedirectAttributes);
+
+        // Verify
+        assertEquals(ALL_PRACTICE_SESSIONS_REDIRECT, returnedPage);
+        verify(mockPracticeSessionService).deletePracticeSession(SESSION_ID, USERNAME);
+        verify(mockRedirectAttributes).addFlashAttribute("message", SUCCESSFUL_PRACTICE_SESSION_DELETE_MESSAGE);
+        verify(mockRedirectAttributes).addFlashAttribute("messageType", "success");
+    }
+
+    @Test
+    public void getConfirmPracticeSessionDeleteById_Should_RedirectWithErrorBannerMessage_When_PracticeSessionDoesntExist() {
+        // Define variables
+
+        // Set mock expectations
+        when(mockPracticeSessionService.deletePracticeSession(SESSION_ID, USERNAME)).thenReturn(null);
+
+        // Execute method under test
+        String returnedPage = practiceSessionController.getConfirmPracticeSessionDeleteById(SESSION_ID, mockOidcUser,
+                mockRedirectAttributes);
+
+        // Verify
+        assertEquals(ALL_PRACTICE_SESSIONS_REDIRECT, returnedPage);
+        verify(mockPracticeSessionService).deletePracticeSession(SESSION_ID, USERNAME);
+        verify(mockRedirectAttributes).addFlashAttribute("message", NO_PRACTICE_SESSION_TO_DELETE_ERROR_MESSAGE);
+        verify(mockRedirectAttributes).addFlashAttribute("messageType", "danger");
     }
 }

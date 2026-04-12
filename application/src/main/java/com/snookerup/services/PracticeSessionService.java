@@ -52,4 +52,12 @@ public interface PracticeSessionService {
      */
     PracticeSession addRoutineToPracticeSession(RoutineAdditionToPracticeSession practiceSessionAddition,
                                                 String playerUsername);
+
+    /**
+     * Deletes a practice session with the provided ID.
+     * @param practiceSessionId The ID of the practice session to delete
+     * @param playerUsername The username of the player that owns the routine and is making the request
+     * @return The deleted practice session if it existed previously, or null if no routine was found with the provided ID
+     */
+    PracticeSession deletePracticeSession(String practiceSessionId, String playerUsername);
 }

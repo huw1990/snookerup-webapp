@@ -242,4 +242,38 @@ public class PracticeSessionServiceImplTests {
         assertEquals(unitNumber, practiceSessionRoutine.getUnitNumber());
         assertEquals(numberOfAttempts, practiceSessionRoutine.getNumberOfAttempts());
     }
+
+    @Test
+    public void deletePracticeSession_Should_ReturnNull_WhenPracticeSessionWithIdDoesntExist() {
+        // Define variables
+
+        // Set mock expectations
+        when(mockPracticeSessionRepository.findByIdAndPlayerUsername(SESSION_ID, USERNAME)).thenReturn(null);
+
+        // Execute method under test
+        PracticeSession deletedPracticeSession = practiceSessionService.deletePracticeSession(SESSION_ID, USERNAME);
+
+        // Verify
+        assertNull(deletedPracticeSession);
+        verify(mockPracticeSessionRepository).findByIdAndPlayerUsername(SESSION_ID, USERNAME);
+        verify(mockPracticeSessionRepository, never()).deleteById(SESSION_ID);
+    }
+
+    @Test
+    public void deletePracticeSession_Should_ReturnPracticeSession_WhenPracticeSessionWithIdExists() {
+        // Define variables
+        PracticeSession mockPracticeSession = mock(PracticeSession.class);
+
+        // Set mock expectations
+        when(mockPracticeSessionRepository.findByIdAndPlayerUsername(SESSION_ID, USERNAME)).thenReturn(mockPracticeSession);
+
+        // Execute method under test
+        PracticeSession deletedPracticeSession = practiceSessionService.deletePracticeSession(SESSION_ID, USERNAME);
+
+        // Verify
+        assertNotNull(deletedPracticeSession);
+        assertEquals(mockPracticeSession, deletedPracticeSession);
+        verify(mockPracticeSessionRepository).findByIdAndPlayerUsername(SESSION_ID, USERNAME);
+        verify(mockPracticeSessionRepository).deleteById(SESSION_ID);
+    }
 }

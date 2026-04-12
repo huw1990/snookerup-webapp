@@ -98,4 +98,17 @@ public class PracticeSessionServiceImpl implements PracticeSessionService {
                 practiceSessionAddition.getPracticeSessionId(), playerUsername);
         return null;
     }
+
+    @Override
+    public PracticeSession deletePracticeSession(String practiceSessionId, String playerUsername) {
+        synchronized (this) {
+            PracticeSession practiceSession = practiceSessionRepository.findByIdAndPlayerUsername(practiceSessionId,
+                    playerUsername);
+            if (practiceSession != null) {
+                log.debug("Deleting practice session, practiceSession={}", practiceSession);
+                practiceSessionRepository.deleteById(practiceSessionId);
+            }
+            return practiceSession;
+        }
+    }
 }

@@ -56,6 +56,9 @@ public class PracticeSessionController {
     protected static final String UNABLE_TO_SAVE_PRACTICE_SESSION_ERROR_MESSAGE =
             "Oops! Some entries weren't valid, please try again.";
 
+    /** Error message to display in a banner when trying to delete a nonexistent practice session. */
+    protected static final String NO_PRACTICE_SESSION_TO_DELETE_ERROR_MESSAGE = "No practice session to delete!";
+
     /** Error message to display in a banner when a user has no remaining slots for new practice sessions. */
     protected static final String NO_PRACTICE_SESSIONS_REMAINING_FOR_PLAYER_ERROR_MESSAGE =
             "Sorry, but you have no practice session slots remaining.";
@@ -71,6 +74,10 @@ public class PracticeSessionController {
     /** Success message to display in a banner when a user's practice session addition is saved to the DB. */
     protected static final String SUCCESSFUL_SAVE_PRACTICE_SESSION_ADDITION_MESSAGE =
             "Great job! Your practice session addition was saved successfully.";
+
+    /** Success message to display in a banner when a user's practice session deletion succeeds. */
+    protected static final String SUCCESSFUL_PRACTICE_SESSION_DELETE_MESSAGE =
+            "Great job! Your practice session was deleted successfully.";
 
     /** Error message to display in a banner when unable to save a user's practice session additions. */
     protected static final String UNABLE_TO_ADD_ROUTINE_TO_PRACTICE_SESSION_ERROR_MESSAGE =
@@ -270,6 +277,44 @@ public class PracticeSessionController {
                         Optional.ofNullable(practiceSessionTitle));
             }
         }
+    }
+
+    /**
+     * Get the confirmation page for deleting an individual practice session.
+     * @param id The practice session ID to delete
+     * @param model The Spring MVC model
+     * @param user The logged-in user performing the action, i.e. the practice session owner
+     * @return The practice session deletion confirmation page to display
+     */
+    @GetMapping("/practicesessions/{id}/delete")
+    public String getPracticeSessionDeleteById(@PathVariable("id") String id, Model model, @AuthenticationPrincipal OidcUser user) {
+        model.addAttribute("practiceSession",
+                practiceSessionService.getPracticeSessionByIdAndPlayerUsername(id, user.getName()));
+        return "deletePracticeSession";
+    }
+
+    /**
+     * Confirms the deletion of an individual practice session, redirecting to the practice sessions overview page.
+     * @param id The practice session ID to delete
+     * @param user The logged-in user performing the action, i.e. the practice session owner
+     * @param redirectAttributes Redirect attributes, to show a response of the action before the redirect
+     * @return A redirect to the practice sessions overview page
+     */
+    @GetMapping("/practicesessions/{id}/delete/confirm")
+    public String getConfirmPracticeSessionDeleteById(@PathVariable("id") String id,
+                                                      @AuthenticationPrincipal OidcUser user,
+                                                      RedirectAttributes redirectAttributes) {
+        PracticeSession deletedPracticeSession = practiceSessionService.deletePracticeSession(id, user.getName());
+        if (deletedPracticeSession == null) {
+            log.debug("Couldn't delete practice session from DB, displaying error message");
+            redirectAttributes.addFlashAttribute("message", NO_PRACTICE_SESSION_TO_DELETE_ERROR_MESSAGE);
+            redirectAttributes.addFlashAttribute("messageType", "danger");
+        } else {
+            log.debug("Successfully deleted practice session addition, displaying success message");
+            redirectAttributes.addFlashAttribute("message", SUCCESSFUL_PRACTICE_SESSION_DELETE_MESSAGE);
+            redirectAttributes.addFlashAttribute("messageType", "success");
+        }
+        return ALL_PRACTICE_SESSIONS_REDIRECT;
     }
 
     /**
