@@ -19,7 +19,7 @@
                         <p class="inline-flex items-center rounded-md bg-green-200 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset mx-1 mb-2">[[ ${practiceSession.getDistinctRoutinesAndVariations()}]]  [[ ${practiceSession.getDistinctRoutinesAndVariations() == 1}? 'distinct variation' : 'distinct variations' ]]</p>
                         <p class="inline-flex items-center rounded-md bg-brown-200 px-2 py-1 text-xs font-medium text-brown ring-1 ring-brown-600/20 ring-inset mx-1 mb-2">[[ ${practiceSession.getTotalAttempts()}]] [[ ${practiceSession.getTotalAttempts() == 1}? 'attempt' : 'attempts' ]]</p>
                     </a>
-                    <div th:each="i: ${#numbers.sequence(0, 5 - practiceSessions.size() - 1)}" class="flex justify-center items-center bg-green-50 flex-none min-h-[12rem] self-stretch min-w-full md:min-w-min max-w-full md:max-w-none m-auto md:mx-1 p-8 mb-6 rounded-lg shadow-md drop-shadow-xl border-dashed border-4 border-brown">
+                    <div th:each="i: ${#numbers.sequence(0, T(com.snookerup.services.PracticeSessionServiceImpl).MAX_SESSIONS_FOR_PLAYER - practiceSessions.size() - 1)}" class="flex justify-center items-center bg-green-50 flex-none min-h-[12rem] self-stretch min-w-full md:min-w-min max-w-full md:max-w-none m-auto md:mx-1 p-8 mb-6 rounded-lg shadow-md drop-shadow-xl border-dashed border-4 border-brown">
                         <div>
                             <h1 class="text-2xl mb-4 font-bold text-green-800 font-ubuntu">AVAILABLE TO USE</h1>
                             <a
@@ -33,7 +33,7 @@
             </div>
             <div th:if="${practiceSessions == null}">
                 <div class="flex flex-wrap justify-center mx-2 md:mx-auto">
-                    <div th:each="i: ${#numbers.sequence(0, 4)}" class="flex justify-center items-center bg-green-50 flex-none min-h-[12rem] self-stretch min-w-full md:min-w-min max-w-full md:max-w-none m-auto md:mx-1 p-8 mb-6 rounded-lg shadow-md drop-shadow-xl border-dashed border-4 border-brown">
+                    <div th:each="i: ${#numbers.sequence(0, T(com.snookerup.services.PracticeSessionServiceImpl).MAX_SESSIONS_FOR_PLAYER)}" class="flex justify-center items-center bg-green-50 flex-none min-h-[12rem] self-stretch min-w-full md:min-w-min max-w-full md:max-w-none m-auto md:mx-1 p-8 mb-6 rounded-lg shadow-md drop-shadow-xl border-dashed border-4 border-brown">
                         <div>
                             <h1 class="text-2xl mb-4 font-bold text-green-800 font-ubuntu">AVAILABLE TO USE</h1>
                             <a

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class PracticeSessionServiceImpl implements PracticeSessionService {
 
     /** The maximum number of sessions a user is allowed to create for themselves. */
-    private static final int MAX_SESSIONS_FOR_PLAYER = 6;
+    public static final int MAX_SESSIONS_FOR_PLAYER = 6;
 
     private final PracticeSessionRepository practiceSessionRepository;
 
