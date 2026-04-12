@@ -1,5 +1,8 @@
 package com.snookerup.services;
 
+import com.snookerup.errorhandling.NoPracticeSessionSlotsRemainingException;
+import com.snookerup.errorhandling.NonUniquePracticeSessionTitleException;
+import com.snookerup.model.RoutineAdditionToPracticeSession;
 import com.snookerup.model.addedcontext.PracticeSessionRoutineWithRoutineContext;
 import com.snookerup.model.addedcontext.PracticeSessionWithRoutineContext;
 import com.snookerup.model.db.nosql.PracticeSession;
@@ -10,11 +13,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for the PracticeSessionServiceImpl class.
@@ -87,7 +88,75 @@ public class PracticeSessionServiceImplTests {
     }
 
     @Test
-    public void saveNewPracticeSession_Should_CreateNewIdAndSaveToDb() {
+    public void saveNewPracticeSession_Should_ThrowException_When_NoSlotsRemaining()
+            throws NonUniquePracticeSessionTitleException {
+        // Define variables
+        String practiceSessionTitle = "Break Building";
+        String practiceSessionDesc = "Session of break building routines";
+        String username = "willo";
+        PracticeSession practiceSession = new PracticeSession();
+        practiceSession.setTitle(practiceSessionTitle);
+        practiceSession.setDescription(practiceSessionDesc);
+        practiceSession.setPlayerUsername(username);
+        PracticeSession existingPracticeSession1 = mock(PracticeSession.class);
+        PracticeSession existingPracticeSession2 = mock(PracticeSession.class);
+        PracticeSession existingPracticeSession3 = mock(PracticeSession.class);
+        PracticeSession existingPracticeSession4 = mock(PracticeSession.class);
+        PracticeSession existingPracticeSession5 = mock(PracticeSession.class);
+        PracticeSession existingPracticeSession6 = mock(PracticeSession.class);
+
+        // Set mock expectations
+        when(mockPracticeSessionRepository.findAllByPlayerUsername(username))
+                .thenReturn(List.of(existingPracticeSession1, existingPracticeSession2, existingPracticeSession3,
+                        existingPracticeSession4, existingPracticeSession5, existingPracticeSession6));
+        when(mockPracticeSessionRepository.save(any())).thenReturn(practiceSession);
+
+        // Execute method under test
+        try {
+            practiceSessionService.saveNewPracticeSession(practiceSession);
+            fail("NoPracticeSessionSlotsRemainingException should have been thrown");
+        } catch (NoPracticeSessionSlotsRemainingException ex) {
+            // Expected, test pass
+        }
+
+        // Verify
+        verify(mockPracticeSessionRepository, never()).save(practiceSession);
+    }
+
+    @Test
+    public void saveNewPracticeSession_Should_ThrowException_When_SessionWithSameTitleExists()
+            throws NoPracticeSessionSlotsRemainingException {
+        // Define variables
+        String practiceSessionTitle = "Break Building";
+        String practiceSessionDesc = "Session of break building routines";
+        String username = "willo";
+        PracticeSession practiceSession = new PracticeSession();
+        practiceSession.setTitle(practiceSessionTitle);
+        practiceSession.setDescription(practiceSessionDesc);
+        practiceSession.setPlayerUsername(username);
+        PracticeSession existingPracticeSession1 = mock(PracticeSession.class);
+
+        // Set mock expectations
+        when(mockPracticeSessionRepository.findAllByPlayerUsername(username))
+                .thenReturn(List.of(existingPracticeSession1));
+        when(mockPracticeSessionRepository.save(any())).thenReturn(practiceSession);
+        when(existingPracticeSession1.getTitle()).thenReturn(practiceSessionTitle);
+
+        // Execute method under test
+        try {
+            practiceSessionService.saveNewPracticeSession(practiceSession);
+            fail("NonUniquePracticeSessionTitleException should have been thrown");
+        } catch (NonUniquePracticeSessionTitleException ex) {
+            // Expected, test pass
+        }
+
+        // Verify
+        verify(mockPracticeSessionRepository, never()).save(practiceSession);
+    }
+
+    @Test
+    public void saveNewPracticeSession_Should_CreateNewIdAndSaveToDb()
+            throws NoPracticeSessionSlotsRemainingException, NonUniquePracticeSessionTitleException {
         // Define variables
         String practiceSessionTitle = "Break Building";
         String practiceSessionDesc = "Session of break building routines";
@@ -104,9 +173,73 @@ public class PracticeSessionServiceImplTests {
         PracticeSession addedPracticeSession = practiceSessionService.saveNewPracticeSession(practiceSession);
 
         // Verify
-        assertEquals(practiceSessionTitle, practiceSession.getTitle());
-        assertEquals(practiceSessionDesc, practiceSession.getDescription());
-        assertEquals(username, practiceSession.getPlayerUsername());
+        assertEquals(practiceSessionTitle, addedPracticeSession.getTitle());
+        assertEquals(practiceSessionDesc, addedPracticeSession.getDescription());
+        assertEquals(username, addedPracticeSession.getPlayerUsername());
         assertNotNull(addedPracticeSession.getId());
+        verify(mockPracticeSessionRepository).save(practiceSession);
+    }
+
+    @Test
+    public void addRoutineToPracticeSession_Should_ReturnNull_WhenPracticeSessionWithIdDoesntExist() {
+        // Define variables
+        String routineId = "the-line-up";
+        int unitNumber = 10;
+        int numberOfAttempts = 5;
+        RoutineAdditionToPracticeSession routineAdditionToPracticeSession = new RoutineAdditionToPracticeSession();
+        routineAdditionToPracticeSession.setPracticeSessionId(SESSION_ID);
+        routineAdditionToPracticeSession.setRoutineId(routineId);
+        routineAdditionToPracticeSession.setUnitNumber(unitNumber);
+        routineAdditionToPracticeSession.setNumberOfAttempts(numberOfAttempts);
+
+        // Set mock expectations
+        when(mockPracticeSessionRepository.findByIdAndPlayerUsername(SESSION_ID, USERNAME)).thenReturn(null);
+
+        // Execute method under test
+        PracticeSession updatedPracticeSession = practiceSessionService.addRoutineToPracticeSession(
+                routineAdditionToPracticeSession, USERNAME);
+
+        // Verify
+        assertNull(updatedPracticeSession);
+        verify(mockPracticeSessionRepository).findByIdAndPlayerUsername(SESSION_ID, USERNAME);
+    }
+
+    @Test
+    public void addRoutineToPracticeSession_Should_ReturnPracticeSession_WhenPracticeSessionWithIdDoesExist() {
+        // Define variables
+        String routineId = "the-line-up";
+        int unitNumber = 10;
+        int numberOfAttempts = 5;
+        RoutineAdditionToPracticeSession routineAdditionToPracticeSession = new RoutineAdditionToPracticeSession();
+        routineAdditionToPracticeSession.setPracticeSessionId(SESSION_ID);
+        routineAdditionToPracticeSession.setRoutineId(routineId);
+        routineAdditionToPracticeSession.setUnitNumber(unitNumber);
+        routineAdditionToPracticeSession.setNumberOfAttempts(numberOfAttempts);
+        PracticeSession practiceSession = new PracticeSession();
+        practiceSession.setId(SESSION_ID);
+        practiceSession.setTitle("Break Building");
+        practiceSession.setDescription("Session of break building routines");
+
+        // Set mock expectations
+        when(mockPracticeSessionRepository.findByIdAndPlayerUsername(SESSION_ID, USERNAME)).thenReturn(practiceSession);
+        // Return the practice session passed in as an argument
+        when(mockPracticeSessionRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+        // Execute method under test
+        PracticeSession updatedPracticeSession = practiceSessionService.addRoutineToPracticeSession(
+                routineAdditionToPracticeSession, USERNAME);
+
+        // Verify
+        assertNotNull(updatedPracticeSession);
+        verify(mockPracticeSessionRepository).findByIdAndPlayerUsername(SESSION_ID, USERNAME);
+        assertEquals(practiceSession.getTitle(), updatedPracticeSession.getTitle());
+        assertEquals(practiceSession.getDescription(), updatedPracticeSession.getDescription());
+        assertEquals(practiceSession.getPlayerUsername(), updatedPracticeSession.getPlayerUsername());
+        assertEquals(practiceSession.getId(), updatedPracticeSession.getId());
+        assertEquals(1, updatedPracticeSession.getRoutines().size());
+        PracticeSessionRoutine practiceSessionRoutine = updatedPracticeSession.getRoutines().get(0);
+        assertEquals(routineId, practiceSessionRoutine.getRoutineId());
+        assertEquals(unitNumber, practiceSessionRoutine.getUnitNumber());
+        assertEquals(numberOfAttempts, practiceSessionRoutine.getNumberOfAttempts());
     }
 }

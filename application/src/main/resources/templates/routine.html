@@ -16,17 +16,25 @@
             <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
                 [[${routine.title}]]
             </h2>
-            <div sec:authorize="isAuthenticated()" class="m-auto max-w-lg my-10 px-6 flex gap-6">
+            <div sec:authorize="isAuthenticated()" class="flex justify-center my-4">
                 <a
                         th:href="@{/addscore?routineId={id}(id=${routine.id})}"
-                        class="flex-grow bg-green-500 text-white text-center py-4 px-6 rounded-xl hover:bg-green-700 border-solid border-2 border-green-800 "
-                >Add Score</a
+                        class="rounded-md rounded-r-none bg-green-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-gray-700 focus:shadow-none active:bg-gray-700 hover:bg-gray-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 >
+                    Add Score
+                </a>
                 <a
                         th:href="@{/scores?routineId={id}(id=${routine.id})}"
-                        class="flex-grow bg-green-500 text-white text-center py-4 px-6 rounded-xl hover:bg-green-700 border-solid border-2 border-green-800 "
-                >View Scores</a
+                        class="rounded-none bg-green-800 py-2 px-4 border-l border-r border-gray-700 text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-gray-700 focus:shadow-none active:bg-gray-700 hover:bg-gray-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 >
+                    View Scores
+                </a>
+                <a
+                        th:href="@{/addtopracticesession?routineId={id}(id=${routine.id})}"
+                        class="rounded-md rounded-l-none bg-green-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-gray-700 focus:shadow-none active:bg-gray-700 hover:bg-gray-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                >
+                    Add to Practice Session
+                </a>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl m-auto p-6">
                 <img th:if="${routine.otherImages.size() == 1}" class="h-routine w-auto mt-0 m-auto" th:src="${routine.otherImages.get(0)}"/>

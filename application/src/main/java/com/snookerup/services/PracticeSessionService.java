@@ -1,5 +1,8 @@
 package com.snookerup.services;
 
+import com.snookerup.errorhandling.NoPracticeSessionSlotsRemainingException;
+import com.snookerup.errorhandling.NonUniquePracticeSessionTitleException;
+import com.snookerup.model.RoutineAdditionToPracticeSession;
 import com.snookerup.model.addedcontext.PracticeSessionWithRoutineContext;
 import com.snookerup.model.db.nosql.PracticeSession;
 
@@ -32,6 +35,21 @@ public interface PracticeSessionService {
      * Adds a new practice session.
      * @param practiceSessionToBeAdded The practice session to add
      * @return The saved practice session
+     * @throws NoPracticeSessionSlotsRemainingException When the user creating the practice session already has the
+     *         maximum number of practice sessions
+     * @throws NonUniquePracticeSessionTitleException When the title of the practice session matches an existing session
+     *         for the same user
      */
-    PracticeSession saveNewPracticeSession(PracticeSession practiceSessionToBeAdded);
+    PracticeSession saveNewPracticeSession(PracticeSession practiceSessionToBeAdded)
+            throws NoPracticeSessionSlotsRemainingException, NonUniquePracticeSessionTitleException;
+
+    /**
+     * Add a routine (and possible variations) to a practice session.
+     * @param practiceSessionAddition The practice session addition, containing the practice session ID, routine ID, and
+     *                                variations
+     * @param playerUsername The username of the player that owns the routine being added to
+     * @return The practice session added to
+     */
+    PracticeSession addRoutineToPracticeSession(RoutineAdditionToPracticeSession practiceSessionAddition,
+                                                String playerUsername);
 }

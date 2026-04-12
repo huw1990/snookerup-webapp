@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/layout}">
+<div layout:fragment="page-content">
+    <section class="py-4">
+        <div class="flex min-h-full flex-col justify-center px-2 py-2 lg:px-8">
+            <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
+                Add to Practice Session
+            </h2>
+            <div class="sm:mx-auto sm:w-full sm:max-w-lg">
+                <form
+                        id="add-score-form"
+                        th:action="@{/addtopracticesession}"
+                        th:object="${practiceSessionAddition}"
+                        method="post"
+                        class="space-y-6">
+                    <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
+                        <label for="sessionSelector" class="block text-sm font-medium leading-6 text-gray-900">Practice Session</label>
+                        <div class="mt-2">
+                            <select th:field="*{practiceSessionId}" name="routineNames" id="sessionSelector" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                <option th:each="practiceSession : ${practiceSessions}" th:value="${practiceSession.id}" th:text="${practiceSession.title}" th:selected="${practiceSession.id.equals(selectedSessionId)}">[[ ${practiceSession.title} ]]</option>
+                            </select>
+                        </div>
+                        <div th:if="${practiceSessions != null && practiceSessions.size() < 6}" class="mt-3">
+                            <p class="block text-sm mb-2 font-medium leading-6 text-gray-900 text-center">OR</p>
+                            <button id="createNewPracticeSessionBeforeFromAddToPracticeSessionButton" onclick="window.createPracticeSessionDialog.showModal();" type="submit" class="flex w-full justify-center rounded-md bg-green-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Create new session</button>
+                        </div>
+                    </div>
+                    <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
+                        <label for="routineSelector" class="block text-sm font-medium leading-6 text-gray-900">Routine</label>
+                        <div class="mt-2">
+                            <select th:field="*{routineId}" name="routineNames" id="routineSelector" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                <option th:each="routine : ${routines}" th:value="${routine.id}" th:text="${routine.title}" th:selected="${routine.id.equals(selectedRoutineId)}">[[ ${routine.title} ]]</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="variationsHolder" class="changing-content show">
+                        <div th:replace="~{fragments/addScoreVariations :: scoreVariations}"></div>
+                    </div>
+                    <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
+                        <label for="scoreNotes" class="block text-sm font-medium leading-6 text-gray-900">Notes/Comments</label>
+                        <div class="mt-2">
+                            <input th:field="*{note}" id="scoreNotes" name="note" type="text" placeholder="e.g. anything specific about the attempt" class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        </div>
+                    </div>
+                    <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
+                        <label id="numAttemptsLabel" for="numAttemptsValue" class="block text-sm font-medium leading-6 text-gray-900">Number of attempts</label>
+                        <div class="mt-2">
+                            <input th:field="*{numberOfAttempts}" id="numAttemptsValue" min="1" name="numAttemptsValue" type="number" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        </div>
+                    </div>
+                    <div>
+                        <button type="submit" class="flex w-full justify-center rounded-md bg-green-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Submit score</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    <dialog id="createPracticeSessionDialog" class="p-4 space-y-6 min-w-9/10 w-9/10 md:min-w-1/2 md:w-1/2">
+        <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
+            Add Practice Session
+        </h2>
+        <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
+            <label for="practiceSessionTitle" class="block text-sm font-medium leading-6 text-gray-900">Title</label>
+            <div class="mt-2">
+                <input id="practiceSessionTitle" name="session-title" type="text" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            </div>
+        </div>
+        <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
+            <label for="practiceSessionDescription" class="block text-sm font-medium leading-6 text-gray-900">Description</label>
+            <div class="mt-2">
+                <input id="practiceSessionDescription" name="session-description" type="text" class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            </div>
+        </div>
+        <p id="practiceSessionCreationErrorMessage" class="font-bold text-red-600 mb-2 text-center font-ubuntu"></p>
+        <div>
+            <button type="submit" id="confirmPracticeSessionCreationButton" class="flex w-full justify-center rounded-md bg-green-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Create practice session</button>
+        </div>
+        <div>
+            <button type="submit" id="closeDialogButton" class="flex w-full justify-center rounded-md bg-green-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Close</button>
+        </div>
+    </dialog>
+</div>

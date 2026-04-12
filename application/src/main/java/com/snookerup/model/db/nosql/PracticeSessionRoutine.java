@@ -1,6 +1,7 @@
 package com.snookerup.model.db.nosql;
 
 import com.snookerup.model.BallStriking;
+import com.snookerup.model.RoutineAdditionToPracticeSession;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -41,4 +42,15 @@ public class PracticeSessionRoutine {
     /** An optional note to provide more context about the routine attempt, e.g. WHICH order to pot in, if potInOrder used. */
     private String note;
 
+    public PracticeSessionRoutine(RoutineAdditionToPracticeSession routineAdditionToPracticeSession) {
+        this.routineId = routineAdditionToPracticeSession.getRoutineId();
+        this.loop = routineAdditionToPracticeSession.isLoop();
+        this.cushionLimit = routineAdditionToPracticeSession.getCushionLimit();
+        this.unitNumber = routineAdditionToPracticeSession.getUnitNumber();
+        this.potInOrder = routineAdditionToPracticeSession.isPotInOrder();
+        this.stayOnOneSideOfTable = routineAdditionToPracticeSession.isStayOnOneSideOfTable();
+        this.ballStriking = routineAdditionToPracticeSession.getBallStriking();
+        this.numberOfAttempts = routineAdditionToPracticeSession.getNumberOfAttempts();
+        this.note = routineAdditionToPracticeSession.getNote();
+    }
 }
