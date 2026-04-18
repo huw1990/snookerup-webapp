@@ -83,7 +83,7 @@
                                         <p>Stay on one side of the table</p>
                                     </div>
                                     <div class="flex flex-wrap px-2 py-2">
-                                        <div th:if="${routine.note != null}" class="my-1 md:my-0 bg-gray-100 border-2 border-gray-100 mx-2 py-1 px-2">
+                                        <div th:if="${routine.note != null && routine.note.length() > 0}" class="my-1 md:my-0 bg-gray-100 border-2 border-gray-100 mx-2 py-1 px-2">
                                             <p>[[ ${"Note: " + routine.note}]]</p>
                                         </div>
                                     </div>
