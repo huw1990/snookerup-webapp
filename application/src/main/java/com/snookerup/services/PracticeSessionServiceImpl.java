@@ -111,4 +111,20 @@ public class PracticeSessionServiceImpl implements PracticeSessionService {
             return practiceSession;
         }
     }
+
+    @Override
+    public PracticeSession updatePracticeSessionTitleAndDescription(PracticeSession practiceSession) {
+        synchronized (this) {
+            log.debug("Updating practice session, practiceSession={}", practiceSession);
+            PracticeSession existingPracticeSession = practiceSessionRepository.findByIdAndPlayerUsername(
+                    practiceSession.getId(), practiceSession.getPlayerUsername());
+            if (existingPracticeSession != null) {
+                log.debug("Practice session exists={}, updating title and description now", existingPracticeSession);
+                existingPracticeSession.setTitle(practiceSession.getTitle());
+                existingPracticeSession.setDescription(practiceSession.getDescription());
+                return practiceSessionRepository.save(existingPracticeSession);
+            }
+            return null;
+        }
+    }
 }

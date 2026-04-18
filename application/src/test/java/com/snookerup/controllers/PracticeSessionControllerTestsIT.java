@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.net.URLEncoder;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
@@ -289,13 +290,109 @@ class PracticeSessionControllerTestsIT extends BaseTestcontainersIT {
     }
 
     @Test
-    void getConfirmPracticeSessionDeleteById_Should_Return200OK_When_CorrectlyAuthed() throws Exception {
+    void getConfirmPracticeSessionDeleteById_Should_RedirectToPracticeSessionsOverview_When_CorrectlyAuthed() throws Exception {
         OidcUser user = createOidcUser("willo@snookerup.com", "willo");
         this.mockMvc
                 .perform(get("/practicesessions/1234/delete/confirm")
                         .with(oidcLogin().oidcUser(user)))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/practicesessions"));
+    }
+
+    @Test
+    void getEditPracticeSession_Should_RedirectToLogin_When_NotAuthed() throws Exception {
+        this.mockMvc
+                .perform(get("/practicesessions/1234/edit"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(LOGIN_REDIRECT_URL));
+    }
+
+    @Test
+    void getEditPracticeSession_Should_Return200OK_When_CorrectlyAuthed() throws Exception {
+        OidcUser user = createOidcUser("willo@snookerup.com", "willo");
+        this.mockMvc
+                .perform(get("/practicesessions/1234/edit")
+                        .with(oidcLogin().oidcUser(user)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void editPracticeSession_Should_Return403Forbidden_When_NotAuthed() throws Exception {
+        String newTitle = "New Title";
+        PracticeSession practiceSession = createPracticeSession();
+        this.mockMvc
+                .perform(post("/practicesessions/" + practiceSession.getId() + "/edit")
+                        .queryParam("id", practiceSession.getId())
+                        .queryParam("title", newTitle)
+                        .queryParam("description", practiceSession.getDescription())
+                        .queryParam("playerUsername", "willo"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void editPracticeSession_Should_RedirectBackToAllPracticeSessionsPage_When_UsernamesDontMatch() throws Exception {
+        String newTitle = "New Title";
+        OidcUser user = createOidcUser("willo@snookerup.com", "willo");
+        //Start by adding practice session we want to edit to the DB
+        PracticeSession practiceSession = createPracticeSession();
+        practiceSession.setPlayerUsername(user.getName());
+        practiceSessionRepository.save(practiceSession);
+        this.mockMvc
+                .perform(post("/practicesessions/" + practiceSession.getId() + "/edit")
+                        .queryParam("id", practiceSession.getId())
+                        .queryParam("title", newTitle)
+                        .queryParam("description", practiceSession.getDescription())
+                        .queryParam("playerUsername", "different-user")
+                        .with(csrf())
+                        .with(oidcLogin().oidcUser(user)))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/practicesessions"));
+    }
+
+    @Test
+    void editPracticeSession_Should_RedirectBackToAllPracticeSessionsPage_When_PracticeSessionIdsDontMatch() throws Exception {
+        String newTitle = "New Title";
+        OidcUser user = createOidcUser("willo@snookerup.com", "willo");
+        //Start by adding practice session we want to edit to the DB
+        PracticeSession practiceSession = createPracticeSession();
+        practiceSession.setPlayerUsername(user.getName());
+        practiceSessionRepository.save(practiceSession);
+        this.mockMvc
+                .perform(post("/practicesessions/1234/edit")
+                        .queryParam("id", practiceSession.getId())
+                        .queryParam("title", newTitle)
+                        .queryParam("description", practiceSession.getDescription())
+                        .queryParam("playerUsername", practiceSession.getPlayerUsername())
+                        .with(csrf())
+                        .with(oidcLogin().oidcUser(user)))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/practicesessions"));
+    }
+
+    @Test
+    void editPracticeSession_Should_RedirectToPracticeSessionPage_When_ValidPracticeSessionUpdated() throws Exception {
+        String newTitle = "New Title";
+        OidcUser user = createOidcUser("willo@snookerup.com", "willo");
+        //Start by adding practice session we want to edit to the DB
+        PracticeSession practiceSession = createPracticeSession();
+        practiceSession.setPlayerUsername(user.getName());
+        practiceSessionRepository.save(practiceSession);
+        MvcResult result = this.mockMvc
+                .perform(post("/practicesessions/" + practiceSession.getId() + "/edit")
+                        .queryParam("id", practiceSession.getId())
+                        .queryParam("title", newTitle)
+                        .queryParam("description", practiceSession.getDescription())
+                        .queryParam("playerUsername", practiceSession.getPlayerUsername())
+                        .with(csrf())
+                        .with(oidcLogin().oidcUser(user)))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        String redirectedUrl = result.getResponse().getRedirectedUrl();
+        String newPracticeSessionId = redirectedUrl.replace(SESSIONS_URL, "");
+        PracticeSession addedPracticeSession = practiceSessionRepository
+                .findByIdAndPlayerUsername(newPracticeSessionId, user.getName());
+        assertNotNull(addedPracticeSession);
+        assertEquals(newTitle, addedPracticeSession.getTitle());
     }
 
     private PracticeSession createPracticeSession() {

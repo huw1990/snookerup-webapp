@@ -10,6 +10,7 @@ import com.snookerup.services.PracticeSessionService;
 import com.snookerup.services.RoutineService;
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,6 +42,9 @@ public class PracticeSessionController {
 
     /** Redirect to use when handling an invalid new practice session submitted by the user. */
     protected static final String ADD_PRACTICE_SESSION_REDIRECT = "redirect:/addpracticesession";
+
+    /** Redirect to use when handling an invalid practice session update. */
+    protected static final String EDIT_PRACTICE_SESSION_REDIRECT = "redirect:/practicesessions/%1$s/edit";
 
     /** Redirect to use when a user tries to add a new practice session but has no slots remaining. */
     protected static final String ALL_PRACTICE_SESSIONS_REDIRECT = "redirect:/practicesessions";
@@ -75,6 +79,10 @@ public class PracticeSessionController {
     protected static final String SUCCESSFUL_SAVE_PRACTICE_SESSION_ADDITION_MESSAGE =
             "Great job! Your practice session addition was saved successfully.";
 
+    /** Success message to display in a banner when a user's practice session was updated. */
+    protected static final String SUCCESSFUL_UPDATE_PRACTICE_SESSION_MESSAGE =
+            "Great job! Your practice session was updated successfully.";
+
     /** Success message to display in a banner when a user's practice session deletion succeeds. */
     protected static final String SUCCESSFUL_PRACTICE_SESSION_DELETE_MESSAGE =
             "Great job! Your practice session was deleted successfully.";
@@ -82,6 +90,9 @@ public class PracticeSessionController {
     /** Error message to display in a banner when unable to save a user's practice session additions. */
     protected static final String UNABLE_TO_ADD_ROUTINE_TO_PRACTICE_SESSION_ERROR_MESSAGE =
             "Oops! Some entries weren't valid, please try again.";
+
+    /** Error message to display in a banner when a practice session doesn't exist. */
+    protected static final String PRACTICE_SESSION_DOESNT_EXIST_ERROR_MESSAGE = "Practice session does not exist!";
 
     /** Service to get practice sessions from. */
     private final PracticeSessionService practiceSessionService;
@@ -315,6 +326,77 @@ public class PracticeSessionController {
             redirectAttributes.addFlashAttribute("messageType", "success");
         }
         return ALL_PRACTICE_SESSIONS_REDIRECT;
+    }
+
+    /**
+     * Get the page to edit an existing practice session.
+     * @param model The Spring MVC model
+     * @param user The logged-in user to edit the practice session for
+     * @return The edit practice session page to display
+     */
+    @GetMapping("/practicesessions/{id}/edit")
+    public String getEditPracticeSession(@PathVariable("id") String id, Model model,
+                                         @AuthenticationPrincipal OidcUser user) {
+        PracticeSessionWithRoutineContext existingPracticeSession = practiceSessionService
+                .getPracticeSessionByIdAndPlayerUsername(id, user.getName());
+        if (existingPracticeSession != null) {
+            PracticeSession practiceSession = new PracticeSession();
+            practiceSession.setId(existingPracticeSession.getId());
+            practiceSession.setPlayerUsername(user.getName());
+            practiceSession.setTitle(existingPracticeSession.getTitle());
+            practiceSession.setDescription(existingPracticeSession.getDescription());
+            model.addAttribute("practiceSession", practiceSession);
+        }
+        return "editPracticeSession";
+    }
+
+    /**
+     * Handles a user editing an existing practice session via form submission.
+     * @param practiceSessionToBeUpdated The practice session to be updated.
+     * @param bindingResult The binding result, containing details of whether the provided practice session passed validation.
+     * @param user The logged-in user making the request
+     * @param model The model, to provide context about the page we will return.
+     * @param redirectAttributes Redirect attributes, used for flash messages
+     * @return The view to load after the pracice session submission operation is processed
+     */
+    @PostMapping("/practicesessions/{id}/edit")
+    public String editPracticeSession(@NotBlank @PathVariable("id") String id,
+            @Valid PracticeSession practiceSessionToBeUpdated,
+            BindingResult bindingResult,
+            Model model,
+            @AuthenticationPrincipal OidcUser user,
+            RedirectAttributes redirectAttributes
+    ) {
+        log.debug("practiceSessionToBeUpdated={}", practiceSessionToBeUpdated);
+        if (practiceSessionToBeUpdated.getId() == null
+                || !id.equals(practiceSessionToBeUpdated.getId())
+                || !user.getName().equals(practiceSessionToBeUpdated.getPlayerUsername())) {
+            log.debug("Practice session ID or username mismatch (ID on URL={}, ID in body={}, request user={}, " +
+                    "user in body={}, redirecting to all practice sessions page", id, practiceSessionToBeUpdated.getId(),
+                    user.getName(), practiceSessionToBeUpdated.getPlayerUsername());
+            redirectAttributes.addFlashAttribute("message", PRACTICE_SESSION_DOESNT_EXIST_ERROR_MESSAGE);
+            redirectAttributes.addFlashAttribute("messageType", "danger");
+            return ALL_PRACTICE_SESSIONS_REDIRECT;
+        } else if (bindingResult.hasErrors()) {
+            log.debug("Have binding errors (bindingResult={}), displaying error message", bindingResult);
+            redirectAttributes.addFlashAttribute("message", UNABLE_TO_SAVE_PRACTICE_SESSION_ERROR_MESSAGE);
+            redirectAttributes.addFlashAttribute("messageType", "danger");
+            return String.format(EDIT_PRACTICE_SESSION_REDIRECT, practiceSessionToBeUpdated.getId());
+        } else {
+            PracticeSession savedPracticeSession = practiceSessionService
+                    .updatePracticeSessionTitleAndDescription(practiceSessionToBeUpdated);
+            if (savedPracticeSession != null) {
+                log.debug("Practice session added to DB successfully, practice session={}", savedPracticeSession);
+                redirectAttributes.addFlashAttribute("message", SUCCESSFUL_UPDATE_PRACTICE_SESSION_MESSAGE);
+                redirectAttributes.addFlashAttribute("messageType", "success");
+                return String.format(VIEW_RECENTLY_CREATED_PRACTICE_SESSION_REDIRECT, savedPracticeSession.getId());
+            } else {
+                log.debug("Practice session wasn't saved successfully, displaying error message");
+                redirectAttributes.addFlashAttribute("message", UNABLE_TO_SAVE_PRACTICE_SESSION_ERROR_MESSAGE);
+                redirectAttributes.addFlashAttribute("messageType", "danger");
+                return String.format(EDIT_PRACTICE_SESSION_REDIRECT, practiceSessionToBeUpdated.getId());
+            }
+        }
     }
 
     /**

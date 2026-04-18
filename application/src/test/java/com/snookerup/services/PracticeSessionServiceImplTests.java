@@ -276,4 +276,53 @@ public class PracticeSessionServiceImplTests {
         verify(mockPracticeSessionRepository).findByIdAndPlayerUsername(SESSION_ID, USERNAME);
         verify(mockPracticeSessionRepository).deleteById(SESSION_ID);
     }
+
+    @Test
+    public void updatePracticeSessionTitleAndDescription_Should_NotUpdateAndReturnNull_WhenPracticeSessionWithIdDoesntExist() {
+        // Define variables
+        PracticeSession practiceSession = new PracticeSession();
+        practiceSession.setId(SESSION_ID);
+        practiceSession.setTitle("Break Building");
+        practiceSession.setDescription("Session of break building routines");
+        practiceSession.setPlayerUsername(USERNAME);
+
+        // Set mock expectations
+        when(mockPracticeSessionRepository.findByIdAndPlayerUsername(SESSION_ID, USERNAME)).thenReturn(null);
+
+        // Execute method under test
+        PracticeSession updatedPracticeSession = practiceSessionService
+                .updatePracticeSessionTitleAndDescription(practiceSession);
+
+        // Verify
+        verify(mockPracticeSessionRepository).findByIdAndPlayerUsername(SESSION_ID, USERNAME);
+        verify(mockPracticeSessionRepository, never()).save(any());
+    }
+
+    @Test
+    public void updatePracticeSessionTitleAndDescription_Should_UpdateAndReturnPracticeSession_WhenPracticeSessionWithIdExists() {
+        // Define variables
+        PracticeSession existingPracticeSession = new PracticeSession();
+        existingPracticeSession.setId(SESSION_ID);
+        existingPracticeSession.setTitle("Break Building");
+        existingPracticeSession.setDescription("Session of break building routines");
+        existingPracticeSession.setPlayerUsername(USERNAME);
+        PracticeSession practiceSession = new PracticeSession();
+        practiceSession.setId(SESSION_ID);
+        practiceSession.setTitle("New Title");
+        practiceSession.setDescription("Session of break building routines");
+        practiceSession.setPlayerUsername(USERNAME);
+
+        // Set mock expectations
+        when(mockPracticeSessionRepository.findByIdAndPlayerUsername(SESSION_ID, USERNAME)).thenReturn(existingPracticeSession);
+        when(mockPracticeSessionRepository.save(practiceSession)).thenReturn(practiceSession);
+
+        // Execute method under test
+        PracticeSession updatedPracticeSession = practiceSessionService
+                .updatePracticeSessionTitleAndDescription(practiceSession);
+
+        // Verify
+        verify(mockPracticeSessionRepository).findByIdAndPlayerUsername(SESSION_ID, USERNAME);
+        verify(mockPracticeSessionRepository).save(practiceSession);
+        assertEquals(practiceSession, updatedPracticeSession);
+    }
 }

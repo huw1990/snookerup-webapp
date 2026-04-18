@@ -60,4 +60,11 @@ public interface PracticeSessionService {
      * @return The deleted practice session if it existed previously, or null if no routine was found with the provided ID
      */
     PracticeSession deletePracticeSession(String practiceSessionId, String playerUsername);
+
+    /**
+     * Updates the title and description of an existing practice session from the stub provided.
+     * @param practiceSession A practice session stub with ID, title and description potentially set
+     * @return The updated practice session, if one existed with the provided ID, or null if one didn't
+     */
+    PracticeSession updatePracticeSessionTitleAndDescription(PracticeSession practiceSession);
 }

@@ -39,6 +39,7 @@ class PracticeSessionControllerTests {
     private static final String DELETE_PRACTICE_SESSION_PAGE = "deletePracticeSession";
     private static final String ADD_PRACTICE_SESSION_PAGE = "addPracticeSession";
     private static final String ADD_TO_PRACTICE_SESSION_PAGE = "addToPracticeSession";
+    private static final String EDIT_PRACTICE_SESSION_PAGE = "editPracticeSession";
     private static final String SESSION_ID = "1234";
 
     private PracticeSessionService mockPracticeSessionService;
@@ -485,5 +486,173 @@ class PracticeSessionControllerTests {
         verify(mockPracticeSessionService).deletePracticeSession(SESSION_ID, USERNAME);
         verify(mockRedirectAttributes).addFlashAttribute("message", NO_PRACTICE_SESSION_TO_DELETE_ERROR_MESSAGE);
         verify(mockRedirectAttributes).addFlashAttribute("messageType", "danger");
+    }
+
+    @Test
+    public void getEditPracticeSession_Should_DelegateToServiceAndReturnPage_When_PracticeSessionDoesntExist() {
+        // Define variables
+
+        // Set mock expectations
+        when(mockPracticeSessionService.getPracticeSessionByIdAndPlayerUsername(SESSION_ID, USERNAME))
+                .thenReturn(null);
+
+        // Execute method under test
+        String returnedPage = practiceSessionController.getEditPracticeSession(SESSION_ID, mockModel, mockOidcUser);
+
+        // Verify
+        assertEquals(EDIT_PRACTICE_SESSION_PAGE, returnedPage);
+        verify(mockPracticeSessionService).getPracticeSessionByIdAndPlayerUsername(SESSION_ID, USERNAME);
+        verify(mockModel, never()).addAttribute(eq("practiceSession"), any());
+    }
+
+    @Test
+    public void getEditPracticeSession_Should_DelegateToServiceAndReturnPage_When_PracticeSessionExists() {
+        // Define variables
+        String title = "title";
+        String description = "description";
+        PracticeSessionWithRoutineContext mockPracticeSession = mock(PracticeSessionWithRoutineContext.class);
+        PracticeSession practiceSession = new PracticeSession();
+        practiceSession.setTitle(title);
+        practiceSession.setDescription(description);
+
+        // Set mock expectations
+        when(mockPracticeSessionService.getPracticeSessionByIdAndPlayerUsername(SESSION_ID, USERNAME))
+                .thenReturn(mockPracticeSession);
+        when(mockPracticeSession.getId()).thenReturn(SESSION_ID);
+        when(mockPracticeSession.getTitle()).thenReturn(title);
+        when(mockPracticeSession.getDescription()).thenReturn(description);
+        when(mockPracticeSession.getPlayerUsername()).thenReturn(USERNAME);
+
+        // Execute method under test
+        String returnedPage = practiceSessionController.getEditPracticeSession(SESSION_ID, mockModel, mockOidcUser);
+
+        // Verify
+        assertEquals(EDIT_PRACTICE_SESSION_PAGE, returnedPage);
+        verify(mockPracticeSessionService).getPracticeSessionByIdAndPlayerUsername(SESSION_ID, USERNAME);
+        ArgumentCaptor<PracticeSession> practiceSessionCaptor = ArgumentCaptor.forClass(PracticeSession.class);
+        verify(mockModel).addAttribute(eq("practiceSession"), practiceSessionCaptor.capture());
+        PracticeSession modelPracticeSession = practiceSessionCaptor.getValue();
+        assertEquals(SESSION_ID, modelPracticeSession.getId());
+        assertEquals(USERNAME, modelPracticeSession.getPlayerUsername());
+        assertEquals(title, modelPracticeSession.getTitle());
+        assertEquals(description, modelPracticeSession.getDescription());
+    }
+
+    @Test
+    public void editPracticeSession_Should_RedirectToAllPracticeSessionsPageWithError_When_UsernamesDontMatch() {
+        // Define variables
+        String title = "title";
+        String description = "description";
+        PracticeSession practiceSession = new PracticeSession();
+        practiceSession.setTitle(title);
+        practiceSession.setDescription(description);
+        practiceSession.setPlayerUsername("differentUsername");
+        practiceSession.setId(SESSION_ID);
+
+        // Set mock expectations
+
+        // Execute method under test
+        String returnedPage = practiceSessionController.editPracticeSession(SESSION_ID, practiceSession,
+                mockBindingResult, mockModel, mockOidcUser, mockRedirectAttributes);
+
+        // Verify
+        assertEquals(ALL_PRACTICE_SESSIONS_REDIRECT, returnedPage);
+        verify(mockRedirectAttributes).addFlashAttribute("message", PRACTICE_SESSION_DOESNT_EXIST_ERROR_MESSAGE);
+        verify(mockRedirectAttributes).addFlashAttribute("messageType", "danger");
+    }
+
+    @Test
+    public void editPracticeSession_Should_RedirectToAllPracticeSessionsPageWithError_When_PracticeSessionIdsDontMatch() {
+        // Define variables
+        String title = "title";
+        String description = "description";
+        PracticeSession practiceSession = new PracticeSession();
+        practiceSession.setTitle(title);
+        practiceSession.setDescription(description);
+        practiceSession.setPlayerUsername(USERNAME);
+        practiceSession.setId("differentId");
+
+        // Set mock expectations
+
+        // Execute method under test
+        String returnedPage = practiceSessionController.editPracticeSession(SESSION_ID, practiceSession,
+                mockBindingResult, mockModel, mockOidcUser, mockRedirectAttributes);
+
+        // Verify
+        assertEquals(ALL_PRACTICE_SESSIONS_REDIRECT, returnedPage);
+        verify(mockRedirectAttributes).addFlashAttribute("message", PRACTICE_SESSION_DOESNT_EXIST_ERROR_MESSAGE);
+        verify(mockRedirectAttributes).addFlashAttribute("messageType", "danger");
+    }
+
+    @Test
+    public void editPracticeSession_Should_RedirectToSamePageWithError_When_HasBindingError() {
+        // Define variables
+        String title = "title";
+        String description = "description";
+        PracticeSession practiceSession = new PracticeSession();
+        practiceSession.setTitle(title);
+        practiceSession.setDescription(description);
+        practiceSession.setPlayerUsername(USERNAME);
+        practiceSession.setId(SESSION_ID);
+
+        // Set mock expectations
+        when(mockBindingResult.hasErrors()).thenReturn(true);
+
+        // Execute method under test
+        String returnedPage = practiceSessionController.editPracticeSession(SESSION_ID, practiceSession,
+                mockBindingResult, mockModel, mockOidcUser, mockRedirectAttributes);
+
+        // Verify
+        assertEquals(String.format(EDIT_PRACTICE_SESSION_REDIRECT, SESSION_ID), returnedPage);
+        verify(mockRedirectAttributes).addFlashAttribute("message", UNABLE_TO_SAVE_PRACTICE_SESSION_ERROR_MESSAGE);
+        verify(mockRedirectAttributes).addFlashAttribute("messageType", "danger");
+    }
+
+    @Test
+    public void editPracticeSession_Should_RedirectToSamePageWithError_When_ServiceFailsToUpdatePracticeSession() {
+        // Define variables
+        String title = "title";
+        String description = "description";
+        PracticeSession practiceSession = new PracticeSession();
+        practiceSession.setTitle(title);
+        practiceSession.setDescription(description);
+        practiceSession.setPlayerUsername(USERNAME);
+        practiceSession.setId(SESSION_ID);
+
+        // Set mock expectations
+        when(mockPracticeSessionService.updatePracticeSessionTitleAndDescription(practiceSession)).thenReturn(null);
+
+        // Execute method under test
+        String returnedPage = practiceSessionController.editPracticeSession(SESSION_ID, practiceSession,
+                mockBindingResult, mockModel, mockOidcUser, mockRedirectAttributes);
+
+        // Verify
+        assertEquals(String.format(EDIT_PRACTICE_SESSION_REDIRECT, SESSION_ID), returnedPage);
+        verify(mockRedirectAttributes).addFlashAttribute("message", UNABLE_TO_SAVE_PRACTICE_SESSION_ERROR_MESSAGE);
+        verify(mockRedirectAttributes).addFlashAttribute("messageType", "danger");
+    }
+
+    @Test
+    public void editPracticeSession_Should_RedirectToPracticeSessionPageWithSuccessMessage_When_ServiceUpdatesAndReturnsPracticeSession() {
+        // Define variables
+        String title = "title";
+        String description = "description";
+        PracticeSession practiceSession = new PracticeSession();
+        practiceSession.setTitle(title);
+        practiceSession.setDescription(description);
+        practiceSession.setPlayerUsername(USERNAME);
+        practiceSession.setId(SESSION_ID);
+
+        // Set mock expectations
+        when(mockPracticeSessionService.updatePracticeSessionTitleAndDescription(practiceSession)).thenReturn(practiceSession);
+
+        // Execute method under test
+        String returnedPage = practiceSessionController.editPracticeSession(SESSION_ID, practiceSession,
+                mockBindingResult, mockModel, mockOidcUser, mockRedirectAttributes);
+
+        // Verify
+        assertEquals(String.format(VIEW_RECENTLY_CREATED_PRACTICE_SESSION_REDIRECT, SESSION_ID), returnedPage);
+        verify(mockRedirectAttributes).addFlashAttribute("message", SUCCESSFUL_UPDATE_PRACTICE_SESSION_MESSAGE);
+        verify(mockRedirectAttributes).addFlashAttribute("messageType", "success");
     }
 }

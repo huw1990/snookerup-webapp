@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/layout}">
+<div layout:fragment="page-content">
+    <section class="pt-6 pb-4">
+        <div th:if="${practiceSession == null}" class="sm:mx-auto sm:w-full sm:max-w-lg">
+            <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
+                Delete Practice Session: Not Found
+            </h2>
+            <p class="my-4 m-auto text-center text-md text-green-900">We couldn't find this practice session.</p>
+            <a
+                    th:href="@{/practicesessions}"
+                    class="text-sm block bg-green-800 text-white text-center py-2 px-2 rounded-xl hover:bg-gray-700  rounded-lg shadow-md drop-shadow-xl border-solid border-4 border-green-800"
+            >View practice sessions</a
+            >
+        </div>
+        <div th:if="${practiceSession}" class="sm:mx-auto sm:w-full sm:max-w-lg">
+            <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
+                Update Practice Session
+            </h2>
+            <form
+                    id="edit-session-form"
+                    th:action="@{/practicesessions/{id}/edit(id=${practiceSession.id})}"
+                    th:object="${practiceSession}"
+                    method="post"
+                    class="space-y-6">
+                <input type="hidden" th:field="*{playerUsername}" id="playerUsername">
+                <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
+                    <label for="sessionTitle" class="block text-sm font-medium leading-6 text-gray-900">Title</label>
+                    <div class="mt-2">
+                        <input th:field="*{title}" id="sessionTitle" name="session-title" type="text" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
+                    <label for="sessionDescription" class="block text-sm font-medium leading-6 text-gray-900">Description</label>
+                    <div class="mt-2">
+                        <input th:field="*{description}" id="sessionDescription" name="session-description" type="text" class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" class="flex w-full justify-center rounded-md bg-green-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Update practice session</button>
+                </div>
+            </form>
+            <a
+                    th:href="@{/practicesessions/{id}/editroutines(id=${practiceSession.id})}"
+                    class="mt-4 flex w-full justify-center rounded-md bg-green-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >Edit Routines</a
+            >
+        </div>
+    </section>
+</div>
