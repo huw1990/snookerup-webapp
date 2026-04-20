@@ -262,6 +262,7 @@ class PracticeSessionControllerTests {
         when(mockPracticeSessionService.getPracticeSessionsForPlayerUsername(USERNAME)).thenReturn(mockPracticeSessions);
         when(mockRoutineService.getAllRoutines()).thenReturn(mockRoutines);
         when(mockRoutineService.getRoutineById(routineId)).thenReturn(Optional.of(mockRoutine));
+        when(mockRoutine.getId()).thenReturn(routineId);
 
         // Execute method under test
         String returnedPage = practiceSessionController.getAddToPracticeSession(mockModel, Optional.of(routineId),
@@ -281,9 +282,10 @@ class PracticeSessionControllerTests {
     }
 
     @Test
-    public void getAddToPracticeSession_Should_RenderPageWithoutRoutineModelAttrs_When_RoutineIdProvidedButRoutineDoesntExist() {
+    public void getAddToPracticeSession_Should_RenderPageWithFirstRoutineModelAttrs_When_RoutineIdProvidedButRoutineDoesntExist() {
         // Define variables
         String routineId = "the-line-up";
+        String otherRoutineId = "the-t-line-up";
         String practiceSessionTitle = "My Practice Session";
         PracticeSession mockPracticeSession = mock(PracticeSession.class);
         List<PracticeSession> mockPracticeSessions = List.of(mockPracticeSession);
@@ -294,6 +296,7 @@ class PracticeSessionControllerTests {
         when(mockPracticeSessionService.getPracticeSessionsForPlayerUsername(USERNAME)).thenReturn(mockPracticeSessions);
         when(mockRoutineService.getAllRoutines()).thenReturn(mockRoutines);
         when(mockRoutineService.getRoutineById(routineId)).thenReturn(Optional.empty());
+        when(mockRoutine.getId()).thenReturn(otherRoutineId);
 
         // Execute method under test
         String returnedPage = practiceSessionController.getAddToPracticeSession(mockModel, Optional.of(routineId),
@@ -304,8 +307,8 @@ class PracticeSessionControllerTests {
         verify(mockPracticeSessionService).getPracticeSessionsForPlayerUsername(USERNAME);
         verify(mockRoutineService).getAllRoutines();
         verify(mockRoutineService).getRoutineById(routineId);
-        verify(mockModel, never()).addAttribute(eq("selectedRoutineId"), any());
-        verify(mockModel, never()).addAttribute(eq("selectedRoutine"), any());
+        verify(mockModel).addAttribute("selectedRoutineId", otherRoutineId);
+        verify(mockModel).addAttribute("selectedRoutine", mockRoutine);
         verify(mockModel).addAttribute("routines", mockRoutines);
         verify(mockModel).addAttribute(eq("practiceSessionAddition"), any());
         verify(mockModel).addAttribute("practiceSessions", mockPracticeSessions);
@@ -313,9 +316,10 @@ class PracticeSessionControllerTests {
     }
 
     @Test
-    public void getAddToPracticeSession_Should_RenderPageWithoutRoutineModelAttrs_When_NoRoutineIdProvided() {
+    public void getAddToPracticeSession_Should_RenderPageWithFirstRoutineModelAttrs_When_NoRoutineIdProvided() {
         // Define variables
         String routineId = "the-line-up";
+        String otherRoutineId = "the-t-line-up";
         String practiceSessionTitle = "My Practice Session";
         PracticeSession mockPracticeSession = mock(PracticeSession.class);
         List<PracticeSession> mockPracticeSessions = List.of(mockPracticeSession);
@@ -325,6 +329,7 @@ class PracticeSessionControllerTests {
         // Set mock expectations
         when(mockPracticeSessionService.getPracticeSessionsForPlayerUsername(USERNAME)).thenReturn(mockPracticeSessions);
         when(mockRoutineService.getAllRoutines()).thenReturn(mockRoutines);
+        when(mockRoutine.getId()).thenReturn(otherRoutineId);
 
         // Execute method under test
         String returnedPage = practiceSessionController.getAddToPracticeSession(mockModel, Optional.empty(),
@@ -335,8 +340,8 @@ class PracticeSessionControllerTests {
         verify(mockPracticeSessionService).getPracticeSessionsForPlayerUsername(USERNAME);
         verify(mockRoutineService).getAllRoutines();
         verify(mockRoutineService, never()).getRoutineById(routineId);
-        verify(mockModel, never()).addAttribute(eq("selectedRoutineId"), any());
-        verify(mockModel, never()).addAttribute(eq("selectedRoutine"), any());
+        verify(mockModel).addAttribute("selectedRoutineId", otherRoutineId);
+        verify(mockModel).addAttribute("selectedRoutine", mockRoutine);
         verify(mockModel).addAttribute("routines", mockRoutines);
         verify(mockModel).addAttribute(eq("practiceSessionAddition"), any());
         verify(mockModel).addAttribute("practiceSessions", mockPracticeSessions);

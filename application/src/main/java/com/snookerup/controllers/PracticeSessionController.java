@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -216,16 +217,25 @@ public class PracticeSessionController {
                                  @AuthenticationPrincipal OidcUser user) {
         log.debug("getAddToPracticeSession routineId = {}", routineId);
         RoutineAdditionToPracticeSession practiceSessionAddition = new RoutineAdditionToPracticeSession();
-        routineId.ifPresent((id) -> {
+        List<Routine> allRoutines = routineService.getAllRoutines();
+        model.addAttribute("routines", allRoutines);
+        System.out.println("routineId=" + routineId);
+        Routine selectedRoutine = null;
+        if (routineId.isPresent()) {
+            String id = routineId.get();
             Optional<Routine> routineOpt = routineService.getRoutineById(id);
-            routineOpt.ifPresent(routine -> {
-                log.debug("selectedRoutineId={}", routine.getId());
-                practiceSessionAddition.setRoutineId(id);
-                model.addAttribute("selectedRoutineId", id);
-                model.addAttribute("selectedRoutine", routine);
-            });
-        });
-        model.addAttribute("routines", routineService.getAllRoutines());
+            if (routineOpt.isPresent()) {
+                selectedRoutine = routineOpt.get();
+            }
+        }
+        if (selectedRoutine == null) {
+            // No routine ID selected, but we need a routine to display variations for, so select the first routine in the list
+            selectedRoutine = allRoutines.get(0);
+        }
+        log.debug("selectedRoutine={}", selectedRoutine);
+        practiceSessionAddition.setRoutineId(selectedRoutine.getId());
+        model.addAttribute("selectedRoutineId", selectedRoutine.getId());
+        model.addAttribute("selectedRoutine", selectedRoutine);
         model.addAttribute("practiceSessionAddition", practiceSessionAddition);
         model.addAttribute("practiceSessions", practiceSessionService
                 .getPracticeSessionsForPlayerUsername(user.getName()));
