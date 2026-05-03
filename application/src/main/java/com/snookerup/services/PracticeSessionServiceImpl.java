@@ -2,7 +2,10 @@ package com.snookerup.services;
 
 import com.snookerup.errorhandling.NoPracticeSessionSlotsRemainingException;
 import com.snookerup.errorhandling.NonUniquePracticeSessionTitleException;
+import com.snookerup.errorhandling.PracticeSessionDoesntExistException;
+import com.snookerup.errorhandling.RoutineUuidDoesntExistException;
 import com.snookerup.model.Id;
+import com.snookerup.model.PracticeSessionRoutineUuids;
 import com.snookerup.model.RoutineAdditionToPracticeSession;
 import com.snookerup.model.addedcontext.PracticeSessionRoutineWithRoutineContext;
 import com.snookerup.model.addedcontext.PracticeSessionWithRoutineContext;
@@ -125,6 +128,27 @@ public class PracticeSessionServiceImpl implements PracticeSessionService {
                 return practiceSessionRepository.save(existingPracticeSession);
             }
             return null;
+        }
+    }
+
+    @Override
+    public PracticeSession updatePracticeSessionRoutines(String practiceSessionId, String playerUsername,
+                                                  PracticeSessionRoutineUuids routineUuids)
+            throws RoutineUuidDoesntExistException, PracticeSessionDoesntExistException {
+        synchronized (this) {
+            log.debug("Updating practice session routines for session ID={} and player username={} to routine UUID list={}",
+                    practiceSessionId, playerUsername, routineUuids);
+            PracticeSession existingPracticeSession = practiceSessionRepository.findByIdAndPlayerUsername(
+                    practiceSessionId, playerUsername);
+            if (existingPracticeSession == null) {
+                throw new PracticeSessionDoesntExistException(practiceSessionId);
+            }
+            log.debug("Practice session exists={}, updating routine order now", existingPracticeSession);
+            List<PracticeSessionRoutine> newRoutineOrder = routineUuids.filterFromPracticeSessionRoutines(
+                    existingPracticeSession.getRoutines());
+            existingPracticeSession.setRoutines(newRoutineOrder);
+            log.debug("New routine order now={}", newRoutineOrder);
+            return practiceSessionRepository.save(existingPracticeSession);
         }
     }
 }

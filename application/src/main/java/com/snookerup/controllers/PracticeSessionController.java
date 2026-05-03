@@ -410,6 +410,26 @@ public class PracticeSessionController {
     }
 
     /**
+     * Get the page to edit the routines of an existing practice session.
+     * @param id The ID of the practice session to edit
+     * @param model The Spring MVC model
+     * @param user The logged-in user to edit the practice session for
+     * @return The edit practice session routines page to display
+     */
+    @GetMapping("/practicesessions/{id}/editroutines")
+    public String getEditPracticeSessionRoutines(@PathVariable("id") String id, Model model,
+                                                 @AuthenticationPrincipal OidcUser user) {
+        PracticeSessionWithRoutineContext existingPracticeSession = practiceSessionService
+                .getPracticeSessionByIdAndPlayerUsername(id, user.getName());
+        if (existingPracticeSession != null) {
+            model.addAttribute("practiceSession", existingPracticeSession);
+            model.addAttribute("routineUuids", existingPracticeSession.getCurrentRoutineUUIDsOrder());
+        }
+        return "editPracticeSessionRoutines";
+    }
+
+
+    /**
      * Constructs a redirect URL for adding to a practice session, with optional query parameters.
      * @param routineId The routine ID
      * @param practiceSessionTitle The practice session title

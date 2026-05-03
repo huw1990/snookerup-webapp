@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/layout}">
+<div layout:fragment="page-content">
+    <section class="pt-6 pb-4">
+        <div th:if="${practiceSession == null}" class="sm:mx-auto sm:w-full sm:max-w-lg">
+            <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
+                Edit Practice Session Routines: Not Found
+            </h2>
+            <p class="my-4 m-auto text-center text-md text-green-900">We couldn't find this practice session.</p>
+            <a
+                    th:href="@{/practicesessions}"
+                    class="text-sm block bg-green-800 text-white text-center py-2 px-2 rounded-xl hover:bg-gray-700  rounded-lg shadow-md drop-shadow-xl border-solid border-4 border-green-800"
+            >View practice sessions</a
+            >
+        </div>
+        <div th:if="${practiceSession}" class="container-xl lg:container m-auto">
+            <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
+                Edit Practice Session Routines: [[ ${practiceSession.title} ]]
+            </h2>
+            <p class="my-4 m-auto text-center text-lg text-green-900">Drag and drop the rows below (using the drag handle, ⠿), then click <strong>Save</strong> to confirm your changes.</p>
+            <p class="mb-4 m-auto text-center text-lg text-green-900">Click <strong>Reset</strong> to undo your unsaved changes.</p>
+            <p id="practiceSessionUpdateRoutineOrderErrorMessage" class="font-bold text-red-600 mb-2 text-center font-ubuntu"></p>
+            <div class="flex m-auto sm:mx-auto sm:w-full sm:max-w-lg">
+                <button id="resetButton" class="m-4 flex w-full justify-center rounded-md bg-green-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Reset</button>
+                <button id="saveButton" th:attr="data-practice-session-id=${practiceSession.id}" class="m-4 flex w-full justify-center rounded-md bg-green-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save</button>
+            </div>
+            <div class="bg-gray-100 container-xl lg:container m-auto p-6 my-8 rounded-lg shadow-md border-solid border-2 border-neutral-500">
+                <p th:if="${practiceSession.routines == null || practiceSession.routines.isEmpty()}" class="my-4 m-auto text-center text-md text-green-900">There are no routines in this session yet.</p>
+                <div th:if="${practiceSession.routines}" id="drag-container">
+                    <div th:each="routine : ${practiceSession.routines}" th:attr="data-id=${routine.uuid}" class="drag-item flex m-2 p-4 border-solid border-4 rounded-md border-green-800 bg-green-200/20 drop-shadow-xl">
+                        <div class="flex-1">
+                            <div class="flex flex-row">
+                                <div class="flex flex-col md:flex-row flex-auto">
+                                    <p class="text-xl flex-auto">[[ ${routine.routineTitle }]]</p>
+                                </div>
+                                <p class="text-xl flex-auto text-right font-bold">[[ ${routine.numberOfAttempts} ]] attempts</p>
+                            </div>
+                            <div class="flex flex-wrap px-6 py-2">
+                                <div th:if="${routine.loop}" class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                                    <p>Loop</p>
+                                </div>
+                                <div th:if="${routine.unitNumber != null}" class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                                    <p>[[ ${routine.unitNumber + " " + routine.routineUnit}]]</p>
+                                </div>
+                                <div th:if="${routine.cushionLimit != null}" class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                                    <p th:if="${routine.cushionLimit == 1}">[[ ${"Max " + routine.cushionLimit + " cushion"} ]]</p>
+                                    <p th:if="${routine.cushionLimit != 1}">[[ ${"Max " + routine.cushionLimit + " cushions"} ]]</p>
+                                </div>
+                                <div th:if="${routine.potInOrder}" class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                                    <p>Pot in order</p>
+                                </div>
+                                <div th:if="${routine.stayOnOneSideOfTable}" class="my-1 md:my-0 bg-lime-100 border-2 rounded-md border-lime-200 mx-2 py-1 px-2">
+                                    <p>Stay on one side of the table</p>
+                                </div>
+                                <div class="flex flex-wrap px-2 py-2">
+                                    <div th:if="${routine.note != null && routine.note.length() > 0}" class="my-1 md:my-0 bg-gray-100 border-2 border-gray-100 mx-2 py-1 px-2">
+                                        <p>[[ ${"Note: " + routine.note}]]</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-none flex flex-col justify-center items-center ml-4">
+                            <div class="routineControlButton dragHandle cursor-pointer flex items-center justify-center mx-2 mb-2 text-green-800 bg-white rounded-md border-solid border-2 border-green-800 disabled:bg-gray-400 disabled:border-gray-500">
+                                <svg viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g stroke-width="0"></g>
+                                    <g stroke-linecap="round" stroke-linejoin="round"></g>
+                                    <g>
+                                        <path fill="#016630" fill-rule="evenodd" clip-rule="evenodd" d="M9.5 8C10.3284 8 11 7.32843 11 6.5C11 5.67157 10.3284 5 9.5 5C8.67157 5 8 5.67157 8 6.5C8 7.32843 8.67157 8 9.5 8ZM9.5 14C10.3284 14 11 13.3284 11 12.5C11 11.6716 10.3284 11 9.5 11C8.67157 11 8 11.6716 8 12.5C8 13.3284 8.67157 14 9.5 14ZM11 18.5C11 19.3284 10.3284 20 9.5 20C8.67157 20 8 19.3284 8 18.5C8 17.6716 8.67157 17 9.5 17C10.3284 17 11 17.6716 11 18.5ZM15.5 8C16.3284 8 17 7.32843 17 6.5C17 5.67157 16.3284 5 15.5 5C14.6716 5 14 5.67157 14 6.5C14 7.32843 14.6716 8 15.5 8ZM17 12.5C17 13.3284 16.3284 14 15.5 14C14.6716 14 14 13.3284 14 12.5C14 11.6716 14.6716 11 15.5 11C16.3284 11 17 11.6716 17 12.5ZM15.5 20C16.3284 20 17 19.3284 17 18.5C17 17.6716 16.3284 17 15.5 17C14.6716 17 14 17.6716 14 18.5C14 19.3284 14.6716 20 15.5 20Z"></path>
+                                    </g>
+                                </svg>
+                            </div>
+                            <button th:attr="data-routine-uuid=${routine.uuid}" class="deleteRoutineButton routineControlButton flex items-center justify-center mx-2 mb-2 text-white bg-green-800 hover:bg-green-950 hover:text-white rounded-md border-solid border-2 border-green-800 disabled:bg-gray-400 disabled:border-gray-500">
+                                <svg fill="#ffffff" version="1.1" id="Layer_1" xmlns:x="&amp;ns_extend;" xmlns:i="&amp;ns_ai;" xmlns:graph="&amp;ns_graphs;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve" stroke="#ffffff">
+                                <g stroke-width="0"/>
+                                    <g stroke-linecap="round" stroke-linejoin="round"/>
+                                    <g>
+                                    <metadata>
+                                        <sfw>
+                                            <slices></slices>
+                                            <slicesourcebounds width="505" height="984" bottomleftorigin="true" x="0" y="-984"></slicesourcebounds>
+                                        </sfw>
+                                    </metadata>
+                                        <g> <g> <g> <path d="M9,3H7c0-1.7,1.3-3,3-3v2C9.4,2,9,2.4,9,3z"/> </g> </g> <g> <g> <path d="M17,3h-2c0-0.6-0.4-1-1-1V0C15.7,0,17,1.3,17,3z"/> </g> </g> <g> <g> <polygon points="17,6 7,6 7,3 9,3 9,4 15,4 15,3 17,3 "/> </g> </g> <g> <g> <rect x="10" width="4" height="2"/> </g> </g> <g> <g> <path d="M21,6H3C2.4,6,2,5.6,2,5s0.4-1,1-1h18c0.6,0,1,0.4,1,1S21.6,6,21,6z"/> </g> </g> <g> <g> <path d="M19,24H5c-0.6,0-1-0.4-1-1V9c0-0.6,0.4-1,1-1h14c0.6,0,1,0.4,1,1v14C20,23.6,19.6,24,19,24z M6,22h12V10H6V22z"/> </g> </g> <g> <g> <path d="M10,20c-0.6,0-1-0.4-1-1v-6c0-0.6,0.4-1,1-1s1,0.4,1,1v6C11,19.6,10.6,20,10,20z"/> </g> </g> <g> <g> <path d="M14,20c-0.6,0-1-0.4-1-1v-6c0-0.6,0.4-1,1-1s1,0.4,1,1v6C15,19.6,14.6,20,14,20z"/> </g> </g> </g>
+                                </g>
+                            </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

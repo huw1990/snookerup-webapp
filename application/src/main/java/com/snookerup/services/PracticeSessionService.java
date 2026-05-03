@@ -2,6 +2,9 @@ package com.snookerup.services;
 
 import com.snookerup.errorhandling.NoPracticeSessionSlotsRemainingException;
 import com.snookerup.errorhandling.NonUniquePracticeSessionTitleException;
+import com.snookerup.errorhandling.PracticeSessionDoesntExistException;
+import com.snookerup.errorhandling.RoutineUuidDoesntExistException;
+import com.snookerup.model.PracticeSessionRoutineUuids;
 import com.snookerup.model.RoutineAdditionToPracticeSession;
 import com.snookerup.model.addedcontext.PracticeSessionWithRoutineContext;
 import com.snookerup.model.db.nosql.PracticeSession;
@@ -56,7 +59,7 @@ public interface PracticeSessionService {
     /**
      * Deletes a practice session with the provided ID.
      * @param practiceSessionId The ID of the practice session to delete
-     * @param playerUsername The username of the player that owns the routine and is making the request
+     * @param playerUsername The username of the player that owns the practice session and is making the request
      * @return The deleted practice session if it existed previously, or null if no routine was found with the provided ID
      */
     PracticeSession deletePracticeSession(String practiceSessionId, String playerUsername);
@@ -67,4 +70,20 @@ public interface PracticeSessionService {
      * @return The updated practice session, if one existed with the provided ID, or null if one didn't
      */
     PracticeSession updatePracticeSessionTitleAndDescription(PracticeSession practiceSession);
+
+    /**
+     * Updates the routine order in a practice session with the provided ID and owned by the provided player.
+     * @param practiceSessionId The ID of the practice session to edit the routine order on
+     * @param playerUsername The username of the player that owns the practice session and is making the request
+     * @param routineUuids An ordered list of routine UUIDs, where each UUID must be a routine that already exists in
+     *                     the practice session, otherwise an exception is thrown
+     * @return The edited practice session
+     * @throws RoutineUuidDoesntExistException If the provided routine UUID list contains a UUID that doesn't exist in
+     * the practice session already
+     * @throws PracticeSessionDoesntExistException If the provided practice session ID doesnt match an existing practice
+     * session for the user
+     */
+    PracticeSession updatePracticeSessionRoutines(String practiceSessionId, String playerUsername,
+                                                  PracticeSessionRoutineUuids routineUuids)
+            throws RoutineUuidDoesntExistException, PracticeSessionDoesntExistException;
 }

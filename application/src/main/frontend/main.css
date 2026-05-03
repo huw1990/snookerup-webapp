@@ -114,12 +114,12 @@ routine-image-slider {
     height: 25px;
 }
 
-.scoreControlButton {
+.scoreControlButton, .routineControlButton {
     width: 30px;
     height: 30px;
 }
 
-.scoreControlButton svg {
+.scoreControlButton svg, .routineControlButton svg {
     width: 18px;
     height: 18px;
 }

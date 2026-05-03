@@ -36,4 +36,22 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler({RoutineUuidDoesntExistException.class})
+    public ResponseEntity<Object> handleRoutineUuidDoesntExistException(
+            RoutineUuidDoesntExistException ex, WebRequest request) {
+        log.error("handleRoutineUuidDoesntExistException request={}", request, ex);
+
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({PracticeSessionDoesntExistException.class})
+    public ResponseEntity<Object> handlePracticeSessionDoesntExistException(
+            PracticeSessionDoesntExistException ex, WebRequest request) {
+        log.error("handlePracticeSessionDoesntExistException request={}", request, ex);
+
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
 }

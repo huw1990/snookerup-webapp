@@ -1108,6 +1108,11 @@ video {
   background-color: rgb(245 245 244 / var(--tw-bg-opacity, 1));
 }
 
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
+
 .bg-yellow-200 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 240 138 / var(--tw-bg-opacity, 1));
@@ -1662,12 +1667,12 @@ routine-image-slider {
   height: 25px;
 }
 
-.scoreControlButton {
+.scoreControlButton, .routineControlButton {
   width: 30px;
   height: 30px;
 }
 
-.scoreControlButton svg {
+.scoreControlButton svg, .routineControlButton svg {
   width: 18px;
   height: 18px;
 }

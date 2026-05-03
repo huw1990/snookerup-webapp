@@ -2,6 +2,9 @@ package com.snookerup.controllers;
 
 import com.snookerup.errorhandling.NoPracticeSessionSlotsRemainingException;
 import com.snookerup.errorhandling.NonUniquePracticeSessionTitleException;
+import com.snookerup.errorhandling.PracticeSessionDoesntExistException;
+import com.snookerup.errorhandling.RoutineUuidDoesntExistException;
+import com.snookerup.model.PracticeSessionRoutineUuids;
 import com.snookerup.model.db.nosql.PracticeSession;
 import com.snookerup.services.PracticeSessionService;
 import jakarta.validation.Valid;
@@ -44,6 +47,24 @@ public class PracticeSessionRestController {
             return createdPracticeSession;
         } catch (NoPracticeSessionSlotsRemainingException | NonUniquePracticeSessionTitleException ex) {
             log.error("Exception creating practiceSession={}", ex.getMessage());
+            throw ex;
+        }
+    }
+
+    @PutMapping("/practicesessions/{id}/editroutines")
+    @ResponseStatus(HttpStatus.OK)
+    public PracticeSession editPracticeSessionRoutines(@PathVariable("id") String id,
+                                                                      @RequestBody @Valid PracticeSessionRoutineUuids routineUuids,
+                                                                      @AuthenticationPrincipal OidcUser user)
+            throws RoutineUuidDoesntExistException, PracticeSessionDoesntExistException {
+        log.debug("editPracticeSessionRoutines routineUuids={}", routineUuids);
+        try {
+            PracticeSession updatedPracticeSession = sessionService.updatePracticeSessionRoutines(id, user.getName(),
+                    routineUuids);
+            log.debug("Updated practice session routines, updated session now={}", updatedPracticeSession);
+            return updatedPracticeSession;
+        } catch (RoutineUuidDoesntExistException | PracticeSessionDoesntExistException ex) {
+            log.error("Exception updating practice session={}", ex.getMessage());
             throw ex;
         }
     }

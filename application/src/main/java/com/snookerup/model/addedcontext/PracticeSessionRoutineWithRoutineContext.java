@@ -15,6 +15,8 @@ import lombok.Getter;
 @Getter
 public class PracticeSessionRoutineWithRoutineContext {
 
+    private final String uuid;
+
     private final String routineId;
 
     private final String routineTitle;
@@ -40,6 +42,7 @@ public class PracticeSessionRoutineWithRoutineContext {
     @Builder
     public PracticeSessionRoutineWithRoutineContext(PracticeSessionRoutine routineWithVariations,
                                                     Routine routineContext) {
+        this.uuid = routineWithVariations.getUuid();
         this.routineId = routineWithVariations.getRoutineId();
         this.routineTitle = routineContext.getTitle();
         this.loop = routineWithVariations.isLoop();

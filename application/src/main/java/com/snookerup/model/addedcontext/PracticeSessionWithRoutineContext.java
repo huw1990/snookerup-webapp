@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A UI-centric version of a practice session from the database, with added routine context, e.g. adds the title and
@@ -42,5 +43,15 @@ public class PracticeSessionWithRoutineContext {
         this.distinctRoutinesAndVariations = practiceSession.getDistinctRoutinesAndVariations();
         this.totalAttempts = practiceSession.getTotalAttempts();
         this.routines = routinesWithContext;
+    }
+
+    /**
+     * Get a list just containing the UUIDs of each routine in this practice session, in the current order.
+     * @return A list of strings, of the routine UUIDs in current order
+     */
+    public List<String> getCurrentRoutineUUIDsOrder() {
+        return routines.stream()
+                .map(routine -> routine.getUuid())
+                .collect(Collectors.toList());
     }
 }

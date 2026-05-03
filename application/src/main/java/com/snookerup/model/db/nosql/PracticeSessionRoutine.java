@@ -5,6 +5,8 @@ import com.snookerup.model.RoutineAdditionToPracticeSession;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 /**
  *  Models a routine and variations, to be included in a practice session.
  *
@@ -13,6 +15,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class PracticeSessionRoutine {
+
+    /** A unique identifier for this particular routine and variations in this practice session. */
+    private String uuid;
 
     /** The ID of the routine. */
     private String routineId;
@@ -43,6 +48,7 @@ public class PracticeSessionRoutine {
     private String note;
 
     public PracticeSessionRoutine(RoutineAdditionToPracticeSession routineAdditionToPracticeSession) {
+        this.uuid = UUID.randomUUID().toString();
         this.routineId = routineAdditionToPracticeSession.getRoutineId();
         this.loop = routineAdditionToPracticeSession.isLoop();
         this.cushionLimit = routineAdditionToPracticeSession.getCushionLimit();

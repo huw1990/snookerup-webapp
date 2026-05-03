@@ -18,8 +18,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.snookerup.controllers.PracticeSessionController.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,6 +42,7 @@ class PracticeSessionControllerTests {
     private static final String ADD_PRACTICE_SESSION_PAGE = "addPracticeSession";
     private static final String ADD_TO_PRACTICE_SESSION_PAGE = "addToPracticeSession";
     private static final String EDIT_PRACTICE_SESSION_PAGE = "editPracticeSession";
+    private static final String EDIT_PRACTICE_SESSION_ROUTINES_PAGE = "editPracticeSessionRoutines";
     private static final String SESSION_ID = "1234";
 
     private PracticeSessionService mockPracticeSessionService;
@@ -659,5 +662,54 @@ class PracticeSessionControllerTests {
         assertEquals(String.format(VIEW_RECENTLY_CREATED_PRACTICE_SESSION_REDIRECT, SESSION_ID), returnedPage);
         verify(mockRedirectAttributes).addFlashAttribute("message", SUCCESSFUL_UPDATE_PRACTICE_SESSION_MESSAGE);
         verify(mockRedirectAttributes).addFlashAttribute("messageType", "success");
+    }
+
+    @Test
+    public void getEditPracticeSessionRoutines_Should_DelegateToServiceAndReturnPage_When_PracticeSessionDoesntExist() {
+        // Define variables
+
+        // Set mock expectations
+        when(mockPracticeSessionService.getPracticeSessionByIdAndPlayerUsername(SESSION_ID, USERNAME))
+                .thenReturn(null);
+
+        // Execute method under test
+        String returnedPage = practiceSessionController.getEditPracticeSessionRoutines(SESSION_ID, mockModel, mockOidcUser);
+
+        // Verify
+        assertEquals(EDIT_PRACTICE_SESSION_ROUTINES_PAGE, returnedPage);
+        verify(mockPracticeSessionService).getPracticeSessionByIdAndPlayerUsername(SESSION_ID, USERNAME);
+        verify(mockModel, never()).addAttribute(eq("practiceSession"), any());
+    }
+
+    @Test
+    public void getEditPracticeSessionRoutines_Should_DelegateToServiceAndReturnPage_When_PracticeSessionExists() {
+        // Define variables
+        String title = "title";
+        String description = "description";
+        PracticeSessionWithRoutineContext mockPracticeSession = mock(PracticeSessionWithRoutineContext.class);
+        PracticeSession practiceSession = new PracticeSession();
+        practiceSession.setTitle(title);
+        practiceSession.setDescription(description);
+        String routine1Uuid = UUID.randomUUID().toString();
+        String routine2Uuid = UUID.randomUUID().toString();
+        List<String> routineUuids = List.of(routine1Uuid, routine2Uuid);
+
+        // Set mock expectations
+        when(mockPracticeSessionService.getPracticeSessionByIdAndPlayerUsername(SESSION_ID, USERNAME))
+                .thenReturn(mockPracticeSession);
+        when(mockPracticeSession.getId()).thenReturn(SESSION_ID);
+        when(mockPracticeSession.getTitle()).thenReturn(title);
+        when(mockPracticeSession.getDescription()).thenReturn(description);
+        when(mockPracticeSession.getPlayerUsername()).thenReturn(USERNAME);
+        when(mockPracticeSession.getCurrentRoutineUUIDsOrder()).thenReturn(routineUuids);
+
+        // Execute method under test
+        String returnedPage = practiceSessionController.getEditPracticeSessionRoutines(SESSION_ID, mockModel, mockOidcUser);
+
+        // Verify
+        assertEquals(EDIT_PRACTICE_SESSION_ROUTINES_PAGE, returnedPage);
+        verify(mockPracticeSessionService).getPracticeSessionByIdAndPlayerUsername(SESSION_ID, USERNAME);
+        verify(mockModel).addAttribute("practiceSession", mockPracticeSession);
+        verify(mockModel).addAttribute("routineUuids", routineUuids);
     }
 }
