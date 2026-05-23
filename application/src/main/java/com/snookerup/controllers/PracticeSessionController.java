@@ -428,6 +428,24 @@ public class PracticeSessionController {
         return "editPracticeSessionRoutines";
     }
 
+    /**
+     * Get the page to play a practice routine, i.e. to then submit scores for all routines.
+     * @param id The ID of the practice session to play
+     * @param model The Spring MVC model
+     * @param user The logged-in user to play the practice session
+     * @return The play practice session page to display
+     */
+    @GetMapping("/practicesessions/{id}/play")
+    public String getPlayPracticeSession(@PathVariable("id") String id, Model model,
+                                                 @AuthenticationPrincipal OidcUser user) {
+        PracticeSessionWithRoutineContext existingPracticeSession = practiceSessionService
+                .getPracticeSessionByIdAndPlayerUsername(id, user.getName());
+        if (existingPracticeSession != null) {
+            model.addAttribute("practiceSession", existingPracticeSession);
+        }
+        return "playPracticeSession";
+    }
+
 
     /**
      * Constructs a redirect URL for adding to a practice session, with optional query parameters.

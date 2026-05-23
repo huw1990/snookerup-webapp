@@ -56,6 +56,12 @@ public class ScoreServiceImpl implements ScoreService {
     }
 
     @Override
+    public List<Score> saveMultipleNewPreValidatedScores(List<Score> scoresToBeAdded) {
+        log.debug("saveMultipleNewPreValidatedScores: {}", scoresToBeAdded);
+        return scoreRepository.saveAll(scoresToBeAdded);
+    }
+
+    @Override
     public ScorePage getScorePageForParams(ScorePageRequestParams params) {
         log.debug("getScorePageForParams: {}", params);
         Page<Score> pageOfResults;

@@ -141,6 +141,29 @@ public class ScoreServiceImplTests {
     }
 
     @Test
+    public void saveMultipleNewPreValidatedScores_Should_AddScoresToDb() throws InvalidScoreException {
+        // Define variables
+        Score mockScore1 = mock(Score.class);
+        Score mockScore2 = mock(Score.class);
+        Score mockScore3 = mock(Score.class);
+        Score mockAddedScore1 = mock(Score.class);
+        Score mockAddedScore2 = mock(Score.class);
+        Score mockAddedScore3 = mock(Score.class);
+        List<Score> scoresToAdd = List.of(mockScore1, mockScore2, mockScore3);
+        List<Score> expectedAddedScores = List.of(mockAddedScore1, mockAddedScore2, mockAddedScore3);
+
+        // Set mock expectations
+        when(mockScoreRepository.saveAll(scoresToAdd)).thenReturn(expectedAddedScores);
+
+        // Execute method under test
+        List<Score> addedScores = scoreService.saveMultipleNewPreValidatedScores(scoresToAdd);
+
+        // Verify
+        verify(mockScoreRepository).saveAll(scoresToAdd);
+        assertEquals(expectedAddedScores, addedScores);
+    }
+
+    @Test
     public void getScorePageForParams_Should_ReturnPageOfScoresAcrossTwoDays_When_NoRoutineOrVariationsSpecified() {
         // Define variables
         LocalDateTime from = LocalDateTime.now().minusWeeks(1).truncatedTo(ChronoUnit.MINUTES);

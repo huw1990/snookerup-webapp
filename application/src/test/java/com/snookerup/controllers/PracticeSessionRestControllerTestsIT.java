@@ -3,6 +3,9 @@ package com.snookerup.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snookerup.BaseTestcontainersIT;
 import com.snookerup.model.PracticeSessionRoutineUuids;
+import com.snookerup.model.PracticeSessionScore;
+import com.snookerup.model.PracticeSessionScores;
+import com.snookerup.model.PracticeSessionScoresForRoutineUuid;
 import com.snookerup.model.db.nosql.PracticeSession;
 import com.snookerup.model.db.nosql.PracticeSessionRoutine;
 import com.snookerup.repositories.PracticeSessionRepository;
@@ -49,7 +52,13 @@ class PracticeSessionRestControllerTestsIT extends BaseTestcontainersIT {
 
     private static final String EDIT_PRACTICE_SESSION_ROUTINES_URL = "/practicesessions/%1$s/editroutines";
 
+    private static final String PLAY_PRACTICE_SESSION_URL = "/practicesessions/%1$s/play";
+
     private static final String ROUTINE_ID = "the-line-up";
+
+    private static final String ROUTINE_UUID_1 = UUID.randomUUID().toString();
+
+    private static final String ROUTINE_UUID_2 = UUID.randomUUID().toString();
 
     @Autowired
     private MockMvc mockMvc;
@@ -299,7 +308,7 @@ class PracticeSessionRestControllerTestsIT extends BaseTestcontainersIT {
         PracticeSession createdPracticeSession = practiceSessionRepository.save(practiceSession);
         String practiceSessionId = createdPracticeSession.getId();
 
-        // Now try updating routines, but with an invalid UUID
+        // Now try updating routines
         PracticeSessionRoutineUuids routineUuids = new PracticeSessionRoutineUuids();
         routineUuids.setUuids(List.of(routine1Uuid));
         String practiceSessionRoutinesJson = objectMapper.writeValueAsString(routineUuids);
@@ -321,6 +330,109 @@ class PracticeSessionRestControllerTestsIT extends BaseTestcontainersIT {
                 );
     }
 
+    @Test
+    void addScoresForPracticeSession_Should_RejectWith403Forbidden_When_RequestSentWithoutAuth() throws Exception {
+        String practiceSessionId = UUID.randomUUID().toString();
+        PracticeSessionScores scores = createPracticeSessionScores();
+        String scoresJson = objectMapper.writeValueAsString(scores);
+        this.mockMvc
+                .perform(post(String.format(PLAY_PRACTICE_SESSION_URL, practiceSessionId))
+                        .content(scoresJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    void addScoresForPracticeSession_Should_RejectWith403Forbidden_When_RequestSentWithAuthButWithoutCsrf() throws Exception {
+        String practiceSessionId = UUID.randomUUID().toString();
+        OidcUser user = createOidcUser(PLAYER_EMAIL, PLAYER_USERNAME);
+        PracticeSessionScores scores = createPracticeSessionScores();
+        String scoresJson = objectMapper.writeValueAsString(scores);
+        this.mockMvc
+                .perform(post(String.format(PLAY_PRACTICE_SESSION_URL, practiceSessionId))
+                        .with(oidcLogin().oidcUser(user))
+                        .content(scoresJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    void addScoresForPracticeSession_Should_RejectWith400BadRequest_When_RoutineUuidNotFoundInPracticeSession()
+            throws Exception {
+        OidcUser user = createOidcUser(PLAYER_EMAIL, PLAYER_USERNAME);
+        // Start by adding the practice session with routines to the DB
+        PracticeSession practiceSession = createPracticeSession(user.getName());
+        practiceSession.setRoutines(createPracticeSessionRoutines());
+        PracticeSession createdPracticeSession = practiceSessionRepository.save(practiceSession);
+        String practiceSessionId = createdPracticeSession.getId();
+
+        // Now construct the scores object, and change the routine UUID to a wrong one
+        PracticeSessionScores scores = createPracticeSessionScores();
+        String unknownUuid = "wrong-value";
+        scores.getRoutinesWithScores().get(0).setRoutineUuid(unknownUuid);
+        String scoresJson = objectMapper.writeValueAsString(scores);
+        String exceptionMessage = "Routine with UUID=" + unknownUuid + " does not exist";
+
+        this.mockMvc
+                .perform(post(String.format(PLAY_PRACTICE_SESSION_URL, practiceSessionId))
+                        .with(oidcLogin().oidcUser(user))
+                        .with(csrf().asHeader())
+                        .content(scoresJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(
+                        jsonPath("$.error").value(exceptionMessage)
+                );
+    }
+
+    @Test
+    void addScoresForPracticeSession_Should_RejectWith404NotFound_When_PracticeSessionIdNotFound() throws Exception {
+        OidcUser user = createOidcUser(PLAYER_EMAIL, PLAYER_USERNAME);
+        PracticeSessionScores scores = createPracticeSessionScores();
+        String scoresJson = objectMapper.writeValueAsString(scores);
+        String unknownPracticeSessionId = "1234";
+        String exceptionMessage = "Practice session with ID=" + unknownPracticeSessionId + " does not exist";
+
+        this.mockMvc
+                .perform(post(String.format(PLAY_PRACTICE_SESSION_URL, unknownPracticeSessionId))
+                        .with(oidcLogin().oidcUser(user))
+                        .with(csrf().asHeader())
+                        .content(scoresJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(
+                        jsonPath("$.error").value(exceptionMessage)
+                );
+    }
+
+    @Test
+    void addScoresForPracticeSession_Should_AddScores_When_ValidRequest() throws Exception {
+        OidcUser user = createOidcUser(PLAYER_EMAIL, PLAYER_USERNAME);
+        // Start by adding the practice session with routines to the DB
+        PracticeSession practiceSession = createPracticeSession(user.getName());
+        practiceSession.setRoutines(createPracticeSessionRoutines());
+        PracticeSession createdPracticeSession = practiceSessionRepository.save(practiceSession);
+        String practiceSessionId = createdPracticeSession.getId();
+
+        // Now construct the scores object
+        PracticeSessionScores scores = createPracticeSessionScores();
+        String scoresJson = objectMapper.writeValueAsString(scores);
+        this.mockMvc
+                .perform(post(String.format(PLAY_PRACTICE_SESSION_URL, practiceSessionId))
+                        .with(oidcLogin().oidcUser(user))
+                        .with(csrf().asHeader())
+                        .content(scoresJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpectAll(
+                        jsonPath("$.ids[0]").exists(),
+                        jsonPath("$.ids[1]").exists(),
+                        jsonPath("$.ids[2]").exists(),
+                        jsonPath("$.ids[3]").exists(),
+                        jsonPath("$.ids[4]").doesNotExist()
+                );
+    }
+
     private PracticeSession createPracticeSession(String playerUsername) {
         return createPracticeSession(playerUsername, "");
     }
@@ -331,5 +443,58 @@ class PracticeSessionRestControllerTestsIT extends BaseTestcontainersIT {
         practiceSession.setDescription(PRACTICE_SESSION_DESCRIPTION);
         practiceSession.setPlayerUsername(playerUsername);
         return practiceSession;
+    }
+
+    private List<PracticeSessionRoutine> createPracticeSessionRoutines() {
+        PracticeSessionRoutine routine1 = new PracticeSessionRoutine();
+        routine1.setRoutineId(ROUTINE_ID);
+        routine1.setUuid(ROUTINE_UUID_1);
+        routine1.setUnitNumber(10);
+        routine1.setNumberOfAttempts(5);
+        PracticeSessionRoutine routine2 = new PracticeSessionRoutine();
+        routine2.setRoutineId(ROUTINE_ID);
+        routine2.setUuid(ROUTINE_UUID_2);
+        routine2.setNumberOfAttempts(10);
+        return List.of(routine1, routine2);
+    }
+
+    private PracticeSessionScores createPracticeSessionScores() {
+        int score1Score = 48;
+        String score1Note = "Score 1";
+        String score1DateTimeString = "22/05/2026, 18:00:09";
+        int score2Score = 80;
+        String score2Note = "Score 2";
+        String score2DateTimeString = "22/05/2026, 18:05:19";
+        int score3Score = 24;
+        String score3Note = "Score 3";
+        String score3DateTimeString = "22/05/2026, 18:08:34";
+        int score4Score = 130;
+        String score4Note = "Score 4";
+        String score4DateTimeString = "22/05/2026, 18:15:23";
+        PracticeSessionScore score1 = new PracticeSessionScore();
+        score1.setScore(score1Score);
+        score1.setNote(score1Note);
+        score1.setDateTimeString(score1DateTimeString);
+        PracticeSessionScore score2 = new PracticeSessionScore();
+        score2.setScore(score2Score);
+        score2.setNote(score2Note);
+        score2.setDateTimeString(score2DateTimeString);
+        PracticeSessionScore score3 = new PracticeSessionScore();
+        score3.setScore(score3Score);
+        score3.setNote(score3Note);
+        score3.setDateTimeString(score3DateTimeString);
+        PracticeSessionScore score4 = new PracticeSessionScore();
+        score4.setScore(score4Score);
+        score4.setNote(score4Note);
+        score4.setDateTimeString(score4DateTimeString);
+        PracticeSessionScoresForRoutineUuid scoresForRoutineUuid1 = new PracticeSessionScoresForRoutineUuid();
+        scoresForRoutineUuid1.setRoutineUuid(ROUTINE_UUID_1);
+        scoresForRoutineUuid1.setScores(List.of(score1, score2));
+        PracticeSessionScoresForRoutineUuid scoresForRoutineUuid2 = new PracticeSessionScoresForRoutineUuid();
+        scoresForRoutineUuid2.setRoutineUuid(ROUTINE_UUID_2);
+        scoresForRoutineUuid2.setScores(List.of(score3, score4));
+        PracticeSessionScores scores = new PracticeSessionScores();
+        scores.setRoutinesWithScores(List.of(scoresForRoutineUuid1, scoresForRoutineUuid2));
+        return scores;
     }
 }

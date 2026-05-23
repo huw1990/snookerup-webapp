@@ -5,6 +5,8 @@ import com.snookerup.errorhandling.NonUniquePracticeSessionTitleException;
 import com.snookerup.errorhandling.PracticeSessionDoesntExistException;
 import com.snookerup.errorhandling.RoutineUuidDoesntExistException;
 import com.snookerup.model.PracticeSessionRoutineUuids;
+import com.snookerup.model.PracticeSessionScores;
+import com.snookerup.model.PracticeSessionScoresAdded;
 import com.snookerup.model.db.nosql.PracticeSession;
 import com.snookerup.services.PracticeSessionService;
 import jakarta.validation.Valid;
@@ -65,6 +67,24 @@ public class PracticeSessionRestController {
             return updatedPracticeSession;
         } catch (RoutineUuidDoesntExistException | PracticeSessionDoesntExistException ex) {
             log.error("Exception updating practice session={}", ex.getMessage());
+            throw ex;
+        }
+    }
+
+    @PostMapping("/practicesessions/{id}/play")
+    @ResponseStatus(HttpStatus.CREATED)
+    public PracticeSessionScoresAdded addScoresForPracticeSession(@PathVariable("id") String id,
+                                                                  @RequestBody @Valid PracticeSessionScores scores,
+                                                                  @AuthenticationPrincipal OidcUser user)
+            throws RoutineUuidDoesntExistException, PracticeSessionDoesntExistException {
+        log.debug("addScoresForPracticeSession, practiceSessionId={} user={} scores={}", id, user, scores);
+        try {
+            PracticeSessionScoresAdded scoresAdded = sessionService.addScoresForPracticeSession(id, user.getName(),
+                    scores);
+            log.debug("Added scores={}", scoresAdded);
+            return scoresAdded;
+        } catch (RoutineUuidDoesntExistException | PracticeSessionDoesntExistException ex) {
+            log.error("Exception submitting scores for practice session={}", ex.getMessage());
             throw ex;
         }
     }

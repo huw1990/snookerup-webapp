@@ -29,6 +29,8 @@ public class PracticeSessionRoutineWithRoutineContext {
 
     private final String routineUnit;
 
+    private final String scoreUnit;
+
     private final boolean potInOrder;
 
     private final boolean stayOnOneSideOfTable;
@@ -53,6 +55,7 @@ public class PracticeSessionRoutineWithRoutineContext {
         } else {
             this.routineUnit = routineContext.getUnit().getValue().toLowerCase();
         }
+        this.scoreUnit = routineContext.getScoreUnit().getValue().toLowerCase();
         this.potInOrder = routineWithVariations.isPotInOrder();
         this.stayOnOneSideOfTable = routineWithVariations.isStayOnOneSideOfTable();
         this.ballStriking = routineWithVariations.getBallStriking();

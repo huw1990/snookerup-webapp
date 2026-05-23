@@ -4,10 +4,10 @@ import com.snookerup.errorhandling.NoPracticeSessionSlotsRemainingException;
 import com.snookerup.errorhandling.NonUniquePracticeSessionTitleException;
 import com.snookerup.errorhandling.PracticeSessionDoesntExistException;
 import com.snookerup.errorhandling.RoutineUuidDoesntExistException;
-import com.snookerup.model.PracticeSessionRoutineUuids;
-import com.snookerup.model.RoutineAdditionToPracticeSession;
+import com.snookerup.model.*;
 import com.snookerup.model.addedcontext.PracticeSessionRoutineWithRoutineContext;
 import com.snookerup.model.addedcontext.PracticeSessionWithRoutineContext;
+import com.snookerup.model.db.Score;
 import com.snookerup.model.db.nosql.PracticeSession;
 import com.snookerup.model.db.nosql.PracticeSessionRoutine;
 import com.snookerup.repositories.PracticeSessionRepository;
@@ -15,6 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +39,7 @@ public class PracticeSessionServiceImplTests {
 
     PracticeSessionRepository mockPracticeSessionRepository;
     RoutineService mockRoutineService;
+    ScoreService mockScoreService;
     PracticeSessionRoutineUuids mockPracticeSessionRoutineUuids;
 
     PracticeSessionServiceImpl practiceSessionService;
@@ -45,9 +48,11 @@ public class PracticeSessionServiceImplTests {
     public void beforeEach() {
         mockPracticeSessionRepository = mock(PracticeSessionRepository.class);
         mockRoutineService = mock(RoutineService.class);
+        mockScoreService = mock(ScoreService.class);
         mockPracticeSessionRoutineUuids = mock(PracticeSessionRoutineUuids.class);
 
-        practiceSessionService = new PracticeSessionServiceImpl(mockPracticeSessionRepository, mockRoutineService);
+        practiceSessionService = new PracticeSessionServiceImpl(mockPracticeSessionRepository, mockRoutineService,
+                mockScoreService);
     }
 
     @Test
@@ -427,6 +432,114 @@ public class PracticeSessionServiceImplTests {
         verify(mockPracticeSessionRepository).save(captor.capture());
         PracticeSession savedPracticeSession = captor.getValue();
         assertEquals(justFirstRoutine, savedPracticeSession.getRoutines());
+    }
+
+    @Test
+    public void addScoresForPracticeSession_Should_SubmitScoresAsBulkOperation() throws PracticeSessionDoesntExistException, RoutineUuidDoesntExistException {
+        // Define variables
+        // Construct practice routine
+        PracticeSession existingPracticeSession = new PracticeSession();
+        existingPracticeSession.setId(SESSION_ID);
+        existingPracticeSession.setTitle("Break Building");
+        existingPracticeSession.setDescription("Session of break building routines");
+        existingPracticeSession.setPlayerUsername(USERNAME);
+        List<PracticeSessionRoutine> practiceSessionRoutines = createPracticeSessionRoutines();
+        existingPracticeSession.setRoutines(practiceSessionRoutines);
+        // Construct scores
+        int score1Score = 48;
+        String score1Note = "Score 1";
+        String score1DateTimeString = "22/05/2026, 18:00:09";
+        LocalDateTime score1DateTime = LocalDateTime.of(2026, 5, 22, 18, 0, 9);
+        int score2Score = 80;
+        String score2Note = "Score 2";
+        String score2DateTimeString = "22/05/2026, 18:05:19";
+        LocalDateTime score2DateTime = LocalDateTime.of(2026, 5, 22, 18, 5, 19);
+        int score3Score = 24;
+        String score3Note = "Score 3";
+        String score3DateTimeString = "22/05/2026, 18:08:34";
+        LocalDateTime score3DateTime = LocalDateTime.of(2026, 5, 22, 18, 8, 34);
+        int score4Score = 130;
+        String score4Note = "Score 4";
+        String score4DateTimeString = "22/05/2026, 18:15:23";
+        LocalDateTime score4DateTime = LocalDateTime.of(2026, 5, 22, 18, 15, 23);
+        PracticeSessionScore score1 = new PracticeSessionScore();
+        score1.setScore(score1Score);
+        score1.setNote(score1Note);
+        score1.setDateTimeString(score1DateTimeString);
+        PracticeSessionScore score2 = new PracticeSessionScore();
+        score2.setScore(score2Score);
+        score2.setNote(score2Note);
+        score2.setDateTimeString(score2DateTimeString);
+        PracticeSessionScore score3 = new PracticeSessionScore();
+        score3.setScore(score3Score);
+        score3.setNote(score3Note);
+        score3.setDateTimeString(score3DateTimeString);
+        PracticeSessionScore score4 = new PracticeSessionScore();
+        score4.setScore(score4Score);
+        score4.setNote(score4Note);
+        score4.setDateTimeString(score4DateTimeString);
+        PracticeSessionScoresForRoutineUuid scoresForRoutineUuid1 = new PracticeSessionScoresForRoutineUuid();
+        scoresForRoutineUuid1.setRoutineUuid(ROUTINE_UUID_1);
+        scoresForRoutineUuid1.setScores(List.of(score1, score2));
+        PracticeSessionScoresForRoutineUuid scoresForRoutineUuid2 = new PracticeSessionScoresForRoutineUuid();
+        scoresForRoutineUuid2.setRoutineUuid(ROUTINE_UUID_2);
+        scoresForRoutineUuid2.setScores(List.of(score3, score4));
+        PracticeSessionScores scores = new PracticeSessionScores();
+        scores.setRoutinesWithScores(List.of(scoresForRoutineUuid1, scoresForRoutineUuid2));
+        Score dbScore1 = new Score();
+        dbScore1.setPlayerUsername(USERNAME);
+        dbScore1.setRoutineId(ROUTINE_ID);
+        dbScore1.setNote(score1Note);
+        dbScore1.setScoreValue(score1Score);
+        dbScore1.setDateOfAttempt(score1DateTime);
+        dbScore1.setUnitNumber(10);
+        Score dbScore2 = new Score();
+        dbScore2.setPlayerUsername(USERNAME);
+        dbScore2.setRoutineId(ROUTINE_ID);
+        dbScore2.setNote(score2Note);
+        dbScore2.setScoreValue(score2Score);
+        dbScore2.setDateOfAttempt(score2DateTime);
+        dbScore2.setUnitNumber(10);
+        Score dbScore3 = new Score();
+        dbScore3.setPlayerUsername(USERNAME);
+        dbScore3.setRoutineId(ROUTINE_ID);
+        dbScore3.setNote(score3Note);
+        dbScore3.setScoreValue(score3Score);
+        dbScore3.setDateOfAttempt(score3DateTime);
+        Score dbScore4 = new Score();
+        dbScore4.setPlayerUsername(USERNAME);
+        dbScore4.setRoutineId(ROUTINE_ID);
+        dbScore4.setNote(score4Note);
+        dbScore4.setScoreValue(score4Score);
+        dbScore4.setDateOfAttempt(score4DateTime);
+        List<Score> scoresToSubmit = List.of(dbScore1, dbScore2, dbScore3, dbScore4);
+        Long score1Id = 1L;
+        Long score2Id = 2L;
+        Long score3Id = 3L;
+        Long score4Id = 4L;
+        Score returnedDbScore1 = new Score();
+        returnedDbScore1.setId(score1Id);
+        Score returnedDbScore2 = new Score();
+        returnedDbScore2.setId(score2Id);
+        Score returnedDbScore3 = new Score();
+        returnedDbScore3.setId(score3Id);
+        Score returnedDbScore4 = new Score();
+        returnedDbScore4.setId(score4Id);
+        List<Score> returnedScores = List.of(returnedDbScore1, returnedDbScore2, returnedDbScore3, returnedDbScore4);
+        List<String> expectedAddedScoreIds = List.of("1", "2", "3", "4");
+
+        // Set mock expectations
+        when(mockPracticeSessionRepository.findByIdAndPlayerUsername(SESSION_ID, USERNAME))
+                .thenReturn(existingPracticeSession);
+        when(mockScoreService.saveMultipleNewPreValidatedScores(scoresToSubmit)).thenReturn(returnedScores);
+
+        // Execute method under test
+        PracticeSessionScoresAdded scoresAdded = practiceSessionService.addScoresForPracticeSession(
+                SESSION_ID, USERNAME, scores);
+
+        // Verify
+        verify(mockScoreService).saveMultipleNewPreValidatedScores(scoresToSubmit);
+        assertEquals(expectedAddedScoreIds, scoresAdded.getIds());
     }
 
     private List<PracticeSessionRoutine> createPracticeSessionRoutines() {

@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -71,5 +72,16 @@ public class PracticeSession {
             return 0;
         }
         return routines.stream().mapToInt(PracticeSessionRoutine::getNumberOfAttempts).sum();
+    }
+
+    /**
+     * Gets a practice routine from the practice session by its UUID.
+     * @param uuid The UUID of the practice session routine to get
+     * @return An optional containing the practice session routine, if the routine UUID was found. Empty otherwise
+     */
+    public Optional<PracticeSessionRoutine> getRoutineFromUuid(String uuid) {
+        return routines.stream()
+                .filter(routine -> routine.getUuid().equals(uuid))
+                .findFirst();
     }
 }

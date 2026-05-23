@@ -1,10 +1,18 @@
 package com.snookerup.model.db.nosql;
 
 import com.snookerup.model.BallStriking;
+import com.snookerup.model.PracticeSessionScore;
 import com.snookerup.model.RoutineAdditionToPracticeSession;
+import com.snookerup.model.db.Score;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 /**
@@ -58,5 +66,42 @@ public class PracticeSessionRoutine {
         this.ballStriking = routineAdditionToPracticeSession.getBallStriking();
         this.numberOfAttempts = routineAdditionToPracticeSession.getNumberOfAttempts();
         this.note = routineAdditionToPracticeSession.getNote();
+    }
+
+    /**
+     * Creates a Score (i.e. the object we can save to the DB) from a practice session score for this routine. The
+     * practice session scores is linked to the routine just by the UUID when submitted, so this is used to set the
+     * routine values (e.g. variations, routine ID).
+     * @param practiceSessionScore The score for this routine
+     * @param playerUsername The player that submitted the score
+     * @return A Score that can be saved to the DB
+     */
+    public Score createScoreFromPracticeSessionAttemptForUser(PracticeSessionScore practiceSessionScore,
+                                                              String playerUsername) {
+        Score score = new Score();
+        score.setRoutineId(this.routineId);
+        score.setPlayerUsername(playerUsername);
+        score.setDateOfAttempt(practiceSessionScore.getDateTime());
+        if (this.loop) {
+            score.setLoop(this.loop);
+        }
+        if (this.cushionLimit != null) {
+            score.setCushionLimit(this.cushionLimit);
+        }
+        if (this.unitNumber != null) {
+            score.setUnitNumber(this.unitNumber);
+        }
+        if (this.potInOrder) {
+            score.setPotInOrder(this.potInOrder);
+        }
+        if (this.stayOnOneSideOfTable) {
+            score.setStayOnOneSideOfTable(this.stayOnOneSideOfTable);
+        }
+        if (this.ballStriking != null) {
+            score.setBallStriking(this.ballStriking.getValue());
+        }
+        score.setScoreValue(practiceSessionScore.getScore());
+        score.setNote(practiceSessionScore.getNote());
+        return score;
     }
 }

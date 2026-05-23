@@ -4,11 +4,10 @@ import com.snookerup.errorhandling.NoPracticeSessionSlotsRemainingException;
 import com.snookerup.errorhandling.NonUniquePracticeSessionTitleException;
 import com.snookerup.errorhandling.PracticeSessionDoesntExistException;
 import com.snookerup.errorhandling.RoutineUuidDoesntExistException;
-import com.snookerup.model.Id;
-import com.snookerup.model.PracticeSessionRoutineUuids;
-import com.snookerup.model.RoutineAdditionToPracticeSession;
+import com.snookerup.model.*;
 import com.snookerup.model.addedcontext.PracticeSessionRoutineWithRoutineContext;
 import com.snookerup.model.addedcontext.PracticeSessionWithRoutineContext;
+import com.snookerup.model.db.Score;
 import com.snookerup.model.db.nosql.PracticeSession;
 import com.snookerup.model.db.nosql.PracticeSessionRoutine;
 import com.snookerup.repositories.PracticeSessionRepository;
@@ -16,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +36,8 @@ public class PracticeSessionServiceImpl implements PracticeSessionService {
     private final PracticeSessionRepository practiceSessionRepository;
 
     private final RoutineService routineService;
+
+    private final ScoreService scoreService;
 
     @Override
     public List<PracticeSession> getPracticeSessionsForPlayerUsername(String playerUsername) {
@@ -149,6 +152,57 @@ public class PracticeSessionServiceImpl implements PracticeSessionService {
             existingPracticeSession.setRoutines(newRoutineOrder);
             log.debug("New routine order now={}", newRoutineOrder);
             return practiceSessionRepository.save(existingPracticeSession);
+        }
+    }
+
+    @Override
+    public PracticeSessionScoresAdded addScoresForPracticeSession(String practiceSessionId, String playerUsername,
+                                                                  PracticeSessionScores scores)
+            throws RoutineUuidDoesntExistException, PracticeSessionDoesntExistException {
+        synchronized (this) {
+            log.debug("Adding scores for practice session, practiceSessionId={} playerUsername={} scores={}",
+                    practiceSessionId, playerUsername, scores);
+
+            // First get the practice session for the provided values
+            PracticeSession existingPracticeSession = practiceSessionRepository.findByIdAndPlayerUsername(
+                    practiceSessionId, playerUsername);
+            if (existingPracticeSession == null) {
+                log.warn("Practice session with ID={} for playerUsername={} doesn't exist, throwing exception",
+                        practiceSessionId, playerUsername);
+                throw new PracticeSessionDoesntExistException(practiceSessionId);
+            }
+
+            // Build a list of scores to submit by constructing proper Score objects using the submitted score values
+            // and the routine details from the provided UUID(s).
+            List<Score> scoresToSubmit = new ArrayList<>();
+            List<PracticeSessionScoresForRoutineUuid> routinesWithScores = scores.getRoutinesWithScores();
+            for (PracticeSessionScoresForRoutineUuid routineWithScore : routinesWithScores) {
+                String routineUuid = routineWithScore.getRoutineUuid();
+                PracticeSessionRoutine practiceSessionRoutine = existingPracticeSession
+                        .getRoutineFromUuid(routineUuid)
+                        .orElseThrow(() -> new RoutineUuidDoesntExistException(routineUuid));
+                log.debug("UUID of {} corresponds to routine={}", routineUuid, routineWithScore);
+                for (PracticeSessionScore practiceSessionScore : routineWithScore.getScores()) {
+                    Score scoreToSubmit = practiceSessionRoutine.createScoreFromPracticeSessionAttemptForUser(
+                            practiceSessionScore, playerUsername);
+                    log.debug("Score to submit={}", scoreToSubmit);
+                    scoresToSubmit.add(scoreToSubmit);
+                }
+            }
+
+            // Submit the scores as a bulk operation. Note we use a method that doesn't validate the scores, since by
+            // constructing them internally, they should be in the correct format
+            log.debug("Total number of scores to submit={}", scoresToSubmit.size());
+            List<Score> addedScores = scoreService.saveMultipleNewPreValidatedScores(scoresToSubmit);
+            log.debug("Successfully added scores for practice session");
+
+            // Construct a body to send back as a response
+            List<String> addedScoreIds = addedScores.stream()
+                    .map(score -> String.valueOf(score.getId()))
+                    .collect(Collectors.toList());
+            PracticeSessionScoresAdded practiceSessionScoresAdded = new PracticeSessionScoresAdded();
+            practiceSessionScoresAdded.setIds(addedScoreIds);
+            return practiceSessionScoresAdded;
         }
     }
 }

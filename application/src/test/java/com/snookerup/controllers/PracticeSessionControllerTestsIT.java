@@ -412,6 +412,23 @@ class PracticeSessionControllerTestsIT extends BaseTestcontainersIT {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void getPlayPracticeSession_Should_RedirectToLogin_When_NotAuthed() throws Exception {
+        this.mockMvc
+                .perform(get("/practicesessions/1234/play"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(LOGIN_REDIRECT_URL));
+    }
+
+    @Test
+    void getPlayPracticeSession_Should_Return200OK_When_CorrectlyAuthed() throws Exception {
+        OidcUser user = createOidcUser("willo@snookerup.com", "willo");
+        this.mockMvc
+                .perform(get("/practicesessions/1234/play")
+                        .with(oidcLogin().oidcUser(user)))
+                .andExpect(status().isOk());
+    }
+
     private PracticeSession createPracticeSession() {
         return createPracticeSession("");
     }

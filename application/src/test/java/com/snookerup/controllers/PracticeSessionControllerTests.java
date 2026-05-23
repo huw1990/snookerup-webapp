@@ -6,6 +6,7 @@ import com.snookerup.model.Routine;
 import com.snookerup.model.RoutineAdditionToPracticeSession;
 import com.snookerup.model.addedcontext.PracticeSessionWithRoutineContext;
 import com.snookerup.model.db.nosql.PracticeSession;
+import com.snookerup.model.db.nosql.PracticeSessionRoutine;
 import com.snookerup.services.PracticeSessionService;
 import com.snookerup.services.RoutineService;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -43,6 +44,7 @@ class PracticeSessionControllerTests {
     private static final String ADD_TO_PRACTICE_SESSION_PAGE = "addToPracticeSession";
     private static final String EDIT_PRACTICE_SESSION_PAGE = "editPracticeSession";
     private static final String EDIT_PRACTICE_SESSION_ROUTINES_PAGE = "editPracticeSessionRoutines";
+    private static final String PLAY_PRACTICE_SESSION_ROUTINES_PAGE = "playPracticeSession";
     private static final String SESSION_ID = "1234";
 
     private PracticeSessionService mockPracticeSessionService;
@@ -711,5 +713,55 @@ class PracticeSessionControllerTests {
         verify(mockPracticeSessionService).getPracticeSessionByIdAndPlayerUsername(SESSION_ID, USERNAME);
         verify(mockModel).addAttribute("practiceSession", mockPracticeSession);
         verify(mockModel).addAttribute("routineUuids", routineUuids);
+    }
+
+    @Test
+    public void getPlayPracticeSession_Should_DelegateToServiceAndReturnPage_When_PracticeSessionDoesntExist() {
+        // Define variables
+
+        // Set mock expectations
+        when(mockPracticeSessionService.getPracticeSessionByIdAndPlayerUsername(SESSION_ID, USERNAME))
+                .thenReturn(null);
+
+        // Execute method under test
+        String returnedPage = practiceSessionController.getPlayPracticeSession(SESSION_ID, mockModel, mockOidcUser);
+
+        // Verify
+        assertEquals(PLAY_PRACTICE_SESSION_ROUTINES_PAGE, returnedPage);
+        verify(mockPracticeSessionService).getPracticeSessionByIdAndPlayerUsername(SESSION_ID, USERNAME);
+        verify(mockModel, never()).addAttribute(eq("practiceSession"), any());
+    }
+
+    @Test
+    public void getPlayPracticeSession_Should_DelegateToServiceAndReturnPage_When_PracticeSessionExists() {
+        // Define variables
+        String title = "title";
+        String description = "description";
+        PracticeSessionWithRoutineContext mockPracticeSession = mock(PracticeSessionWithRoutineContext.class);
+        PracticeSession practiceSession = new PracticeSession();
+        practiceSession.setTitle(title);
+        practiceSession.setDescription(description);
+        PracticeSessionRoutine routine1 = new PracticeSessionRoutine();
+        routine1.setRoutineId("the-line-up");
+        routine1.setUuid("1234");
+        routine1.setUnitNumber(10);
+        routine1.setNumberOfAttempts(5);
+        practiceSession.setRoutines(List.of(routine1));
+
+        // Set mock expectations
+        when(mockPracticeSessionService.getPracticeSessionByIdAndPlayerUsername(SESSION_ID, USERNAME))
+                .thenReturn(mockPracticeSession);
+        when(mockPracticeSession.getId()).thenReturn(SESSION_ID);
+        when(mockPracticeSession.getTitle()).thenReturn(title);
+        when(mockPracticeSession.getDescription()).thenReturn(description);
+        when(mockPracticeSession.getPlayerUsername()).thenReturn(USERNAME);
+
+        // Execute method under test
+        String returnedPage = practiceSessionController.getPlayPracticeSession(SESSION_ID, mockModel, mockOidcUser);
+
+        // Verify
+        assertEquals(PLAY_PRACTICE_SESSION_ROUTINES_PAGE, returnedPage);
+        verify(mockPracticeSessionService).getPracticeSessionByIdAndPlayerUsername(SESSION_ID, USERNAME);
+        verify(mockModel).addAttribute("practiceSession", mockPracticeSession);
     }
 }

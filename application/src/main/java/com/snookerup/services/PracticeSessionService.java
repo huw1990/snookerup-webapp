@@ -5,6 +5,8 @@ import com.snookerup.errorhandling.NonUniquePracticeSessionTitleException;
 import com.snookerup.errorhandling.PracticeSessionDoesntExistException;
 import com.snookerup.errorhandling.RoutineUuidDoesntExistException;
 import com.snookerup.model.PracticeSessionRoutineUuids;
+import com.snookerup.model.PracticeSessionScores;
+import com.snookerup.model.PracticeSessionScoresAdded;
 import com.snookerup.model.RoutineAdditionToPracticeSession;
 import com.snookerup.model.addedcontext.PracticeSessionWithRoutineContext;
 import com.snookerup.model.db.nosql.PracticeSession;
@@ -85,5 +87,18 @@ public interface PracticeSessionService {
      */
     PracticeSession updatePracticeSessionRoutines(String practiceSessionId, String playerUsername,
                                                   PracticeSessionRoutineUuids routineUuids)
+            throws RoutineUuidDoesntExistException, PracticeSessionDoesntExistException;
+
+    /**
+     * Add a list of scores, all submitted when a user "plays" a practice session.
+     * @param practiceSessionId The ID of the practice session the scores belong to
+     * @param playerUsername The username of the player that submitted the scores
+     * @param scores The scores to be submitted
+     * @return An object containing the DB IDs of each of the submitted scores
+     * @throws RoutineUuidDoesntExistException If a provided routine UUID doesn't exist for the provided practice
+     * session
+     * @throws PracticeSessionDoesntExistException If no practice session was found for the provided practice session ID
+     */
+    PracticeSessionScoresAdded addScoresForPracticeSession(String practiceSessionId, String playerUsername, PracticeSessionScores scores)
             throws RoutineUuidDoesntExistException, PracticeSessionDoesntExistException;
 }

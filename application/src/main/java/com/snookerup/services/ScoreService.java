@@ -25,6 +25,14 @@ public interface ScoreService {
     Score saveNewScore(@Valid Score scoreToBeAdded) throws InvalidScoreException;
 
     /**
+     * Saves a list of pre-validated scores (i.e. scores constructed internally, rather than submitted by users,
+     * therefore already validated).
+     * @param scoresToBeAdded The scores to add
+     * @return A list of the submitted scores (each with added auto-generated DB ID)
+     */
+    List<Score> saveMultipleNewPreValidatedScores(List<Score> scoresToBeAdded);
+
+    /**
      * Gets details about a page of scores based on a provided set of parameters.
      * @param params The parameters on what scores to load
      * @return A page of scores
