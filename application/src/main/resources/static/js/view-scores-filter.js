@@ -3,7 +3,6 @@ window.addEventListener('load', function() {
     const fromInput = document.getElementById("fromDateTime");
     const toInput = document.getElementById("toDateTime");
     const routineIdSelector = document.getElementById("routineIdSelector");
-    console.log("fromInput=" + fromInput + ", toInput=" + toInput + ", routineIdSelector=", routineIdSelector);
     if (fromInput && toInput && routineIdSelector) {
         // Deconstruct the URL to get the individual params
         const queryString = window.location.search;

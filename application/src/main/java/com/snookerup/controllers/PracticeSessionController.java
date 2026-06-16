@@ -2,7 +2,7 @@ package com.snookerup.controllers;
 
 import com.snookerup.errorhandling.NoPracticeSessionSlotsRemainingException;
 import com.snookerup.errorhandling.NonUniquePracticeSessionTitleException;
-import com.snookerup.model.Routine;
+import com.snookerup.model.db.nosql.Routine;
 import com.snookerup.model.RoutineAdditionToPracticeSession;
 import com.snookerup.model.addedcontext.PracticeSessionWithRoutineContext;
 import com.snookerup.model.db.nosql.PracticeSession;
@@ -233,8 +233,8 @@ public class PracticeSessionController {
             selectedRoutine = allRoutines.get(0);
         }
         log.debug("selectedRoutine={}", selectedRoutine);
-        practiceSessionAddition.setRoutineId(selectedRoutine.getId());
-        model.addAttribute("selectedRoutineId", selectedRoutine.getId());
+        practiceSessionAddition.setRoutineId(selectedRoutine.getRoutineId());
+        model.addAttribute("selectedRoutineId", selectedRoutine.getRoutineId());
         model.addAttribute("selectedRoutine", selectedRoutine);
         model.addAttribute("practiceSessionAddition", practiceSessionAddition);
         model.addAttribute("practiceSessions", practiceSessionService

@@ -14,7 +14,7 @@
                     <p class="inline ml-4">Routine:</p>
                     <select id="routineIdSelector" name="routineNames" class="text-xs inline rounded-md border-0 py-2 md:py-0.5 px-4 mx-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                         <option value="all"th:selected="${selectedRoutineId == null}">All routines</option>
-                        <option th:each="routine : ${routines}" th:value="${routine.id}" th:text="${routine.title}" th:selected="${routine.id.equals(selectedRoutineId)}">[[ ${routine.title} ]]</option>
+                        <option th:each="routine : ${routines}" th:value="${routine.routineId}" th:text="${routine.title}" th:selected="${routine.routineId.equals(selectedRoutineId)}">[[ ${routine.title} ]]</option>
                     </select>
                 </div>
                 <div class="items-center m-2 flex flex-col md:flex-row text-center py-2 md:py-4 border-solid border-2 rounded-md border-green-800">

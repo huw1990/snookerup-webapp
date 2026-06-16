@@ -1,6 +1,6 @@
 package com.snookerup.services;
 
-import com.snookerup.model.Routine;
+import com.snookerup.model.db.nosql.Routine;
 import com.snookerup.model.addedcontext.PracticeSessionRoutineWithRoutineContext;
 import com.snookerup.model.addedcontext.ScoreWithRoutineContext;
 import com.snookerup.model.db.Score;

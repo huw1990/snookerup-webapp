@@ -1,7 +1,8 @@
-package com.snookerup.model;
+package com.snookerup.model.db.nosql;
 
 import com.snookerup.model.db.Score;
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +13,11 @@ import java.util.List;
  * @author Huw
  */
 @Data
+@Document(collection = "routines")
 public class Routine {
 
-    /** ID of the routine. */
-    private String id;
+    /** ID of the routine.  Note this is not the actual Mongo ObjectId. */
+    private String routineId;
 
     /** Title of the routine. */
     private String title;
@@ -55,7 +57,7 @@ public class Routine {
      */
     public boolean isValidScoreForRoutine(Score score) {
         // First check the routine ID matches
-        if (!id.equals(score.getRoutineId())) {
+        if (!routineId.equals(score.getRoutineId())) {
             return false;
         }
         // Now check the variations on the score are valid for the routine
@@ -92,7 +94,12 @@ public class Routine {
         }
         // Ball striking
         if (score.getBallStriking() != null) {
-            BallStriking ballStriking = BallStriking.getFromStringValue(score.getBallStriking());
+            BallStriking ballStriking = null;
+            try {
+                ballStriking = BallStriking.fromString(score.getBallStriking());
+            } catch (IllegalArgumentException ex) {
+                // Fall through
+            }
             if (ballStriking == null) {
                 return false;
             }

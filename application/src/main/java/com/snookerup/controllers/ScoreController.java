@@ -3,6 +3,7 @@ package com.snookerup.controllers;
 import com.snookerup.errorhandling.InvalidScoreException;
 import com.snookerup.model.*;
 import com.snookerup.model.db.Score;
+import com.snookerup.model.db.nosql.Routine;
 import com.snookerup.model.stats.ScoreStats;
 import com.snookerup.services.RoutineService;
 import com.snookerup.services.ScoreService;
@@ -119,8 +120,8 @@ public class ScoreController {
             return redirect;
         }
         routineFromId.ifPresent((routine) -> {
-            log.debug("selectedRoutineId={}", routine.getId());
-            model.addAttribute("selectedRoutineId", routine.getId());
+            log.debug("selectedRoutineId={}", routine.getRoutineId());
+            model.addAttribute("selectedRoutineId", routine.getRoutineId());
             model.addAttribute("selectedRoutine", routine);
         });
         model.addAttribute("routines", routineService.getAllRoutines());
@@ -151,7 +152,7 @@ public class ScoreController {
         routineId.ifPresent((id) -> {
             Optional<Routine> routineOpt = routineService.getRoutineById(id);
             routineOpt.ifPresent(routine -> {
-                log.debug("selectedRoutineId={}", routine.getId());
+                log.debug("selectedRoutineId={}", routine.getRoutineId());
                 score.setRoutineId(id);
                 model.addAttribute("selectedRoutineId", id);
                 model.addAttribute("selectedRoutine", routine);

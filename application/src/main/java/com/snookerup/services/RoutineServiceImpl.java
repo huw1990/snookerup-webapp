@@ -1,19 +1,17 @@
 package com.snookerup.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.snookerup.model.AllRoutines;
-import com.snookerup.model.Routine;
+import com.snookerup.model.db.nosql.Routine;
 import com.snookerup.model.addedcontext.PracticeSessionRoutineWithRoutineContext;
 import com.snookerup.model.addedcontext.ScoreWithRoutineContext;
 import com.snookerup.model.db.Score;
 import com.snookerup.model.db.nosql.PracticeSessionRoutine;
+import com.snookerup.repositories.RoutineRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of the RoutineService interface, providing operations related to routines.
@@ -22,70 +20,53 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
-public class RoutineServiceImpl implements RoutineService, CommandLineRunner {
+@RequiredArgsConstructor
+public class RoutineServiceImpl implements RoutineService {
 
-    /** The name of the file containing all the routine file names. */
-    public static final String ALL_ROUTINES_JSON_FILE = "routines/all-routines.json";
+    /** The MongoRepository implementation for this collection, where the bulk of our queries will go to. */
+    private final RoutineRepository routineRepository;
 
-    private final Map<String, Routine> routineIdToRoutines = new HashMap<>();
-    private final Set<String> allTags = new HashSet<>();
-    private final Map<String, Set<Routine>> tagsToRoutines = new HashMap<>();
-    private final List<Routine> allRoutines = new ArrayList<>();
-    private final Random randomGenerator = new Random();
+    /** A MongoTemplate instance, for queries that don't quite fit into the MongoRepository interface. */
+    private final MongoTemplate mongoTemplate;
 
-    @Override
-    public void run(String... args) throws Exception {
-        log.debug("Loading routine config JSON files into memory");
-        ObjectMapper objectMapper = new ObjectMapper();
-        AllRoutines allRoutinesFromFile = objectMapper.readValue(new ClassPathResource(ALL_ROUTINES_JSON_FILE).getInputStream(),
-                AllRoutines.class);
-        List<String> routineFileNames = allRoutinesFromFile.getRoutineFileNames();
-        for (String routineFileName : routineFileNames) {
-            log.debug("Routine file name={}", routineFileName);
-            Routine routine = objectMapper.readValue(new ClassPathResource(routineFileName).getInputStream(), Routine.class);
-            log.debug("Parsed routine={}", routine);
-            allRoutines.add(routine);
-            routineIdToRoutines.put(routine.getId(), routine);
-            allTags.addAll(routine.getTags());
-            for (String tag : routine.getTags()) {
-                tagsToRoutines.computeIfAbsent(tag, k -> new HashSet<>()).add(routine);
-            }
-        }
-    }
+    /**
+     * All the tags in the collection of routines. We can safely only call it from the DB and store it since new
+     * routines are not added outside of an app restart.
+     */
+    private List<String> allTags = null;
 
     @Override
     public List<Routine> getAllRoutines() {
-        return allRoutines;
+        return routineRepository.findAll();
     }
 
     @Override
     public Optional<Routine> getRoutineById(String id) {
-        return Optional.ofNullable(routineIdToRoutines.get(id));
+        return routineRepository.findByRoutineId(id);
     }
 
     @Override
     public List<String> getAllTags() {
-        return allTags.stream().sorted().collect(Collectors.toList());
+        if (allTags == null) {
+            // Don't use the repository here, since MongoTemplate has explicit native support for "distinct"
+            allTags = mongoTemplate.findDistinct("tags", Routine.class, String.class);
+        }
+        return allTags;
     }
 
     @Override
     public List<Routine> getRoutinesForTag(String tag) {
-        Set<Routine> routines = tagsToRoutines.get(tag);
-        if (routines == null) {
-            return Collections.emptyList();
-        }
-        return routines.stream().collect(Collectors.toList());
+        return routineRepository.findByTags(tag);
     }
 
     @Override
     public Routine getRandomRoutine() {
-        int random = randomGenerator.nextInt(allRoutines.size());
-        return allRoutines.get(random);
+        return routineRepository.getRandomRoutine();
     }
 
     @Override
     public ScoreWithRoutineContext addRoutineContextToScore(Score score) {
-        Routine routineForScore = routineIdToRoutines.get(score.getRoutineId());
+        Routine routineForScore = routineRepository.findByRoutineId(score.getRoutineId()).get();
         return ScoreWithRoutineContext.builder()
                 .score(score)
                 .routineForScore(routineForScore)
@@ -95,7 +76,7 @@ public class RoutineServiceImpl implements RoutineService, CommandLineRunner {
     @Override
     public PracticeSessionRoutineWithRoutineContext addRoutineContextToPracticeSessionRoutine(
             PracticeSessionRoutine practiceSessionRoutine) {
-        Routine routineForScore = routineIdToRoutines.get(practiceSessionRoutine.getRoutineId());
+        Routine routineForScore = routineRepository.findByRoutineId(practiceSessionRoutine.getRoutineId()).get();
         return PracticeSessionRoutineWithRoutineContext.builder()
                 .routineWithVariations(practiceSessionRoutine)
                 .routineContext(routineForScore)

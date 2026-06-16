@@ -45,7 +45,12 @@ public abstract class BaseTestcontainersIT {
             .withExposedPorts(27017)
             .withEnv("MONGO_INITDB_ROOT_USERNAME", "snookerup")
             .withEnv("MONGO_INITDB_ROOT_PASSWORD", "snookerup")
-            .withEnv("MONGO_INITDB_DATABASE", "snookerup");
+            .withEnv("MONGO_INITDB_DATABASE", "snookerup")
+            .withClasspathResourceMapping(
+                    "mongo/mongo-routines-add.js",
+                    "/docker-entrypoint-initdb.d/mongo-routines-add.js",
+                    BindMode.READ_ONLY
+            );;
 
     @DynamicPropertySource
     static void containersProperties(DynamicPropertyRegistry registry) {

@@ -1,7 +1,7 @@
 // Fixes a Thymeleaf issue where HTML select elements cannot be selected correctly when bound to an object
 window.addEventListener('load', function() {
     const sessionSelector = document.getElementById("sessionSelector");
-    const routineSelector = document.getElementById("routineSelector");
+    const routineSelector = document.getElementById("scoreRoutineSelector");
     if (sessionSelector && routineSelector) {
         console.log("sessionSelector=" + sessionSelector + ", routineSelector=" + routineSelector);
         const searchParams = new URLSearchParams(window.location.search);

@@ -2,7 +2,7 @@ package com.snookerup.controllers;
 
 import com.snookerup.errorhandling.NoPracticeSessionSlotsRemainingException;
 import com.snookerup.errorhandling.NonUniquePracticeSessionTitleException;
-import com.snookerup.model.Routine;
+import com.snookerup.model.db.nosql.Routine;
 import com.snookerup.model.RoutineAdditionToPracticeSession;
 import com.snookerup.model.addedcontext.PracticeSessionWithRoutineContext;
 import com.snookerup.model.db.nosql.PracticeSession;
@@ -19,7 +19,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -267,7 +266,7 @@ class PracticeSessionControllerTests {
         when(mockPracticeSessionService.getPracticeSessionsForPlayerUsername(USERNAME)).thenReturn(mockPracticeSessions);
         when(mockRoutineService.getAllRoutines()).thenReturn(mockRoutines);
         when(mockRoutineService.getRoutineById(routineId)).thenReturn(Optional.of(mockRoutine));
-        when(mockRoutine.getId()).thenReturn(routineId);
+        when(mockRoutine.getRoutineId()).thenReturn(routineId);
 
         // Execute method under test
         String returnedPage = practiceSessionController.getAddToPracticeSession(mockModel, Optional.of(routineId),
@@ -301,7 +300,7 @@ class PracticeSessionControllerTests {
         when(mockPracticeSessionService.getPracticeSessionsForPlayerUsername(USERNAME)).thenReturn(mockPracticeSessions);
         when(mockRoutineService.getAllRoutines()).thenReturn(mockRoutines);
         when(mockRoutineService.getRoutineById(routineId)).thenReturn(Optional.empty());
-        when(mockRoutine.getId()).thenReturn(otherRoutineId);
+        when(mockRoutine.getRoutineId()).thenReturn(otherRoutineId);
 
         // Execute method under test
         String returnedPage = practiceSessionController.getAddToPracticeSession(mockModel, Optional.of(routineId),
@@ -334,7 +333,7 @@ class PracticeSessionControllerTests {
         // Set mock expectations
         when(mockPracticeSessionService.getPracticeSessionsForPlayerUsername(USERNAME)).thenReturn(mockPracticeSessions);
         when(mockRoutineService.getAllRoutines()).thenReturn(mockRoutines);
-        when(mockRoutine.getId()).thenReturn(otherRoutineId);
+        when(mockRoutine.getRoutineId()).thenReturn(otherRoutineId);
 
         // Execute method under test
         String returnedPage = practiceSessionController.getAddToPracticeSession(mockModel, Optional.empty(),

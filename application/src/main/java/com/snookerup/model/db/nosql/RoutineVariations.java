@@ -1,4 +1,4 @@
-package com.snookerup.model;
+package com.snookerup.model.db.nosql;
 
 import lombok.Data;
 

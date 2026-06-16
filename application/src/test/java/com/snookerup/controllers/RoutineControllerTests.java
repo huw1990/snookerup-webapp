@@ -1,6 +1,6 @@
 package com.snookerup.controllers;
 
-import com.snookerup.model.Routine;
+import com.snookerup.model.db.nosql.Routine;
 import com.snookerup.services.RoutineService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

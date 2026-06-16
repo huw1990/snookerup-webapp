@@ -1,5 +1,6 @@
 package com.snookerup.model;
 
+import com.snookerup.model.db.nosql.BallStriking;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;

@@ -1,21 +1,20 @@
 package com.snookerup.services;
 
-import com.snookerup.model.BallStriking;
-import com.snookerup.model.Routine;
+import com.snookerup.model.db.nosql.*;
 import com.snookerup.model.addedcontext.PracticeSessionRoutineWithRoutineContext;
 import com.snookerup.model.addedcontext.ScoreWithRoutineContext;
 import com.snookerup.model.db.Score;
-import com.snookerup.model.db.nosql.PracticeSessionRoutine;
+import com.snookerup.repositories.RoutineRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for the RoutineServiceImpl class.
@@ -24,178 +23,122 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class RoutineServiceImplTests {
 
+    private RoutineRepository mockRoutineRepository;
+    private MongoTemplate mockMongoTemplate;
+    private Routine mockRoutine;
+
     RoutineServiceImpl routineService;
 
     @BeforeEach
     public void beforeEach() {
-        routineService = new RoutineServiceImpl();
+        mockRoutineRepository = mock(RoutineRepository.class);
+        mockMongoTemplate = mock(MongoTemplate.class);
+        mockRoutine = mock(Routine.class);
+
+        routineService = new RoutineServiceImpl(mockRoutineRepository, mockMongoTemplate);
     }
 
     @Test
-    public void run_Should_PopulateRoutinesCollections() throws Exception {
+    public void getAllRoutines_Should_DelegateToRepository() {
         // Define variables
+        List<Routine> allRoutinesList = List.of(mockRoutine);
 
         // Set mock expectations
+        when(mockRoutineRepository.findAll()).thenReturn(allRoutinesList);
 
-        // Execute method under test
-        routineService.run();
-
-        // Verify
-        Map<String, Routine> routineIdToRoutines = (Map<String, Routine>) ReflectionTestUtils
-                .getField(routineService, "routineIdToRoutines");
-        Set<String> allTags = (Set<String>) ReflectionTestUtils.getField(routineService, "allTags");
-        Map<String, Set<Routine>> tagsToRoutines = (Map<String, Set<Routine>>) ReflectionTestUtils
-                .getField(routineService, "tagsToRoutines");
-        List<Routine> allRoutines = (List<Routine>) ReflectionTestUtils.getField(routineService, "allRoutines");
-        assertEquals(9, allRoutines.size());
-        assertEquals(9, routineIdToRoutines.size());
-        assertEquals(5, allTags.size());
-        assertTrue(allTags.contains("break-building"));
-        assertTrue(allTags.contains("positional-play"));
-        assertTrue(allTags.contains("straight-cueing"));
-        assertTrue(allTags.contains("match-situations"));
-        assertTrue(allTags.contains("long-potting"));
-        assertEquals(5, tagsToRoutines.size());
-        assertEquals(7, tagsToRoutines.get("break-building").size());
-        assertEquals(8, tagsToRoutines.get("positional-play").size());
-        assertEquals(1, tagsToRoutines.get("straight-cueing").size());
-        assertEquals(2, tagsToRoutines.get("match-situations").size());
-        assertEquals(1, tagsToRoutines.get("long-potting").size());
-    }
-
-    @Test
-    public void getAllRoutines_Should_ReturnAllRoutines() throws Exception {
-        // Define variables
-
-        // Set mock expectations
-
-        // First call the run() method
-        routineService.run();
         // Then execute method under test
         List<Routine> allRoutines = routineService.getAllRoutines();
 
         // Verify
-        List<Routine> allRoutinesInService = (List<Routine>) ReflectionTestUtils.getField(routineService, "allRoutines");
-        assertTrue(allRoutines.size() == allRoutinesInService.size());
-        assertTrue(allRoutines.containsAll(allRoutinesInService));
+        verify(mockRoutineRepository).findAll();
+        assertEquals(allRoutines, allRoutinesList);
     }
 
     @Test
-    public void getRoutineById_Should_ReturnRoutine_When_IdExists() throws Exception {
+    public void getRoutineById_Should_DelegateToRepository() {
         // Define variables
+        String routineId = "the-line-up";
 
         // Set mock expectations
+        when(mockRoutineRepository.findByRoutineId(routineId)).thenReturn(Optional.of(mockRoutine));
 
-        // First call the run() method
-        routineService.run();
         // Then execute method under test
-        Optional<Routine> routine = routineService.getRoutineById("the-line-up");
+        Optional<Routine> routine = routineService.getRoutineById(routineId);
 
         // Verify
-        assertTrue(routine.isPresent());
-        Routine routineInService = ((Map<String, Routine>) ReflectionTestUtils
-                .getField(routineService, "routineIdToRoutines")).get("the-line-up");
-        Optional<Routine> routineInServiceOpt = Optional.of(routineInService);
-        assertEquals(routine, routineInServiceOpt);
+        verify(mockRoutineRepository).findByRoutineId(routineId);
+        assertEquals(routine, Optional.of(mockRoutine));
     }
 
     @Test
-    public void getRoutineById_Should_ReturnNull_When_IdDoesntExist() throws Exception {
-        // Define variables
-
-        // Set mock expectations
-
-        // First call the run() method
-        routineService.run();
-        // Then execute method under test
-        Optional<Routine> routine = routineService.getRoutineById("invalid-id");
-
-        // Verify
-        assertTrue(routine.isEmpty());
-    }
-
-    @Test
-    public void getAllTags_Should_ReturnAllTagsAsList() throws Exception {
-        // Define variables
-
-        // Set mock expectations
-
-        // First call the run() method
-        routineService.run();
-        // Then execute method under test
-        List<String> allTags = routineService.getAllTags();
-
-        // Verify
-        List<String> allTagsInService = (List<String>) ((Set<String>) ReflectionTestUtils
-                .getField(routineService, "allTags")).stream().collect(Collectors.toList());
-        assertTrue(allTags.size() == allTagsInService.size());
-        assertTrue(allTags.containsAll(allTagsInService));
-    }
-
-    @Test
-    public void getRoutinesForTag_Should_ReturnListOfRoutinesForTag_When_TagExists() throws Exception {
+    public void getAllTags_Should_DelegateToMongoTemplateForFirstCallOnly() {
         // Define variables
         String tag = "break-building";
 
         // Set mock expectations
+        when(mockMongoTemplate.findDistinct("tags", Routine.class, String.class)).thenReturn(List.of(tag));
 
-        // First call the run() method
-        routineService.run();
+        // Then execute method under test
+        List<String> allTags = routineService.getAllTags();
+
+        // Verify
+        verify(mockMongoTemplate).findDistinct("tags", Routine.class, String.class);
+        assertEquals(allTags, List.of(tag));
+        // Now call it again and verify we didn't call MongoTemplate again
+        List<String> allTagsAgain = routineService.getAllTags();
+        assertEquals(allTagsAgain, List.of(tag));
+        // MongoTemplate should still have only been called once
+        verify(mockMongoTemplate, times(1)).findDistinct("tags", Routine.class, String.class);
+    }
+
+    @Test
+    public void getRoutinesForTag_Should_DelegateToRepository() {
+        // Define variables
+        String tag = "break-building";
+
+        // Set mock expectations
+        when(mockRoutineRepository.findByTags(tag)).thenReturn(List.of(mockRoutine));
+
         // Then execute method under test
         List<Routine> routinesForTag = routineService.getRoutinesForTag(tag);
 
         // Verify
-        List<Routine> routinesForTagsInService = (List<Routine>) ((Map<String, Set<Routine>>) ReflectionTestUtils
-                .getField(routineService, "tagsToRoutines")).get(tag).stream().collect(Collectors.toList());
-        assertTrue(routinesForTag.size() == routinesForTagsInService.size());
-        assertTrue(routinesForTag.containsAll(routinesForTagsInService));
+        verify(mockRoutineRepository).findByTags(tag);
+        assertEquals(routinesForTag, List.of(mockRoutine));
     }
 
     @Test
-    public void getRoutinesForTag_Should_ReturnEmptyList_When_TagDoesntExist() throws Exception {
-        // Define variables
-        String tag = "invalid-tag";
-
-        // Set mock expectations
-
-        // First call the run() method
-        routineService.run();
-        // Then execute method under test
-        List<Routine> routinesForTag = routineService.getRoutinesForTag(tag);
-
-        // Verify
-        assertTrue(routinesForTag.isEmpty());
-    }
-
-    @Test
-    public void getRandomRoutine_Should_ReturnRoutine() throws Exception {
+    public void getRandomRoutine_Should_DelegateToRepository() {
         // Define variables
 
         // Set mock expectations
+        when(mockRoutineRepository.getRandomRoutine()).thenReturn(mockRoutine);
 
-        // First call the run() method
-        routineService.run();
         // Then execute method under test
         Routine randomRoutine = routineService.getRandomRoutine();
 
         // Verify
-        assertNotNull(randomRoutine);
+        verify(mockRoutineRepository).getRandomRoutine();
+        assertEquals(randomRoutine, mockRoutine);
     }
 
     @Test
-    public void addRoutineContextToScore_Should_ReturnCreatedScoreWithRoutineContext() throws Exception {
+    public void addRoutineContextToScore_Should_ReturnCreatedScoreWithRoutineContext() {
         // Define variables
+        String routineId = "the-line-up";
         Score score = new Score();
         score.setId(1L);
         score.setPlayerUsername("willo");
         score.setDateOfAttempt(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-        score.setRoutineId("the-line-up");
+        score.setRoutineId(routineId);
         score.setScoreValue(50);
 
         // Set mock expectations
+        when(mockRoutineRepository.findByRoutineId(routineId)).thenReturn(Optional.of(mockRoutine));
+        when(mockRoutine.getUnit()).thenReturn(Unit.REDS);
+        when(mockRoutine.getScoreUnit()).thenReturn(ScoreUnit.BREAK);
+        when(mockRoutine.getTitle()).thenReturn("The Line Up");
 
-        // First call the run() method
-        routineService.run();
         // Then execute method under test
         ScoreWithRoutineContext scoreWithRoutineContext = routineService.addRoutineContextToScore(score);
 
@@ -212,8 +155,9 @@ class RoutineServiceImplTests {
     @Test
     public void addRoutineContextToPracticeSessionRoutine_Should_ReturnCreatedPracticeSessionRoutineWithRoutineContext() throws Exception {
         // Define variables
+        String routineId = "the-line-up";
         PracticeSessionRoutine routine = new PracticeSessionRoutine();
-        routine.setRoutineId("the-line-up");
+        routine.setRoutineId(routineId);
         routine.setLoop(true);
         routine.setCushionLimit(3);
         routine.setUnitNumber(10);
@@ -224,9 +168,11 @@ class RoutineServiceImplTests {
         routine.setNote("Test note");
 
         // Set mock expectations
+        when(mockRoutineRepository.findByRoutineId(routineId)).thenReturn(Optional.of(mockRoutine));
+        when(mockRoutine.getUnit()).thenReturn(Unit.REDS);
+        when(mockRoutine.getScoreUnit()).thenReturn(ScoreUnit.BREAK);
+        when(mockRoutine.getTitle()).thenReturn("The Line Up");
 
-        // First call the run() method
-        routineService.run();
         // Then execute method under test
         PracticeSessionRoutineWithRoutineContext routineWithRoutineContext =
                 routineService.addRoutineContextToPracticeSessionRoutine(routine);

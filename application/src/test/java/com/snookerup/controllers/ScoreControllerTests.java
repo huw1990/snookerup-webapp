@@ -3,6 +3,8 @@ package com.snookerup.controllers;
 import com.snookerup.errorhandling.InvalidScoreException;
 import com.snookerup.model.*;
 import com.snookerup.model.db.Score;
+import com.snookerup.model.db.nosql.BallStriking;
+import com.snookerup.model.db.nosql.Routine;
 import com.snookerup.model.stats.ScoreStats;
 import com.snookerup.services.RoutineService;
 import com.snookerup.services.ScoreService;
@@ -125,7 +127,7 @@ class ScoreControllerTests {
         // Set mock expectations
         when(mockRoutineService.getRoutineById(ROUTINE_ID)).thenReturn(Optional.of(mockRoutine1));
         when(mockScoreService.getScorePageForParams(requestParams)).thenReturn(mockScorePage);
-        when(mockRoutine1.getId()).thenReturn(ROUTINE_ID);
+        when(mockRoutine1.getRoutineId()).thenReturn(ROUTINE_ID);
 
         // Execute method under test
         String returnedPage = scoreController.getScores(mockModel, Optional.of(ROUTINE_ID), Optional.of(1),
@@ -159,7 +161,7 @@ class ScoreControllerTests {
         // Set mock expectations
         when(mockRoutineService.getRoutineById(ROUTINE_ID)).thenReturn(Optional.of(mockRoutine1));
         when(mockScoreService.getScorePageForParams(requestParams)).thenReturn(mockScorePage);
-        when(mockRoutine1.getId()).thenReturn(ROUTINE_ID);
+        when(mockRoutine1.getRoutineId()).thenReturn(ROUTINE_ID);
 
         // Execute method under test
         String returnedPage = scoreController.getScores(mockModel, Optional.of(ROUTINE_ID), Optional.of(1),
@@ -192,7 +194,7 @@ class ScoreControllerTests {
         // Set mock expectations
         when(mockRoutineService.getRoutineById(ROUTINE_ID)).thenReturn(Optional.of(mockRoutine1));
         when(mockScoreService.getScorePageForParams(requestParams)).thenReturn(mockScorePage);
-        when(mockRoutine1.getId()).thenReturn(ROUTINE_ID);
+        when(mockRoutine1.getRoutineId()).thenReturn(ROUTINE_ID);
 
         // Execute method under test
         String returnedPage = scoreController.getScores(mockModel, Optional.of(ROUTINE_ID), Optional.of(1),
@@ -218,7 +220,7 @@ class ScoreControllerTests {
 
         // Execute method under test
         String returnedPage = scoreController.getAddNewScore(mockModel, Optional.of(ROUTINE_ID), mockOidcUser);
-        when(mockRoutine1.getId()).thenReturn(ROUTINE_ID);
+        when(mockRoutine1.getRoutineId()).thenReturn(ROUTINE_ID);
 
         // Verify
         assertEquals(expectedReturn, returnedPage);

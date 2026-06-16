@@ -1,7 +1,7 @@
 package com.snookerup.services;
 
 import com.snookerup.model.DateTimeFormats;
-import com.snookerup.model.Routine;
+import com.snookerup.model.db.nosql.Routine;
 import com.snookerup.model.ScoreStatsRequestParams;
 import com.snookerup.model.db.Score;
 import com.snookerup.model.stats.*;

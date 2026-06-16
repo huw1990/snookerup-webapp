@@ -1,7 +1,7 @@
 package com.snookerup.controllers;
 
 import com.snookerup.model.Last30DaysStats;
-import com.snookerup.model.Routine;
+import com.snookerup.model.db.nosql.Routine;
 import com.snookerup.services.RoutineService;
 import com.snookerup.services.ScoreService;
 import lombok.RequiredArgsConstructor;

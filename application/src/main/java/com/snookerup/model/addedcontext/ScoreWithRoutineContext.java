@@ -1,7 +1,7 @@
 package com.snookerup.model.addedcontext;
 
 import com.snookerup.model.DateTimeFormats;
-import com.snookerup.model.Routine;
+import com.snookerup.model.db.nosql.Routine;
 import com.snookerup.model.db.Score;
 import lombok.Builder;
 import lombok.Getter;

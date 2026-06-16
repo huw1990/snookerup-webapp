@@ -1,18 +1,11 @@
 package com.snookerup.model.db.nosql;
 
-import com.snookerup.model.BallStriking;
 import com.snookerup.model.PracticeSessionScore;
 import com.snookerup.model.RoutineAdditionToPracticeSession;
 import com.snookerup.model.db.Score;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 /**

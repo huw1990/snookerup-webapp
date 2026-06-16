@@ -6,6 +6,8 @@ target/
 .DS_Store
 src/main/frontend/node_modules/
 src/main/frontend/package-lock.json
+infrastructure/routine-db-import/node_modules/
+infrastructure/routine-db-import/package-lock.json
 
 ### STS ###
 .apt_generated

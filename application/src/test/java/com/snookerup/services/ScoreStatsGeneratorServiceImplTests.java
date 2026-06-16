@@ -2,6 +2,9 @@ package com.snookerup.services;
 
 import com.snookerup.model.*;
 import com.snookerup.model.db.Score;
+import com.snookerup.model.db.nosql.BallStriking;
+import com.snookerup.model.db.nosql.Routine;
+import com.snookerup.model.db.nosql.Unit;
 import com.snookerup.model.stats.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
