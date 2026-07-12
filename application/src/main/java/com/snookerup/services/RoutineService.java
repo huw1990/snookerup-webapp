@@ -5,6 +5,7 @@ import com.snookerup.model.addedcontext.PracticeSessionRoutineWithRoutineContext
 import com.snookerup.model.addedcontext.ScoreWithRoutineContext;
 import com.snookerup.model.db.Score;
 import com.snookerup.model.db.nosql.PracticeSessionRoutine;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,18 @@ import java.util.Optional;
  * @author Huw
  */
 public interface RoutineService {
+
+    /**
+     * Gets a page of routines (with size and page number indicated by params) matching the provided optional tag and
+     * optional title search term.
+     * @param tag Optional tag to search for
+     * @param search Optional search for routine title
+     * @param pageNumber Page number, where 0 is the first page
+     * @param pageSize Page size
+     * @return A page of routines matching the provided values (so may contain zero items, but a Page will always be
+     *         returned)
+     */
+    Page<Routine> getRoutines(String tag, String search, int pageNumber, int pageSize);
 
     /**
      * Get all routines.

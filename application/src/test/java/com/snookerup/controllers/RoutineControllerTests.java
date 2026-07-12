@@ -4,9 +4,9 @@ import com.snookerup.model.db.nosql.Routine;
 import com.snookerup.services.RoutineService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
 import org.springframework.ui.Model;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,6 +28,7 @@ class RoutineControllerTests {
     Model mockModel;
     Routine routineOne;
     Routine routineTwo;
+    Page<Routine> mockRoutinesPage;
 
     RoutineController routineController;
 
@@ -37,98 +38,57 @@ class RoutineControllerTests {
         mockModel = mock(Model.class);
         routineOne = mock(Routine.class);
         routineTwo = mock(Routine.class);
+        mockRoutinesPage = mock(Page.class);
 
         routineController = new RoutineController(mockRoutineService);
     }
 
     @Test
-    public void getAllRoutines_Should_ReturnRoutinesPageWithAllRoutinesFromService_When_NoTagIncluded() {
+    public void getRoutines_Should_DelegateToRoutineService_When_DefaultParamsProvided() {
         // Define variables
-        List<Routine> allRoutines = List.of(routineOne, routineTwo);
+        String tag = "all";
+        String searchTerm = "";
+        int pageNumber = 0;
+        int pageSize = 18;
 
         // Set mock expectations
-        when(mockRoutineService.getAllRoutines()).thenReturn(allRoutines);
+        when(mockRoutineService.getRoutines(null, searchTerm, pageNumber, pageSize)).thenReturn(mockRoutinesPage);
 
         // Execute method under test
-        String returnedPage = routineController.getAllRoutines(mockModel, Optional.empty());
+        String returnedPage = routineController.getRoutines(mockModel, tag, searchTerm, pageNumber, pageSize);
 
         // Verify
         assertEquals(ROUTINES_PAGE, returnedPage);
-        verify(mockRoutineService).getAllRoutines();
-        verify(mockModel).addAttribute("routines", allRoutines);
+        verify(mockRoutineService).getRoutines(null, searchTerm, pageNumber, pageSize);
+        verify(mockModel).addAttribute("routines", mockRoutinesPage);
         verify(mockModel).addAttribute("selectedTag", "all");
+        verify(mockModel).addAttribute("currentPage", pageNumber);
+        verify(mockModel).addAttribute("searchTerm", searchTerm);
     }
 
     @Test
-    public void getAllRoutines_Should_ReturnRoutinesPageWithAllRoutinesFromService_When_AllTagIncluded() {
+    public void getRoutines_Should_DelegateToRoutineServiceWithTranslatedPageNum_When_PageNumIsOnlyParamProvided() {
         // Define variables
-        List<Routine> allRoutines = List.of(routineOne, routineTwo);
+        String tag = "all";
+        String searchTerm = "";
+        int pageNumber = 2;
+        int pageSize = 18;
+        // Users expect pages to start at 1, but on the backend they start at 0
+        int backendPageNumber = 1;
 
         // Set mock expectations
-        when(mockRoutineService.getAllRoutines()).thenReturn(allRoutines);
+        when(mockRoutineService.getRoutines(null, searchTerm, backendPageNumber, pageSize)).thenReturn(mockRoutinesPage);
 
         // Execute method under test
-        String returnedPage = routineController.getAllRoutines(mockModel, Optional.empty());
+        String returnedPage = routineController.getRoutines(mockModel, tag, searchTerm, pageNumber, pageSize);
 
         // Verify
         assertEquals(ROUTINES_PAGE, returnedPage);
-        verify(mockRoutineService).getAllRoutines();
-        verify(mockModel).addAttribute("routines", allRoutines);
+        verify(mockRoutineService).getRoutines(null, searchTerm, backendPageNumber, pageSize);
+        verify(mockModel).addAttribute("routines", mockRoutinesPage);
         verify(mockModel).addAttribute("selectedTag", "all");
-    }
-
-    @Test
-    public void getAllRoutines_Should_ReturnRoutinesPageWithOnlyRoutinesMatchingTagFromService_When_TagIncluded() {
-        // Define variables
-        List<Routine> allRoutines = List.of(routineOne, routineTwo);
-        String tag = "break-building";
-
-        // Set mock expectations
-        when(mockRoutineService.getRoutinesForTag(tag)).thenReturn(allRoutines);
-
-        // Execute method under test
-        String returnedPage = routineController.getAllRoutines(mockModel, Optional.of(tag));
-
-        // Verify
-        assertEquals(ROUTINES_PAGE, returnedPage);
-        verify(mockRoutineService).getRoutinesForTag(tag);
-        verify(mockModel).addAttribute("routines", allRoutines);
-        verify(mockModel).addAttribute("selectedTag", tag);
-    }
-
-    @Test
-    public void getRoutinesByTagFragment_Should_ReturnRoutinesPageWithAllRoutinesFromService_When_AllTagIncluded() {
-        // Define variables
-        List<Routine> allRoutines = List.of(routineOne, routineTwo);
-
-        // Set mock expectations
-        when(mockRoutineService.getAllRoutines()).thenReturn(allRoutines);
-
-        // Execute method under test
-        String returnedPage = routineController.getRoutinesByTagFragment(mockModel, Optional.empty());
-
-        // Verify
-        assertEquals(ROUTINE_LIST_FRAGMENT, returnedPage);
-        verify(mockRoutineService).getAllRoutines();
-        verify(mockModel).addAttribute("routines", allRoutines);
-    }
-
-    @Test
-    public void getRoutinesByTagFragment_Should_ReturnRoutinesPageWithOnlyRoutinesMatchingTagFromService_When_TagIncluded() {
-        // Define variables
-        List<Routine> allRoutines = List.of(routineOne, routineTwo);
-        String tag = "break-building";
-
-        // Set mock expectations
-        when(mockRoutineService.getRoutinesForTag(tag)).thenReturn(allRoutines);
-
-        // Execute method under test
-        String returnedPage = routineController.getRoutinesByTagFragment(mockModel, Optional.of(tag));
-
-        // Verify
-        assertEquals(ROUTINE_LIST_FRAGMENT, returnedPage);
-        verify(mockRoutineService).getRoutinesForTag(tag);
-        verify(mockModel).addAttribute("routines", allRoutines);
+        verify(mockModel).addAttribute("currentPage", backendPageNumber);
+        verify(mockModel).addAttribute("searchTerm", searchTerm);
     }
 
     @Test

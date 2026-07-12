@@ -2,6 +2,8 @@ package com.snookerup.controllers;
 
 import com.snookerup.model.db.nosql.Routine;
 import com.snookerup.services.RoutineService;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -29,20 +31,31 @@ public class RoutineController {
     private final RoutineService routineService;
 
     @GetMapping("/routines")
-    public String getAllRoutines(Model model, @RequestParam Optional<String> tag) {
+    public String getRoutines(Model model,
+                                 @RequestParam(value = "tag", required = false, defaultValue = ALL_TAG) String tag,
+                                 @RequestParam(value = "search", required = false, defaultValue = "") String searchTerm,
+                                 @RequestParam(value = "page", defaultValue = "0") @PositiveOrZero int userPage,
+                                 @RequestParam(value = "size", defaultValue = "18") @Positive int size) {
         log.debug("getAllRoutines tag={}", tag);
-        addRoutinesToModel(model, tag);
+        // Users expect page number to start at 1, but it actually starts at 0, so translate by subtracting one
+        int page;
+        if (userPage <= 0) {
+            page = 0;
+        } else {
+            page = userPage - 1;
+        }
+        String tagSearch;
+        if (tag.equals(ALL_TAG)) {
+            tagSearch = null;
+        } else {
+            tagSearch = tag;
+        }
+        model.addAttribute("routines", routineService.getRoutines(tagSearch, searchTerm, page, size));
         model.addAttribute("tags", routineService.getAllTags());
-        String selectedTag = tag.orElse(ALL_TAG);
-        model.addAttribute("selectedTag", selectedTag);
+        model.addAttribute("selectedTag", tag);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("searchTerm", searchTerm);
         return "routines";
-    }
-
-    @GetMapping("/routines-frag")
-    public String getRoutinesByTagFragment(Model model, @RequestParam Optional<String> tag) {
-        log.debug("getRoutinesByTagFragment tag={}", tag);
-        addRoutinesToModel(model, tag);
-        return "fragments/routinelist :: routineList";
     }
 
     @GetMapping("/routines/{id}")
@@ -52,13 +65,5 @@ public class RoutineController {
             model.addAttribute("routine", routineOpt.get());
         });
         return "routine";
-    }
-
-    private void addRoutinesToModel(Model model, Optional<String> tag) {
-        if (tag.isPresent() && !tag.get().equals(ALL_TAG)) {
-            model.addAttribute("routines", routineService.getRoutinesForTag(tag.get()));
-        } else {
-            model.addAttribute("routines", routineService.getAllRoutines());
-        }
     }
 }

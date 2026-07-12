@@ -25,23 +25,20 @@ class RoutineControllerTestsIT extends BaseTestcontainersIT {
     private MockMvc mockMvc;
 
     @Test
-    void getAllRoutines() throws Exception {
+    void getRoutines_NoParams() throws Exception {
         this.mockMvc
                 .perform(get("/routines"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    void getRoutinesByTagFragment() throws Exception {
+    void getRoutines_AllParams() throws Exception {
         this.mockMvc
-                .perform(get("/routines-frag"))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-    }
-
-    @Test
-    void getRoutinesByTagFragment_When_TagIncluded() throws Exception {
-        this.mockMvc
-                .perform(get("/routines-frag?tag=break-building"))
+                .perform(get("/routines")
+                        .queryParam("tag", "break-building")
+                        .queryParam("search", "line")
+                        .queryParam("page", "1")
+                        .queryParam("size", "20"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 

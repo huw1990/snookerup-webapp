@@ -8,10 +8,15 @@ import com.snookerup.model.db.nosql.PracticeSessionRoutine;
 import com.snookerup.repositories.RoutineRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Implementation of the RoutineService interface, providing operations related to routines.
@@ -34,6 +39,45 @@ public class RoutineServiceImpl implements RoutineService {
      * routines are not added outside of an app restart.
      */
     private List<String> allTags = null;
+
+    @Override
+    public Page<Routine> getRoutines(String tag, String search, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Query query = new Query().with(pageable);
+        List<Criteria> criteriaList = new ArrayList<>();
+
+        // 1. Handle optional search term
+        if (search != null && !search.trim().isEmpty()) {
+            // Escape special regex characters to prevent syntax issues if users type things like keys/brackets
+            String escapedSearch = Pattern.quote(search.trim());
+
+            // "i" flag makes it case-insensitive
+            // The query will look for anything *containing* the escaped string
+            criteriaList.add(Criteria.where("title").regex(escapedSearch, "i"));
+        }
+
+        // 2. Handle optional List of tags field (Matches if the DB array contains ANY of these values)
+        if (tag != null && !tag.isEmpty()) {
+            criteriaList.add(Criteria.where("tags").in(tag));
+        }
+
+        // 3. Link criteria with an AND operator if any exist
+        if (!criteriaList.isEmpty()) {
+            query.addCriteria(new Criteria().andOperator(criteriaList.toArray(new Criteria[0])));
+        }
+
+        // 4. Fetch the paginated data
+        List<Routine> list = mongoTemplate.find(query, Routine.class);
+
+        // 5. Wrap inside a Page object using PageableExecutionUtils
+        // (It optimizes performance by avoiding the count query if it's the first/only page)
+        return PageableExecutionUtils.getPage(
+                list,
+                pageable,
+                () -> mongoTemplate.count(Query.of(query).limit(-1).skip(-1), Routine.class)
+        );
+    }
 
     @Override
     public List<Routine> getAllRoutines() {

@@ -7,11 +7,17 @@ import com.snookerup.model.db.Score;
 import com.snookerup.repositories.RoutineRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -26,6 +32,11 @@ class RoutineServiceImplTests {
     private RoutineRepository mockRoutineRepository;
     private MongoTemplate mockMongoTemplate;
     private Routine mockRoutine;
+    private Routine mockRoutine1;
+    private Routine mockRoutine2;
+    private Routine mockRoutine3;
+    private Page<Routine> mockPage;
+    private List<Routine> routineList;
 
     RoutineServiceImpl routineService;
 
@@ -34,8 +45,191 @@ class RoutineServiceImplTests {
         mockRoutineRepository = mock(RoutineRepository.class);
         mockMongoTemplate = mock(MongoTemplate.class);
         mockRoutine = mock(Routine.class);
+        mockRoutine1 = mock(Routine.class);
+        mockRoutine2 = mock(Routine.class);
+        mockRoutine3 = mock(Routine.class);
+        mockPage = mock(Page.class);
+
+        routineList = List.of(mockRoutine, mockRoutine1, mockRoutine2, mockRoutine3);
 
         routineService = new RoutineServiceImpl(mockRoutineRepository, mockMongoTemplate);
+    }
+
+    @Test
+    public void getRoutines_When_NoTagOrSearchTerm() {
+        // Define variables
+        String tag = null;
+        String searchTerm = null;
+        int pageNumber = 0;
+        // Set small page size so the query goes into multiple pages
+        int pageSize = 2;
+        long totalElements = 10L;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Query query = new Query().with(pageable);
+
+        // Set mock expectations
+        when(mockMongoTemplate.find(query, Routine.class)).thenReturn(routineList);
+        when(mockMongoTemplate.count(Query.of(query).limit(-1).skip(-1), Routine.class)).thenReturn(totalElements);
+
+        // Then execute method under test
+        Page<Routine> routinesPage = routineService.getRoutines(tag, searchTerm, pageNumber, pageSize);
+
+        // Verify
+        verify(mockMongoTemplate).find(query, Routine.class);
+        verify(mockMongoTemplate).count(Query.of(query).limit(-1).skip(-1), Routine.class);
+        assertEquals(routineList, routinesPage.toList());
+        assertEquals(totalElements, routinesPage.getTotalElements());
+    }
+
+    @Test
+    public void getRoutines_When_TagButNoSearchTerm() {
+        // Define variables
+        String tag = "break-building";
+        String searchTerm = null;
+        int pageNumber = 0;
+        // Set small page size so the query goes into multiple pages
+        int pageSize = 2;
+        long totalElements = 10L;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Query query = new Query().with(pageable);
+        List<Criteria> criteriaList = new ArrayList<>();
+        criteriaList.add(Criteria.where("tags").in(tag));
+        query.addCriteria(new Criteria().andOperator(criteriaList.toArray(new Criteria[0])));
+
+        // Set mock expectations
+        when(mockMongoTemplate.find(query, Routine.class)).thenReturn(routineList);
+        when(mockMongoTemplate.count(Query.of(query).limit(-1).skip(-1), Routine.class)).thenReturn(totalElements);
+
+        // Then execute method under test
+        Page<Routine> routinesPage = routineService.getRoutines(tag, searchTerm, pageNumber, pageSize);
+
+        // Verify
+        verify(mockMongoTemplate).find(query, Routine.class);
+        verify(mockMongoTemplate).count(Query.of(query).limit(-1).skip(-1), Routine.class);
+        assertEquals(routineList, routinesPage.toList());
+        assertEquals(totalElements, routinesPage.getTotalElements());
+    }
+
+    @Test
+    public void getRoutines_When_SearchTermButNoTagAndMultiplePages() {
+        // Define variables
+        String tag = null;
+        String searchTerm = "line";
+        int pageNumber = 0;
+        // Set small page size so the query goes into multiple pages
+        int pageSize = 2;
+        long totalElements = 10L;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Query query = new Query().with(pageable);
+        List<Criteria> criteriaList = new ArrayList<>();
+        String escapedSearch = Pattern.quote(searchTerm.trim());
+        criteriaList.add(Criteria.where("title").regex(escapedSearch, "i"));
+        query.addCriteria(new Criteria().andOperator(criteriaList.toArray(new Criteria[0])));
+
+        // Set mock expectations
+        when(mockMongoTemplate.find(query, Routine.class)).thenReturn(routineList);
+        when(mockMongoTemplate.count(Query.of(query).limit(-1).skip(-1), Routine.class)).thenReturn(totalElements);
+
+        // Then execute method under test
+        Page<Routine> routinesPage = routineService.getRoutines(tag, searchTerm, pageNumber, pageSize);
+
+        // Verify
+        verify(mockMongoTemplate).find(query, Routine.class);
+        verify(mockMongoTemplate).count(Query.of(query).limit(-1).skip(-1), Routine.class);
+        assertEquals(routineList, routinesPage.toList());
+        assertEquals(totalElements, routinesPage.getTotalElements());
+    }
+
+    @Test
+    public void getRoutines_When_SearchTermButNoTagAndSinglePage() {
+        // Define variables
+        String tag = null;
+        String searchTerm = "line";
+        int pageNumber = 0;
+        // Set small page size so the query goes into multiple pages
+        int pageSize = 20;
+        long totalElements = 4L;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Query query = new Query().with(pageable);
+        List<Criteria> criteriaList = new ArrayList<>();
+        String escapedSearch = Pattern.quote(searchTerm.trim());
+        criteriaList.add(Criteria.where("title").regex(escapedSearch, "i"));
+        query.addCriteria(new Criteria().andOperator(criteriaList.toArray(new Criteria[0])));
+
+        // Set mock expectations
+        when(mockMongoTemplate.find(query, Routine.class)).thenReturn(routineList);
+        when(mockMongoTemplate.count(Query.of(query).limit(-1).skip(-1), Routine.class)).thenReturn(totalElements);
+
+        // Then execute method under test
+        Page<Routine> routinesPage = routineService.getRoutines(tag, searchTerm, pageNumber, pageSize);
+
+        // Verify
+        verify(mockMongoTemplate).find(query, Routine.class);
+        verify(mockMongoTemplate, never()).count(Query.of(query).limit(-1).skip(-1), Routine.class);
+        assertEquals(routineList, routinesPage.toList());
+        assertEquals(totalElements, routinesPage.getTotalElements());
+    }
+
+    @Test
+    public void getRoutines_When_BothTagAndSearchTermAndMultiplePages() {
+        // Define variables
+        String tag = "break-building";
+        String searchTerm = "line";
+        int pageNumber = 0;
+        // Set small page size so the query goes into multiple pages
+        int pageSize = 2;
+        long totalElements = 10L;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Query query = new Query().with(pageable);
+        List<Criteria> criteriaList = new ArrayList<>();
+        String escapedSearch = Pattern.quote(searchTerm.trim());
+        criteriaList.add(Criteria.where("title").regex(escapedSearch, "i"));
+        criteriaList.add(Criteria.where("tags").in(tag));
+        query.addCriteria(new Criteria().andOperator(criteriaList.toArray(new Criteria[0])));
+
+        // Set mock expectations
+        when(mockMongoTemplate.find(query, Routine.class)).thenReturn(routineList);
+        when(mockMongoTemplate.count(Query.of(query).limit(-1).skip(-1), Routine.class)).thenReturn(totalElements);
+
+        // Then execute method under test
+        Page<Routine> routinesPage = routineService.getRoutines(tag, searchTerm, pageNumber, pageSize);
+
+        // Verify
+        verify(mockMongoTemplate).find(query, Routine.class);
+        verify(mockMongoTemplate).count(Query.of(query).limit(-1).skip(-1), Routine.class);
+        assertEquals(routineList, routinesPage.toList());
+        assertEquals(totalElements, routinesPage.getTotalElements());
+    }
+
+    @Test
+    public void getRoutines_When_BothTagAndSearchTermAndSinglePage() {
+        // Define variables
+        String tag = "break-building";
+        String searchTerm = "line";
+        int pageNumber = 0;
+        // Set small page size so the query goes into multiple pages
+        int pageSize = 20;
+        long totalElements = 4L;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Query query = new Query().with(pageable);
+        List<Criteria> criteriaList = new ArrayList<>();
+        String escapedSearch = Pattern.quote(searchTerm.trim());
+        criteriaList.add(Criteria.where("title").regex(escapedSearch, "i"));
+        criteriaList.add(Criteria.where("tags").in(tag));
+        query.addCriteria(new Criteria().andOperator(criteriaList.toArray(new Criteria[0])));
+
+        // Set mock expectations
+        when(mockMongoTemplate.find(query, Routine.class)).thenReturn(routineList);
+        when(mockMongoTemplate.count(Query.of(query).limit(-1).skip(-1), Routine.class)).thenReturn(totalElements);
+
+        // Then execute method under test
+        Page<Routine> routinesPage = routineService.getRoutines(tag, searchTerm, pageNumber, pageSize);
+
+        // Verify
+        verify(mockMongoTemplate).find(query, Routine.class);
+        verify(mockMongoTemplate, never()).count(Query.of(query).limit(-1).skip(-1), Routine.class);
+        assertEquals(routineList, routinesPage.toList());
+        assertEquals(totalElements, routinesPage.getTotalElements());
     }
 
     @Test

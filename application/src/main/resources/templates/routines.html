@@ -6,21 +6,40 @@
 <div layout:fragment="page-content">
     <section class="px-4 py-10">
         <div class="container-xl lg:container m-auto">
-            <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
+            <h2 class="text-3xl font-bold text-green-800 text-center font-ubuntu">
                 Routines
             </h2>
             <div class="md:w-2/3 2xl:w-1/2 m-auto">
                 <form id="routineFilterByTagForm" class="flex flex-row justify-center gap-3 p-10">
-                    <select id="tag" name="tag"
-                            class="w-32 md:w-56 h-10 border-2 border-green-700 focus:outline-none focus:border-green-700 text-green-700 rounded px-2 md:px-3 py-0 md:py-1 tracking-wider">
-                        <option value="all" th:selected="${selectedTag.equals('all')}">all</option>
-                        <option th:each="tag : ${tags}" th:value="${tag}" th:selected="${selectedTag.equals(tag)}">[[${tag}]]</option>
-                    </select>
+                    <input type="text" id="searchByTitle" name="searchByTitle" placeholder="Search by title" th:value="${searchTerm != null} ? ${searchTerm} : ''" class="w-32 md:w-56 h-10 border-2 border-green-700 focus:outline-none focus:border-green-700 text-green-700 rounded px-2 md:px-3 py-0 md:py-1 tracking-wider">
                     <button type="submit" class="bg-green-700 text-white rounded-r px-2 md:px-3 py-0 md:py-1">Search</button>
                 </form>
+                <div class="relative flex items-center mb-6 m-auto">
+                    <div id="pill-carousel" class="flex gap-3 overflow-x-auto no-scrollbar scroll-smooth pb-2">
+                        <button th:each="tag : ${tags}" th:attr="data-tag-value=${tag}"
+                                class="tag-pill px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 text-white shadow-sm"
+                                th:classappend="${tag == selectedTag} ? 'bg-green-600' : 'bg-green-800'">
+                            [[${tag}]]
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div id="routinesHolder" class="changing-content show">
-                <div th:replace="~{fragments/routinelist :: routineList}"></div>
+            <div th:if="${routines.toList().size() == 0}">
+                <h2 class="text-lg text-green-800 text-center my-12">No routines found</h2>
+            </div>
+            <div class="flex flex-wrap justify-center">
+                <div th:each="routine : ${routines.toList()}" class="bg-green-50 flex-none min-w-full md:min-w-min max-w-full md:max-w-none m-auto md:mx-1 p-8 rounded-lg shadow-md mb-6 drop-shadow-xl border-solid border-4 border-brown">
+                    <a th:href="@{/routines/{id}(id=${routine.routineId})}">
+                        <h1 class="text-2xl font-bold text-green-800 mb-4 font-ubuntu">[[${routine.title}]]</h1>
+                        <span th:each="tag : ${routine.tags}" class="inline-flex items-center rounded-md bg-green-200 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset mx-1 mb-2">[[${tag}]]</span>
+                        <img class="h-[10rem] w-auto m-auto" th:src="${routine.titleImage}"/>
+                    </a>
+                </div>
+            </div>
+            <div class="flex items-center justify-center gap-4">
+                <button id="prevPageButton" th:disabled="${currentPage == 0}" th:classappend="${currentPage == 0} ? 'bg-gray-700' : 'bg-green-800'" class="block text-white text-center py-2 px-4 rounded-xl hover:bg-gray-700">Prev</button>
+                <p id="pageNumberLabel" th:attr="data-current-page=${currentPage + 1},data-tag=${selectedTag}" class="text-center text-sm text-green-900" th:text="|Page ${currentPage + 1} of ${routines.getTotalPages()}|">Page 1 of 1</p>
+                <button id="nextPageButton" th:disabled="${currentPage >= routines.getTotalPages() - 1}" th:classappend="${currentPage >= routines.getTotalPages() - 1} ? 'bg-gray-700' : 'bg-green-800'" class="block text-white text-center py-2 px-4 rounded-xl hover:bg-gray-700">Next</button>
             </div>
         </div>
     </section>
