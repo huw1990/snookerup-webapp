@@ -88,7 +88,7 @@ function addListenersForCheckboxTextBoxes() {
  * 2. Set up the JavaScript to handle the AJAX functionality whenever the selected routine is changed
  */
 addListenersForCheckboxTextBoxes();
-const scoreRoutineSelector = document.getElementById('scoreRoutineSelector');
+const scoreRoutineSelector = document.getElementById('routineIdSelector');
 if (scoreRoutineSelector) {
     scoreRoutineSelector.addEventListener('change', event => {
         const selectedRoutineId = scoreRoutineSelector.value;

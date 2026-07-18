@@ -224,7 +224,6 @@ class ScoreControllerTests {
         ArgumentCaptor<Score> scoreCaptor = ArgumentCaptor.forClass(Score.class);
         verify(mockModel).addAttribute("selectedRoutineId", ROUTINE_ID);
         verify(mockModel).addAttribute("selectedRoutine", mockRoutine1);
-        verify(mockModel).addAttribute("routines", allRoutines);
         verify(mockModel).addAttribute(eq("score"), scoreCaptor.capture());
         Score score = scoreCaptor.getValue();
         assertEquals(USERNAME, score.getPlayerUsername());
@@ -247,7 +246,6 @@ class ScoreControllerTests {
         // Verify
         assertEquals(expectedReturn, returnedPage);
         ArgumentCaptor<Score> scoreCaptor = ArgumentCaptor.forClass(Score.class);
-        verify(mockModel).addAttribute("routines", allRoutines);
         verify(mockModel).addAttribute(eq("score"), scoreCaptor.capture());
         Score score = scoreCaptor.getValue();
         assertEquals(USERNAME, score.getPlayerUsername());
@@ -268,7 +266,6 @@ class ScoreControllerTests {
         // Verify
         assertEquals(expectedReturn, returnedPage);
         ArgumentCaptor<Score> scoreCaptor = ArgumentCaptor.forClass(Score.class);
-        verify(mockModel).addAttribute("routines", allRoutines);
         verify(mockModel).addAttribute(eq("score"), scoreCaptor.capture());
         Score score = scoreCaptor.getValue();
         assertEquals(USERNAME, score.getPlayerUsername());

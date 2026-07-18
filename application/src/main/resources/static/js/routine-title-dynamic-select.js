@@ -7,6 +7,7 @@ if (routineIdSelector) {
         searchField: [],            // Empty array disables local filtering so it shows exactly what the backend API returns
         plugins: ['virtual_scroll', 'clear_button'],
         maxOptions: 200,
+        dropdownParent: 'body',
 
         // Set what the first URL should be when searching using the API
         firstUrl: function(query) {

@@ -158,7 +158,6 @@ public class ScoreController {
             });
         });
         score.setPlayerUsername(user.getName());
-        model.addAttribute("routines", routineService.getAllRoutines());
         model.addAttribute("score", score);
         return "addscore";
     }
