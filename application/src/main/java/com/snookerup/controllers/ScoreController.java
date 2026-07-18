@@ -124,7 +124,6 @@ public class ScoreController {
             model.addAttribute("selectedRoutineId", routine.getRoutineId());
             model.addAttribute("selectedRoutine", routine);
         });
-        model.addAttribute("routines", routineService.getAllRoutines());
         ScorePageRequestParams params = new ScorePageRequestParams(user.getName(), routineId.get(),
                 pageNumber.orElse(1), from.get(), to.get(), loop.orElse(null), cushionLimit.orElse(null),
                 unitNumber.orElse(null), potInOrder.orElse(null), stayOnOneSideOfTable.orElse(null),

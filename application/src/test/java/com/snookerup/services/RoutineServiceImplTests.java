@@ -56,6 +56,28 @@ class RoutineServiceImplTests {
     }
 
     @Test
+    public void getRoutineOverviews_Should_DelegateToRepository() {
+        // Define variables
+        String searchTerm = "line";
+        int pageNumber = 0;
+        int pageSize = 18;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<RoutineOverview> mockRoutineOverviewsPage = mock(Page.class);
+
+        // Set mock expectations
+        when(mockRoutineRepository.findByTitleContainingIgnoreCase(searchTerm, pageable))
+                .thenReturn(mockRoutineOverviewsPage);
+
+        // Then execute method under test
+        Page<RoutineOverview> routineOverviewsPage = routineService
+                .getRoutineOverviews(searchTerm, pageNumber, pageSize);
+
+        // Verify
+        assertEquals(mockRoutineOverviewsPage, routineOverviewsPage);
+        verify(mockRoutineRepository).findByTitleContainingIgnoreCase(searchTerm, pageable);
+    }
+
+    @Test
     public void getRoutines_When_NoTagOrSearchTerm() {
         // Define variables
         String tag = null;

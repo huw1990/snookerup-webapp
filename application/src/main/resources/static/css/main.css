@@ -879,6 +879,10 @@ video {
   flex-shrink: 0;
 }
 
+.shrink-0 {
+  flex-shrink: 0;
+}
+
 .flex-grow {
   flex-grow: 1;
 }
@@ -2144,11 +2148,6 @@ routine-image-slider {
   .md\:px-8 {
     padding-left: 2rem;
     padding-right: 2rem;
-  }
-
-  .md\:py-0\.5 {
-    padding-top: 0.125rem;
-    padding-bottom: 0.125rem;
   }
 
   .md\:py-1 {

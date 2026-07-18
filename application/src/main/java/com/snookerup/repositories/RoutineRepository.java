@@ -1,6 +1,9 @@
 package com.snookerup.repositories;
 
 import com.snookerup.model.db.nosql.Routine;
+import com.snookerup.model.db.nosql.RoutineOverview;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -36,4 +39,12 @@ public interface RoutineRepository extends MongoRepository<Routine, String> {
      */
     @Query("{ 'routineId': ?0 }")
     Optional<Routine> findByRoutineId(String id);
+
+    /**
+     * Get a page of routine overviews (just routine ID and title) for a given title search term
+     * @param title The search term for the title, so could be not matching case and partial match
+     * @param pageable Details about the page, i.e. page number (starting from 0) and page size
+     * @return A page of routine overviews
+     */
+    Page<RoutineOverview> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 }

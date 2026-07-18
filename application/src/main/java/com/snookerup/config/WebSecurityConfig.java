@@ -36,6 +36,7 @@ public class WebSecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/",
                                 "/login*",
+                                "/routine-overviews",
                                 "/routines",
                                 "/routines/**",
                                 "/routines-frag",

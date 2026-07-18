@@ -5,6 +5,7 @@ import com.snookerup.model.addedcontext.PracticeSessionRoutineWithRoutineContext
 import com.snookerup.model.addedcontext.ScoreWithRoutineContext;
 import com.snookerup.model.db.Score;
 import com.snookerup.model.db.nosql.PracticeSessionRoutine;
+import com.snookerup.model.db.nosql.RoutineOverview;
 import com.snookerup.repositories.RoutineRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,12 @@ public class RoutineServiceImpl implements RoutineService {
      * routines are not added outside of an app restart.
      */
     private List<String> allTags = null;
+
+    @Override
+    public Page<RoutineOverview> getRoutineOverviews(String search, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return routineRepository.findByTitleContainingIgnoreCase(search, pageable);
+    }
 
     @Override
     public Page<Routine> getRoutines(String tag, String search, int page, int size) {

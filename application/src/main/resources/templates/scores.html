@@ -9,14 +9,15 @@
             <h2 class="text-3xl font-bold text-green-800 mb-2 text-center font-ubuntu">
                 Scores
             </h2>
+            <div class="md:m-auto my-4 flex items-center gap-4 w-full md:w-1/2">
+                <label for="routineIdSelector" class="ml-2 text-xs shrink-0">
+                    Routine:
+                </label>
+                <select class="grow mr-2" id="routineIdSelector" name="routineNames" autocomplete="off" placeholder="Search for a routine..." >
+                    <option th:if="${selectedRoutine != null}" th:value="${selectedRoutineId}" selected>[[ ${selectedRoutine.getTitle()} ]]</option>
+                </select>
+            </div>
             <div class="text-center text-xs flex flex-col md:flex-row justify-center">
-                <div class="m-2 text-center py-4 border-solid border-2 rounded-md border-green-800">
-                    <p class="inline ml-4">Routine:</p>
-                    <select id="routineIdSelector" name="routineNames" class="text-xs inline rounded-md border-0 py-2 md:py-0.5 px-4 mx-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        <option value="all"th:selected="${selectedRoutineId == null}">All routines</option>
-                        <option th:each="routine : ${routines}" th:value="${routine.routineId}" th:text="${routine.title}" th:selected="${routine.routineId.equals(selectedRoutineId)}">[[ ${routine.title} ]]</option>
-                    </select>
-                </div>
                 <div class="items-center m-2 flex flex-col md:flex-row text-center py-2 md:py-4 border-solid border-2 rounded-md border-green-800">
                     <div class="pb-2 md:pb-0">
                         <p class="inline ml-4">From:</p>

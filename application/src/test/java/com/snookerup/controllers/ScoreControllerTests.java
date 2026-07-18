@@ -139,7 +139,6 @@ class ScoreControllerTests {
         assertEquals(SCORES_PAGE, returnedPage);
         verify(mockModel).addAttribute("selectedRoutineId", ROUTINE_ID);
         verify(mockModel).addAttribute("selectedRoutine", mockRoutine1);
-        verify(mockModel).addAttribute("routines", allRoutines);
         verify(mockModel).addAttribute("pageOfScores", mockScorePage);
         verify(mockScoreService).getScorePageForParams(requestParams);
     }
@@ -172,7 +171,6 @@ class ScoreControllerTests {
         assertEquals(SCORES_PAGE, returnedPage);
         verify(mockModel).addAttribute("selectedRoutineId", ROUTINE_ID);
         verify(mockModel).addAttribute("selectedRoutine", mockRoutine1);
-        verify(mockModel).addAttribute("routines", allRoutines);
         verify(mockModel).addAttribute("pageOfScores", mockScorePage);
         verify(mockScoreService).getScorePageForParams(requestParams);
     }
@@ -205,7 +203,6 @@ class ScoreControllerTests {
         assertEquals(SCORES_PAGE, returnedPage);
         verify(mockModel).addAttribute("selectedRoutineId", ROUTINE_ID);
         verify(mockModel).addAttribute("selectedRoutine", mockRoutine1);
-        verify(mockModel).addAttribute("routines", allRoutines);
         verify(mockModel).addAttribute("pageOfScores", mockScorePage);
         verify(mockScoreService).getScorePageForParams(requestParams);
     }
