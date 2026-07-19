@@ -87,11 +87,6 @@ public class RoutineServiceImpl implements RoutineService {
     }
 
     @Override
-    public List<Routine> getAllRoutines() {
-        return routineRepository.findAll();
-    }
-
-    @Override
     public Optional<Routine> getRoutineById(String id) {
         return routineRepository.findByRoutineId(id);
     }

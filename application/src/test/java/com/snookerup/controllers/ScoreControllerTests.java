@@ -52,8 +52,6 @@ class ScoreControllerTests {
     private ScorePage mockScorePage;
     private ScoreStats mockScoreStats;
 
-    private List<Routine> allRoutines;
-
     ScoreController scoreController;
 
     @BeforeEach
@@ -72,8 +70,6 @@ class ScoreControllerTests {
 
         scoreController = new ScoreController(mockScoreService, mockRoutineService, mockMeterRegistry);
 
-        allRoutines = List.of(mockRoutine1, mockRoutine2);
-        when(mockRoutineService.getAllRoutines()).thenReturn(allRoutines);
         when(mockOidcUser.getName()).thenReturn(USERNAME);
     }
 

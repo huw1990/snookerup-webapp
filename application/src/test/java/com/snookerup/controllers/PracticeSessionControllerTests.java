@@ -264,7 +264,6 @@ class PracticeSessionControllerTests {
 
         // Set mock expectations
         when(mockPracticeSessionService.getPracticeSessionsForPlayerUsername(USERNAME)).thenReturn(mockPracticeSessions);
-        when(mockRoutineService.getAllRoutines()).thenReturn(mockRoutines);
         when(mockRoutineService.getRoutineById(routineId)).thenReturn(Optional.of(mockRoutine));
         when(mockRoutine.getRoutineId()).thenReturn(routineId);
 

@@ -255,22 +255,6 @@ class RoutineServiceImplTests {
     }
 
     @Test
-    public void getAllRoutines_Should_DelegateToRepository() {
-        // Define variables
-        List<Routine> allRoutinesList = List.of(mockRoutine);
-
-        // Set mock expectations
-        when(mockRoutineRepository.findAll()).thenReturn(allRoutinesList);
-
-        // Then execute method under test
-        List<Routine> allRoutines = routineService.getAllRoutines();
-
-        // Verify
-        verify(mockRoutineRepository).findAll();
-        assertEquals(allRoutines, allRoutinesList);
-    }
-
-    @Test
     public void getRoutineById_Should_DelegateToRepository() {
         // Define variables
         String routineId = "the-line-up";

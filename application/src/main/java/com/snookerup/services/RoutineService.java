@@ -41,12 +41,6 @@ public interface RoutineService {
     Page<Routine> getRoutines(String tag, String search, int pageNumber, int pageSize);
 
     /**
-     * Get all routines.
-     * @return A list of all routines loaded into the app
-     */
-    List<Routine> getAllRoutines();
-
-    /**
      * Get a routine by its ID.
      * @param id The ID of the routine
      * @return An optional containing the routine with the matching ID, if found
