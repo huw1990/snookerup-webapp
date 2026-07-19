@@ -217,8 +217,6 @@ public class PracticeSessionController {
                                  @AuthenticationPrincipal OidcUser user) {
         log.debug("getAddToPracticeSession routineId = {}", routineId);
         RoutineAdditionToPracticeSession practiceSessionAddition = new RoutineAdditionToPracticeSession();
-        List<Routine> allRoutines = routineService.getAllRoutines();
-        model.addAttribute("routines", allRoutines);
         System.out.println("routineId=" + routineId);
         Routine selectedRoutine = null;
         if (routineId.isPresent()) {
@@ -228,14 +226,12 @@ public class PracticeSessionController {
                 selectedRoutine = routineOpt.get();
             }
         }
-        if (selectedRoutine == null) {
-            // No routine ID selected, but we need a routine to display variations for, so select the first routine in the list
-            selectedRoutine = allRoutines.get(0);
+        if (selectedRoutine != null) {
+            log.debug("selectedRoutine={}", selectedRoutine);
+            practiceSessionAddition.setRoutineId(selectedRoutine.getRoutineId());
+            model.addAttribute("selectedRoutineId", selectedRoutine.getRoutineId());
+            model.addAttribute("selectedRoutine", selectedRoutine);
         }
-        log.debug("selectedRoutine={}", selectedRoutine);
-        practiceSessionAddition.setRoutineId(selectedRoutine.getRoutineId());
-        model.addAttribute("selectedRoutineId", selectedRoutine.getRoutineId());
-        model.addAttribute("selectedRoutine", selectedRoutine);
         model.addAttribute("practiceSessionAddition", practiceSessionAddition);
         model.addAttribute("practiceSessions", practiceSessionService
                 .getPracticeSessionsForPlayerUsername(user.getName()));

@@ -29,10 +29,10 @@
                         </div>
                     </div>
                     <div class="px-8 py-4 border-solid border-2 rounded-md bg-stone-100 drop-shadow-xl border-solid border-4 border-green-800">
-                        <label for="scoreRoutineSelector" class="block text-sm font-medium leading-6 text-gray-900">Routine</label>
+                        <label for="routineIdSelector" class="block text-sm font-medium leading-6 text-gray-900">Routine</label>
                         <div class="mt-2">
-                            <select th:field="*{routineId}" name="routineNames" id="scoreRoutineSelector" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                <option th:each="routine : ${routines}" th:value="${routine.routineId}" th:text="${routine.title}" th:selected="${routine.routineId.equals(selectedRoutineId)}">[[ ${routine.title} ]]</option>
+                            <select th:field="*{routineId}" id="routineIdSelector" name="routineNames" autocomplete="off" placeholder="Search for a routine..." required class="block w-full p-1.5 text-gray-900 sm:text-sm sm:leading-6">
+                                <option th:if="${selectedRoutine != null}" th:value="${selectedRoutineId}" selected>[[ ${selectedRoutine.getTitle()} ]]</option>
                             </select>
                         </div>
                     </div>

@@ -275,11 +275,9 @@ class PracticeSessionControllerTests {
         // Verify
         assertEquals(ADD_TO_PRACTICE_SESSION_PAGE, returnedPage);
         verify(mockPracticeSessionService).getPracticeSessionsForPlayerUsername(USERNAME);
-        verify(mockRoutineService).getAllRoutines();
         verify(mockRoutineService).getRoutineById(routineId);
         verify(mockModel).addAttribute("selectedRoutineId", routineId);
         verify(mockModel).addAttribute("selectedRoutine", mockRoutine);
-        verify(mockModel).addAttribute("routines", mockRoutines);
         verify(mockModel).addAttribute(eq("practiceSessionAddition"), any());
         verify(mockModel).addAttribute("practiceSessions", mockPracticeSessions);
         verify(mockModel).addAttribute("selectedPracticeSessionTitle", practiceSessionTitle);
@@ -298,7 +296,6 @@ class PracticeSessionControllerTests {
 
         // Set mock expectations
         when(mockPracticeSessionService.getPracticeSessionsForPlayerUsername(USERNAME)).thenReturn(mockPracticeSessions);
-        when(mockRoutineService.getAllRoutines()).thenReturn(mockRoutines);
         when(mockRoutineService.getRoutineById(routineId)).thenReturn(Optional.empty());
         when(mockRoutine.getRoutineId()).thenReturn(otherRoutineId);
 
@@ -309,11 +306,7 @@ class PracticeSessionControllerTests {
         // Verify
         assertEquals(ADD_TO_PRACTICE_SESSION_PAGE, returnedPage);
         verify(mockPracticeSessionService).getPracticeSessionsForPlayerUsername(USERNAME);
-        verify(mockRoutineService).getAllRoutines();
         verify(mockRoutineService).getRoutineById(routineId);
-        verify(mockModel).addAttribute("selectedRoutineId", otherRoutineId);
-        verify(mockModel).addAttribute("selectedRoutine", mockRoutine);
-        verify(mockModel).addAttribute("routines", mockRoutines);
         verify(mockModel).addAttribute(eq("practiceSessionAddition"), any());
         verify(mockModel).addAttribute("practiceSessions", mockPracticeSessions);
         verify(mockModel).addAttribute("selectedPracticeSessionTitle", practiceSessionTitle);
@@ -332,7 +325,6 @@ class PracticeSessionControllerTests {
 
         // Set mock expectations
         when(mockPracticeSessionService.getPracticeSessionsForPlayerUsername(USERNAME)).thenReturn(mockPracticeSessions);
-        when(mockRoutineService.getAllRoutines()).thenReturn(mockRoutines);
         when(mockRoutine.getRoutineId()).thenReturn(otherRoutineId);
 
         // Execute method under test
@@ -342,11 +334,7 @@ class PracticeSessionControllerTests {
         // Verify
         assertEquals(ADD_TO_PRACTICE_SESSION_PAGE, returnedPage);
         verify(mockPracticeSessionService).getPracticeSessionsForPlayerUsername(USERNAME);
-        verify(mockRoutineService).getAllRoutines();
         verify(mockRoutineService, never()).getRoutineById(routineId);
-        verify(mockModel).addAttribute("selectedRoutineId", otherRoutineId);
-        verify(mockModel).addAttribute("selectedRoutine", mockRoutine);
-        verify(mockModel).addAttribute("routines", mockRoutines);
         verify(mockModel).addAttribute(eq("practiceSessionAddition"), any());
         verify(mockModel).addAttribute("practiceSessions", mockPracticeSessions);
         verify(mockModel).addAttribute("selectedPracticeSessionTitle", practiceSessionTitle);
