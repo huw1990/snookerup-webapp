@@ -52,3 +52,9 @@
         </div>
     </section>
 </div>
+
+<th:block layout:fragment="page-scripts">
+    <script th:if="${stats != null}" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js" integrity="sha512-Y51n9mtKTVBh3Jbx5pZSJNDDMyY+yGe77DGtBPzRlgsf/YLCh13kSZ3JmfHGzYFCmOndraf0sQgfM654b7dJ3w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script th:inline="javascript" th:if="${stats != null}" th:replace="fragments/scoreGraphScriptTag :: statsGraphScript"></script>
+</th:block>
+</html>

@@ -83,3 +83,12 @@
         </div>
     </dialog>
 </div>
+
+<th:block layout:fragment="page-scripts">
+    <script th:inline="javascript" type="text/javascript" th:src="@{/js/routine-addition-to-practice-session-select-fixes.js}"></script>
+    <script th:inline="javascript" type="text/javascript" th:src="@{/js/create-session-before-adding-routine.js}"></script>
+    <script th:inline="javascript" type="text/javascript" th:src="@{/js/ajax/dynamic-add-score-fields-ajax.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.6.2/dist/js/tom-select.complete.min.js"></script>
+    <script th:inline="javascript" type="text/javascript" th:src="@{/js/routine-title-dynamic-select.js}"></script>
+</th:block>
+</html>
