@@ -36,14 +36,14 @@ import static org.mockito.Mockito.*;
 class PracticeSessionControllerTests {
 
     private static final String USERNAME = "willo";
-    private static final String PRACTICE_SESSIONS_PAGE = "practiceSessions";
-    private static final String PRACTICE_SESSION_PAGE = "practiceSession";
-    private static final String DELETE_PRACTICE_SESSION_PAGE = "deletePracticeSession";
-    private static final String ADD_PRACTICE_SESSION_PAGE = "addPracticeSession";
-    private static final String ADD_TO_PRACTICE_SESSION_PAGE = "addToPracticeSession";
-    private static final String EDIT_PRACTICE_SESSION_PAGE = "editPracticeSession";
-    private static final String EDIT_PRACTICE_SESSION_ROUTINES_PAGE = "editPracticeSessionRoutines";
-    private static final String PLAY_PRACTICE_SESSION_ROUTINES_PAGE = "playPracticeSession";
+    private static final String PRACTICE_SESSIONS_PAGE = "practiceSessions/practiceSessions";
+    private static final String PRACTICE_SESSION_PAGE = "practiceSessions/practiceSession";
+    private static final String DELETE_PRACTICE_SESSION_PAGE = "practiceSessions/deletePracticeSession";
+    private static final String ADD_PRACTICE_SESSION_PAGE = "practiceSessions/addPracticeSession";
+    private static final String ADD_TO_PRACTICE_SESSION_PAGE = "practiceSessions/addToPracticeSession";
+    private static final String EDIT_PRACTICE_SESSION_PAGE = "practiceSessions/editPracticeSession";
+    private static final String EDIT_PRACTICE_SESSION_ROUTINES_PAGE = "practiceSessions/editPracticeSessionRoutines";
+    private static final String PLAY_PRACTICE_SESSION_ROUTINES_PAGE = "practiceSessions/playPracticeSession";
     private static final String SESSION_ID = "1234";
 
     private PracticeSessionService mockPracticeSessionService;

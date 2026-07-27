@@ -55,7 +55,7 @@ public class RoutineController {
         model.addAttribute("selectedTag", tag);
         model.addAttribute("currentPage", page);
         model.addAttribute("searchTerm", searchTerm);
-        return "routines";
+        return "routines/routines";
     }
 
     @GetMapping("/routines/{id}")
@@ -64,6 +64,6 @@ public class RoutineController {
         routineOpt.ifPresent((routine) -> {
             model.addAttribute("routine", routineOpt.get());
         });
-        return "routine";
+        return "routines/routine";
     }
 }

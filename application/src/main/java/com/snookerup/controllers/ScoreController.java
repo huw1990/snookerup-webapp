@@ -132,7 +132,7 @@ public class ScoreController {
         model.addAttribute("pageOfScores", scorePage);
         model.addAttribute("fromTime", String.valueOf(from.get()));
         model.addAttribute("toTime", String.valueOf(to.get()));
-        return "scores";
+        return "scores/scores";
     }
 
     /**
@@ -159,7 +159,7 @@ public class ScoreController {
         });
         score.setPlayerUsername(user.getName());
         model.addAttribute("score", score);
-        return "addscore";
+        return "scores/addScore";
     }
 
     /**
@@ -237,7 +237,7 @@ public class ScoreController {
                                 @AuthenticationPrincipal OidcUser user) {
         if (routineId.isEmpty()) {
             model.addAttribute("noRoutineProvidedError", NO_ROUTINE_PROVIDED_ERROR);
-            return "stats";
+            return "scores/stats";
         }
         if (from.isEmpty() || to.isEmpty()) {
             LocalDateTime fromParam = null;
@@ -283,7 +283,7 @@ public class ScoreController {
                 ballStriking.orElse(null));
         ScoreStats scoreStats = scoreService.getStatsForParams(params);
         model.addAttribute("stats", scoreStats);
-        return "stats";
+        return "scores/stats";
     }
 
     /**

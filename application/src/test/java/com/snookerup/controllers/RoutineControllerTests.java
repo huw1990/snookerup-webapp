@@ -19,9 +19,8 @@ import static org.mockito.Mockito.*;
  */
 class RoutineControllerTests {
 
-    private static final String ROUTINES_PAGE = "routines";
-    private static final String ROUTINE_PAGE = "routine";
-    private static final String ROUTINE_LIST_FRAGMENT = "fragments/routinelist :: routineList";
+    private static final String ROUTINES_PAGE = "routines/routines";
+    private static final String ROUTINE_PAGE = "routines/routine";
     private static final String ROUTINE_ID = "the-line-up";
 
     RoutineService mockRoutineService;

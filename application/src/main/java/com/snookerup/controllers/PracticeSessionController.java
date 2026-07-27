@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -115,7 +114,7 @@ public class PracticeSessionController {
     public String getAllPracticeSessions(Model model, @AuthenticationPrincipal OidcUser user) {
         model.addAttribute("practiceSessions",
                 practiceSessionService.getPracticeSessionsForPlayerUsername(user.getName()));
-        return "practiceSessions";
+        return "practiceSessions/practiceSessions";
     }
 
     /**
@@ -129,7 +128,7 @@ public class PracticeSessionController {
     public String getPracticeSessionById(@PathVariable("id") String id, Model model, @AuthenticationPrincipal OidcUser user) {
         model.addAttribute("practiceSession",
                 practiceSessionService.getPracticeSessionByIdAndPlayerUsername(id, user.getName()));
-        return "practiceSession";
+        return "practiceSessions/practiceSession";
     }
 
     /**
@@ -143,7 +142,7 @@ public class PracticeSessionController {
         PracticeSession practiceSession = new PracticeSession();
         practiceSession.setPlayerUsername(user.getName());
         model.addAttribute("practiceSession", practiceSession);
-        return "addPracticeSession";
+        return "practiceSessions/addPracticeSession";
     }
 
     /**
@@ -238,7 +237,7 @@ public class PracticeSessionController {
         if (practiceSessionTitle.isPresent()) {
             model.addAttribute("selectedPracticeSessionTitle", practiceSessionTitle.get());
         }
-        return "addToPracticeSession";
+        return "practiceSessions/addToPracticeSession";
     }
 
     /**
@@ -307,7 +306,7 @@ public class PracticeSessionController {
     public String getPracticeSessionDeleteById(@PathVariable("id") String id, Model model, @AuthenticationPrincipal OidcUser user) {
         model.addAttribute("practiceSession",
                 practiceSessionService.getPracticeSessionByIdAndPlayerUsername(id, user.getName()));
-        return "deletePracticeSession";
+        return "practiceSessions/deletePracticeSession";
     }
 
     /**
@@ -353,7 +352,7 @@ public class PracticeSessionController {
             practiceSession.setDescription(existingPracticeSession.getDescription());
             model.addAttribute("practiceSession", practiceSession);
         }
-        return "editPracticeSession";
+        return "practiceSessions/editPracticeSession";
     }
 
     /**
@@ -421,7 +420,7 @@ public class PracticeSessionController {
             model.addAttribute("practiceSession", existingPracticeSession);
             model.addAttribute("routineUuids", existingPracticeSession.getCurrentRoutineUUIDsOrder());
         }
-        return "editPracticeSessionRoutines";
+        return "practiceSessions/editPracticeSessionRoutines";
     }
 
     /**
@@ -439,7 +438,7 @@ public class PracticeSessionController {
         if (existingPracticeSession != null) {
             model.addAttribute("practiceSession", existingPracticeSession);
         }
-        return "playPracticeSession";
+        return "practiceSessions/playPracticeSession";
     }
 
 

@@ -37,8 +37,9 @@ class ScoreControllerTests {
     private static final String REDIRECT_PREFIX = "redirect:";
     private static final String SCORES_PAGE_URL_START = "/scores?";
     private static final String STATS_PAGE_URL_START = "/scores/stats?";
-    private static final String SCORES_PAGE = "scores";
-    private static final String STATS_PAGE = "stats";
+    private static final String SCORES_PAGE = "scores/scores";
+    private static final String STATS_PAGE = "scores/stats";
+    private static final String ADD_SCORE_PAGE = "scores/addScore";
 
     private ScoreService mockScoreService;
     private RoutineService mockRoutineService;
@@ -206,7 +207,6 @@ class ScoreControllerTests {
     @Test
     public void getAddNewScore_Should_ReturnAddScoreWithSelectedRoutine_When_ValidRoutineIdProvided() {
         // Define variables
-        String expectedReturn = "addscore";
 
         // Set mock expectations
         when(mockRoutineService.getRoutineById(ROUTINE_ID)).thenReturn(Optional.of(mockRoutine1));
@@ -216,7 +216,7 @@ class ScoreControllerTests {
         when(mockRoutine1.getRoutineId()).thenReturn(ROUTINE_ID);
 
         // Verify
-        assertEquals(expectedReturn, returnedPage);
+        assertEquals(ADD_SCORE_PAGE, returnedPage);
         ArgumentCaptor<Score> scoreCaptor = ArgumentCaptor.forClass(Score.class);
         verify(mockModel).addAttribute("selectedRoutineId", ROUTINE_ID);
         verify(mockModel).addAttribute("selectedRoutine", mockRoutine1);
@@ -230,7 +230,6 @@ class ScoreControllerTests {
     @Test
     public void getAddNewScore_Should_ReturnAddScoreWithoutSelectedRoutine_When_InvalidRoutineIdProvided() {
         // Define variables
-        String expectedReturn = "addscore";
         String invalidRoutineId = "invalid-id";
 
         // Set mock expectations
@@ -240,7 +239,7 @@ class ScoreControllerTests {
         String returnedPage = scoreController.getAddNewScore(mockModel, Optional.of(invalidRoutineId), mockOidcUser);
 
         // Verify
-        assertEquals(expectedReturn, returnedPage);
+        assertEquals(ADD_SCORE_PAGE, returnedPage);
         ArgumentCaptor<Score> scoreCaptor = ArgumentCaptor.forClass(Score.class);
         verify(mockModel).addAttribute(eq("score"), scoreCaptor.capture());
         Score score = scoreCaptor.getValue();
@@ -252,7 +251,6 @@ class ScoreControllerTests {
     @Test
     public void getAddNewScore_Should_ReturnAddScoreWithoutSelectedRoutine_When_NoRoutineIdProvided() {
         // Define variables
-        String expectedReturn = "addscore";
 
         // Set mock expectations
 
@@ -260,7 +258,7 @@ class ScoreControllerTests {
         String returnedPage = scoreController.getAddNewScore(mockModel, Optional.empty(), mockOidcUser);
 
         // Verify
-        assertEquals(expectedReturn, returnedPage);
+        assertEquals(ADD_SCORE_PAGE, returnedPage);
         ArgumentCaptor<Score> scoreCaptor = ArgumentCaptor.forClass(Score.class);
         verify(mockModel).addAttribute(eq("score"), scoreCaptor.capture());
         Score score = scoreCaptor.getValue();
