@@ -191,6 +191,7 @@ data "template_file" "user_data" {
     cognito_client_secret = var.cognito_client_secret
     s3_backup_bucket      = aws_s3_bucket.backups.id
     invite_codes          = var.invite_codes
+  }
 }
 
 # EC2 Instance
