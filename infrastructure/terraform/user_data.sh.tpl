@@ -42,10 +42,10 @@ mkdir -p $${APP_DIR}/backups
 mkdir -p $${APP_DIR}/data/postgres
 mkdir -p $${APP_DIR}/data/mongo
 
-# 4. Generate Random Passwords for Local Databases
+# 4. Generate Random Passwords & Application Configs
 POSTGRES_PASS=$(openssl rand -base64 24 | tr -dc 'a-zA-Z0-9')
 MONGO_PASS=$(openssl rand -base64 24 | tr -dc 'a-zA-Z0-9')
-# Calculate Cognito Issuer URI dynamically
+
 COGNITO_ISSUER_URI="https://cognito-idp.${aws_region}.amazonaws.com/${cognito_user_pool_id}"
 COGNITO_LOGOUT_URL="https://${cognito_domain_prefix}.auth.${aws_region}.amazoncognito.com/logout?client_id=${cognito_client_id}&logout_uri=https://${domain_name}"
 
@@ -65,6 +65,7 @@ COGNITO_CLIENT_ID=${cognito_client_id}
 COGNITO_CLIENT_SECRET=${cognito_client_secret}
 COGNITO_ISSUER_URI=$${COGNITO_ISSUER_URI}
 COGNITO_LOGOUT_URL=$${COGNITO_LOGOUT_URL}
+INVITE_CODES=${invite_codes}
 EOF
 chmod 600 $${APP_DIR}/.env
 
@@ -174,7 +175,7 @@ networks:
     driver: bridge
 EOF
 
-# 6. Generate Temporary Nginx Bootstrap Config (for HTTP Validation)
+# 6. Generate Temporary Nginx Bootstrap Config
 cat <<EOF > $${APP_DIR}/nginx/conf.d/app.conf
 server {
     listen 80;
@@ -185,7 +186,7 @@ server {
     }
 
     location / {
-        return 200 "Bootstraping TLS certificates...";
+        return 200 "Bootstrapping TLS certificates...";
         add_header Content-Type text/plain;
     }
 }
@@ -273,27 +274,27 @@ EOF
 fi
 
 # 10. Configure Daily Backup Cron Job
-cat <<'EOF' > /usr/local/bin/snookerup-backup.sh
+cat <<EOF > /usr/local/bin/snookerup-backup.sh
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_DIR="/opt/snookerup"
-BACKUP_DIR="${APP_DIR}/backups"
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+APP_DIR="/opt/${app_name}"
+BACKUP_DIR="\$${APP_DIR}/backups"
+TIMESTAMP=\$$(date +%Y%m%d_%H%M%S)
 
-source ${APP_DIR}/.env
+source \$${APP_DIR}/.env
 
 # 1. Dump Postgres
-docker exec snookerup-postgres pg_dump -U ${POSTGRES_USER} ${POSTGRES_DB} | gzip > "${BACKUP_DIR}/postgres_${TIMESTAMP}.sql.gz"
+docker exec snookerup-postgres pg_dump -U \$${POSTGRES_USER} \$${POSTGRES_DB} | gzip > "\$${BACKUP_DIR}/postgres_\$${TIMESTAMP}.sql.gz"
 
 # 2. Dump Mongo
-docker exec snookerup-mongo mongodump --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD} --authenticationDatabase admin --archive | gzip > "${BACKUP_DIR}/mongo_${TIMESTAMP}.archive.gz"
+docker exec snookerup-mongo mongodump --username \$${MONGO_INITDB_ROOT_USERNAME} --password \$${MONGO_INITDB_ROOT_PASSWORD} --authenticationDatabase admin --archive | gzip > "\$${BACKUP_DIR}/mongo_\$${TIMESTAMP}.archive.gz"
 
 # 3. Sync backups off the server to S3
-aws s3 sync ${BACKUP_DIR} s3://${s3_backup_bucket}/database-backups/ --region ${aws_region}
+aws s3 sync \$${BACKUP_DIR} s3://${s3_backup_bucket}/database-backups/ --region ${aws_region}
 
 # 4. Clean up local dumps older than 7 days
-find ${BACKUP_DIR} -type f -mtime +7 -delete
+find \$${BACKUP_DIR} -type f -mtime +7 -delete
 EOF
 
 chmod +x /usr/local/bin/snookerup-backup.sh

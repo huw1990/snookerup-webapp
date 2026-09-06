@@ -176,25 +176,6 @@ data "aws_ami" "ubuntu_arm64" {
   }
 }
 
-# User Data Template Script
-data "template_file" "user_data" {
-  template = file("${path.module}/user_data.sh.tpl")
-  vars = {
-    app_name              = var.app_name
-    domain_name           = var.domain_name
-    admin_email           = var.admin_email
-    aws_region            = var.aws_region
-    ecr_repo_uri          = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.app_name}-webapp"
-    cognito_user_pool_id  = var.cognito_user_pool_id
-    cognito_client_name   = var.cognito_client_name
-    cognito_client_id     = var.cognito_client_id
-    cognito_client_secret = var.cognito_client_secret
-    cognito_domain_prefix = var.cognito_domain_prefix
-    s3_backup_bucket      = aws_s3_bucket.backups.id
-    invite_codes          = var.invite_codes
-  }
-}
-
 # EC2 Instance
 resource "aws_instance" "app_server" {
   ami                    = data.aws_ami.ubuntu_arm64.id
@@ -210,7 +191,20 @@ resource "aws_instance" "app_server" {
     delete_on_termination = false
   }
 
-  user_data = data.template_file.user_data.rendered
+  user_data = templatefile("${path.module}/user_data.sh.tpl", {
+    app_name              = var.app_name
+    domain_name           = var.domain_name
+    admin_email           = var.admin_email
+    aws_region            = var.aws_region
+    ecr_repo_uri          = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.app_name}-webapp"
+    cognito_user_pool_id  = var.cognito_user_pool_id
+    cognito_client_name   = var.cognito_client_name
+    cognito_client_id     = var.cognito_client_id
+    cognito_client_secret = var.cognito_client_secret
+    cognito_domain_prefix = var.cognito_domain_prefix
+    s3_backup_bucket      = aws_s3_bucket.backups.id
+    invite_codes          = var.invite_codes
+  })
 
   tags = {
     Name = "${var.app_name}-server"
