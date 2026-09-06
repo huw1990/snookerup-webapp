@@ -1,7 +1,7 @@
 # This is a workflow to be run every time there is a new version of the version of the SnookerUp application to
 # deploy.
 # Note this is triggered manually, rather than every time a commit is pushed.
-name: Build & Deploy Application
+name: 03 - Build & Deploy Application
 
 on:
   workflow_dispatch:

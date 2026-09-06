@@ -2,7 +2,7 @@
 # infrastructure/terraform change.
 # Note that the 01-bootstrap.yml workflow needs to be run before this is run for the first time, because it creates
 # the S3 bucket and DynamoDB table for storing state about the install, which this workflow relies upon.
-name: Infrastructure Deployment (Terraform)
+name: 02 - Infrastructure Deployment (Terraform)
 
 on:
   workflow_dispatch:
