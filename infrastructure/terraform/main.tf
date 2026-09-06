@@ -196,11 +196,11 @@ data "template_file" "user_data" {
 
 # EC2 Instance
 resource "aws_instance" "app_server" {
-  ami                  = data.aws_ami.ubuntu_arm64.id
-  instance_type        = var.instance_type
-  subnet_id            = data.aws_subnets.default.ids[0]
+  ami                    = data.aws_ami.ubuntu_arm64.id
+  instance_type          = var.instance_type
+  subnet_id              = data.aws_subnets.default.ids[0]
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
-  iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
+  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
 
   root_block_device {
     volume_size           = 20
