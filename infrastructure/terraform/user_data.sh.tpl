@@ -213,9 +213,14 @@ RestartSec=10s
 WantedBy=multi-user.target
 EOF
 
+cd $${APP_DIR}
+aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin ${ecr_repo_uri} || true
+docker compose pull app || echo "WARNING: ECR image not found yet. Ready for first deploy pipeline run."
+
+# Enable and attempt to start service
 systemctl daemon-reload
 systemctl enable ${app_name}.service
-systemctl start ${app_name}.service
+systemctl start ${app_name}.service || true
 
 # 8. Obtain Let's Encrypt Certificate
 sleep 15
