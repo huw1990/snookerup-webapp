@@ -96,22 +96,22 @@ services:
         max-file: "3"
 
   app:
-    image: ${ECR_REPO_URI}:latest
+    image: $${ECR_REPO_URI}:latest
     container_name: snookerup-app
     restart: unless-stopped
     environment:
       - SPRING_PROFILES_ACTIVE=aws
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
-      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
-      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
-      - SPRING_DATA_MONGODB_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/snookerup_catalog?authSource=admin
-      - COGNITO_USER_POOL_ID=${COGNITO_USER_POOL_ID}
-      - COGNITO_CLIENT_ID=${COGNITO_CLIENT_ID}
-      - COGNITO_CLIENT_SECRET=${COGNITO_CLIENT_SECRET}
-      - COGNITO_LOGOUT_URL=${COGNITO_LOGOUT_URL}
-      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=${COGNITO_ISSUER_URI}
-      - AWS_REGION=${AWS_REGION}
-      - INVITE_CODES=${INVITE_CODES}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/$${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=$${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=$${POSTGRES_PASSWORD}
+      - SPRING_DATA_MONGODB_URI=mongodb://$${MONGO_INITDB_ROOT_USERNAME}:$${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/snookerup_catalog?authSource=admin
+      - COGNITO_USER_POOL_ID=$${COGNITO_USER_POOL_ID}
+      - COGNITO_CLIENT_ID=$${COGNITO_CLIENT_ID}
+      - COGNITO_CLIENT_SECRET=$${COGNITO_CLIENT_SECRET}
+      - COGNITO_LOGOUT_URL=$${COGNITO_LOGOUT_URL}
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=$${COGNITO_ISSUER_URI}
+      - AWS_REGION=$${AWS_REGION}
+      - INVITE_CODES=$${INVITE_CODES}
     depends_on:
       postgres:
         condition: service_healthy
@@ -130,13 +130,13 @@ services:
     container_name: snookerup-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: $${POSTGRES_DB}
+      POSTGRES_USER: $${POSTGRES_USER}
+      POSTGRES_PASSWORD: $${POSTGRES_PASSWORD}
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -153,8 +153,8 @@ services:
     container_name: snookerup-mongo
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: $${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: $${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - ./data/mongo:/data/db
     healthcheck:
