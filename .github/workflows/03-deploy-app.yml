@@ -1,5 +1,4 @@
-# This is a workflow to be run every time there is a new version of the version of the SnookerUp application to
-# deploy.
+# This is a workflow to be run every time there is a new version of the SnookerUp application to deploy.
 # Note this is triggered manually, rather than every time a commit is pushed.
 name: 03 - Build & Deploy Application
 
@@ -35,7 +34,8 @@ jobs:
       - name: Build and Push ARM64 Docker Image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./application
+          file: ./application/Dockerfile
           platforms: linux/arm64
           push: true
           tags: |
@@ -50,13 +50,7 @@ jobs:
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
             --comment "Deploying new app image" \
-            --parameters 'commands=[
-              "cd /opt/snookerup",
-              "aws ecr get-login-password --region '${{ secrets.AWS_REGION }}' | docker login --username AWS --password-stdin '${{ steps.login-ecr.outputs.registry }}'",
-              "docker compose pull app",
-              "docker compose up -d --no-deps app",
-              "docker image prune -f"
-            ]' \
+            --parameters commands='["cd /opt/snookerup", "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}", "docker compose pull app", "docker compose up -d --no-deps app", "docker image prune -f"]' \
             --query "Command.CommandId" \
             --output text)
 
