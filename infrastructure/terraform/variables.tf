@@ -58,6 +58,11 @@ variable "cognito_client_secret" {
   description = "Existing AWS Cognito App Client Secret"
 }
 
+variable "cognito_domain_prefix" {
+  type        = string
+  description = "Existing AWS Cognito App Domain Prefix"
+}
+
 variable "invite_codes" {
   type        = string
   description = "Invite codes for users to sign up with"

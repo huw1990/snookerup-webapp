@@ -46,7 +46,7 @@ mkdir -p $${APP_DIR}/data/mongo
 POSTGRES_PASS=$(openssl rand -base64 24 | tr -dc 'a-zA-Z0-9')
 MONGO_PASS=$(openssl rand -base64 24 | tr -dc 'a-zA-Z0-9')
 # Calculate Cognito Issuer URI dynamically
-COGNITO_ISSUER_URI="https://cognito-idp.${aws_region}.amazonaws.com/${cognito_user_pool_id}
+COGNITO_ISSUER_URI="https://cognito-idp.${aws_region}.amazonaws.com/${cognito_user_pool_id}"
 COGNITO_LOGOUT_URL="https://${cognito_domain_prefix}.auth.${aws_region}.amazoncognito.com/logout?client_id=${cognito_client_id}&logout_uri=https://${domain_name}"
 
 # Create environment file

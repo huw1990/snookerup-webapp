@@ -189,6 +189,7 @@ data "template_file" "user_data" {
     cognito_client_name   = var.cognito_client_name
     cognito_client_id     = var.cognito_client_id
     cognito_client_secret = var.cognito_client_secret
+    cognito_domain_prefix = var.cognito_domain_prefix
     s3_backup_bucket      = aws_s3_bucket.backups.id
     invite_codes          = var.invite_codes
   }

@@ -7,21 +7,22 @@ managed through Docker Compose. The deployment process is managed through GitHub
 
 The setup/install requires a number of values to be set as GitHub Repository Secrets. A full list is:
 
-| Secret Name           |                                               Description                                               |                              Example Value |
-|:----------------------|:-------------------------------------------------------------------------------------------------------:|-------------------------------------------:|
-| AWS_ACCESS_KEY_ID     |                                           AWS IAM access key                                            |                                  `AKIA...` |
-| AWS_SECRET_ACCESS_KEY |                                        AWS IAM secret access key                                        |                             `wJalrXUtn...` |
-| AWS_REGION            |                                               AWS region                                                |                                `eu-west-2` |
-| DOMAIN_NAME           |                              Root domain already configured in AWS Route53                              |                            `snookerup.com` |
-| ADMIN_EMAIL           |                             Personal email for Let's Encrypt notifications                              |                       `myname@example.com` |
-| TF_STATE_BUCKET       |        Name of AWS S3 bucket where we store TerraForm state. Created during the "bootstrap" step        |             `snookerup-tf-state-123456789` |
-| TF_LOCK_TABLE         | Name of the AWS DynamoDB table where we store TerraForm lock state. Created during the "bootstrap" step |                       `snookerup-tf-locks` |
-| COGNITO_USER_POOL_ID  |                               User pool ID already created in AWS Cognito                               |                      `eu-west-2_XXXXXXXXX` |
-| COGNITO_CLIENT_NAME   |                               Client Name already created in AWS Cognito                                |                                `snookerup` |
-| COGNITO_CLIENT_ID     |                                Client ID already created in AWS Cognito                                 |               `2xxxxxxxxxxxxxxxxxxxxxxxxx` |
-| COGNITO_CLIENT_SECRET |                              Client Secret already created in AWS Cognito                               |               `2xxxxxxxxxxxxxxxxxxxxxxxxx` |
-| EC2_INSTANCE_ID       |                      AWS EC2 instance ID. Created during the "infrastructure" step                      |                      `i-0123456789abcdef0` |
-| INVITE_CODES          |       A list of invite codes for people to sign up with, to restrict access when first launching        |         `CRUCIBLE, 147_BREAK, SNOOKER_CUE` |
+| Secret Name           |                                               Description                                               |                      Example Value |
+|:----------------------|:-------------------------------------------------------------------------------------------------------:|-----------------------------------:|
+| AWS_ACCESS_KEY_ID     |                                           AWS IAM access key                                            |                          `AKIA...` |
+| AWS_SECRET_ACCESS_KEY |                                        AWS IAM secret access key                                        |                     `wJalrXUtn...` |
+| AWS_REGION            |                                               AWS region                                                |                        `eu-west-2` |
+| DOMAIN_NAME           |                              Root domain already configured in AWS Route53                              |                    `snookerup.com` |
+| ADMIN_EMAIL           |                             Personal email for Let's Encrypt notifications                              |               `myname@example.com` |
+| TF_STATE_BUCKET       |        Name of AWS S3 bucket where we store TerraForm state. Created during the "bootstrap" step        |     `snookerup-tf-state-123456789` |
+| TF_LOCK_TABLE         | Name of the AWS DynamoDB table where we store TerraForm lock state. Created during the "bootstrap" step |               `snookerup-tf-locks` |
+| COGNITO_USER_POOL_ID  |                               User pool ID already created in AWS Cognito                               |              `eu-west-2_XXXXXXXXX` |
+| COGNITO_CLIENT_NAME   |                               Client Name already created in AWS Cognito                                |                        `snookerup` |
+| COGNITO_CLIENT_ID     |                                Client ID already created in AWS Cognito                                 |       `2xxxxxxxxxxxxxxxxxxxxxxxxx` |
+| COGNITO_CLIENT_SECRET |                              Client Secret already created in AWS Cognito                               |       `2xxxxxxxxxxxxxxxxxxxxxxxxx` |
+| COGNITO_DOMAIN_PREFIX |                             Domain prefix already created in AWS Cognito                                |     `eu-wexxxxxxxxxxxxxxxxxxxxxxx` |
+| EC2_INSTANCE_ID       |                      AWS EC2 instance ID. Created during the "infrastructure" step                      |              `i-0123456789abcdef0` |
+| INVITE_CODES          |       A list of invite codes for people to sign up with, to restrict access when first launching        | `CRUCIBLE, 147_BREAK, SNOOKER_CUE` |
 ## Setup Stages
 
 The various stages of setup, in different GitHub Actions workflows, are:
