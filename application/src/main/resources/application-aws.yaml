@@ -7,20 +7,15 @@ spring:
             clientId: ${COGNITO_CLIENT_ID}
             clientSecret: ${COGNITO_CLIENT_SECRET}
             scope: openid, profile, email
-            clientName: snookerup-webapp-client
+            clientName: ${COGNITO_CLIENT_NAME}
         provider:
           cognito:
-            issuerUri: ${COGNITO_PROVIDER_URL}
-
-management:
-  cloudwatch:
-    metrics:
-      export:
-        enabled: true
-        namespace: snookerup
-        step: 1m
-      tags:
-        environment: ${ENVIRONMENT_NAME}
+            issuerUri: ${COGNITO_ISSUER_URI}
+  cloud:
+    aws:
+      region:
+        static: ${AWS_REGION}
 
 custom:
   use-cognito-as-identity-provider: true
+  invitation-codes: ${INVITE_CODES}
