@@ -70,7 +70,7 @@ EOF
 chmod 600 $${APP_DIR}/.env
 
 # 5. Write docker-compose.yml
-cat <<'EOF' > $${APP_DIR}/docker-compose.yml
+cat <<EOF > $${APP_DIR}/docker-compose.yml
 version: '3.8'
 
 services:
@@ -104,8 +104,16 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/$${POSTGRES_DB}
       - SPRING_DATASOURCE_USERNAME=$${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=$${POSTGRES_PASSWORD}
-      - SPRING_DATA_MONGODB_URI=mongodb://$${MONGO_INITDB_ROOT_USERNAME}:$${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/snookerup_catalog?authSource=admin
+      - SPRING_DATA_MONGODB_HOST=mongo
+      - SPRING_DATA_MONGODB_PORT=27017
+      - SPRING_DATA_MONGODB_DATABASE=snookerup_catalog
+      - MONGO_INITDB_ROOT_USERNAME=$${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=$${MONGO_INITDB_ROOT_PASSWORD}
+      - SPRING_DATA_MONGODB_USERNAME=$${MONGO_INITDB_ROOT_USERNAME}
+      - SPRING_DATA_MONGODB_PASSWORD=$${MONGO_INITDB_ROOT_PASSWORD}
+      - SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE=admin
       - COGNITO_USER_POOL_ID=$${COGNITO_USER_POOL_ID}
+      - COGNITO_ISSUER_URI=$${COGNITO_ISSUER_URI}
       - COGNITO_CLIENT_ID=$${COGNITO_CLIENT_ID}
       - COGNITO_CLIENT_SECRET=$${COGNITO_CLIENT_SECRET}
       - COGNITO_LOGOUT_URL=$${COGNITO_LOGOUT_URL}
@@ -194,6 +202,15 @@ EOF
 
 # Create directory for certbot challenge
 mkdir -p /var/www/certbot
+chmod -R 755 /var/www/certbot
+
+# Start temporary Nginx container for ACME challenge
+docker run -d \
+  --name nginx-bootstrap \
+  -p 80:80 \
+  -v /var/www/certbot:/var/www/certbot \
+  -v $${APP_DIR}/nginx/conf.d/app.conf:/etc/nginx/conf.d/default.conf:ro \
+  nginx:alpine
 
 # 7. Setup systemd Service for Docker Compose
 cat <<EOF > /etc/systemd/system/${app_name}.service
@@ -223,16 +240,22 @@ systemctl daemon-reload
 systemctl enable ${app_name}.service
 systemctl start ${app_name}.service || true
 
-# 8. Obtain Let's Encrypt Certificate
-sleep 15
-certbot certonly --webroot -w /var/www/certbot \
-    -d ${domain_name} \
-    --email ${admin_email} \
-    --agree-tos --non-interactive || true
+# 8. Obtain Let's Encrypt Certificate with retry mechanism
+for i in {1..5}; do
+  certbot certonly --webroot -w /var/www/certbot \
+      -d ${domain_name} \
+      --email ${admin_email} \
+      --agree-tos --non-interactive && break || sleep 15
+done
+
+# Copy generated certificates into the Docker volume mount path
+cp -rL /etc/letsencrypt/* $${APP_DIR}/nginx/certs/
+
+# Stop temporary bootstrap container
+docker stop nginx-bootstrap && docker rm nginx-bootstrap
 
 # 9. Write Production Nginx Config with HTTPS and Proxying
 if [ -d "/etc/letsencrypt/live/${domain_name}" ]; then
-    cp -r /etc/letsencrypt $${APP_DIR}/nginx/certs/
     cat <<EOF > $${APP_DIR}/nginx/conf.d/app.conf
 server {
     listen 80;
@@ -273,12 +296,25 @@ EOF
     cd $${APP_DIR} && docker compose restart nginx
 fi
 
-# 10. Configure Daily Backup Cron Job
+# 10. Automated Let's Encrypt Certificate Renewal
+cat << EOF > $${APP_DIR}/renew-certs.sh
+#!/bin/bash
+certbot renew --webroot -w /var/www/certbot --quiet
+cp -rL /etc/letsencrypt/* $${APP_DIR}/nginx/certs/
+docker exec snookerup-nginx nginx -s reload
+EOF
+
+chmod +x $${APP_DIR}/renew-certs.sh
+
+# Add to root crontab (runs twice daily at 2 AM and 2 PM)
+(crontab -l 2>/dev/null; echo "0 2,14 * * * $${APP_DIR}/renew-certs.sh >> /var/log/certbot-renewal.log 2>&1") | crontab -
+
+# 11. Configure Daily Backup Cron Job
 cat <<EOF > /usr/local/bin/snookerup-backup.sh
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_DIR="/opt/${app_name}"
+APP_DIR="$${APP_DIR}"
 BACKUP_DIR="\$${APP_DIR}/backups"
 TIMESTAMP=\$$(date +%Y%m%d_%H%M%S)
 
