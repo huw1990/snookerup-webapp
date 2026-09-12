@@ -55,6 +55,7 @@ APP_NAME=${app_name}
 AWS_REGION=${aws_region}
 DOMAIN_NAME=${domain_name}
 ECR_REPO_URI=${ecr_repo_uri}
+ECR_REPO_URI_SEEDER=${ecr_repo_uri_seeder}
 POSTGRES_DB=snookerup_db
 POSTGRES_USER=snookerup_user
 POSTGRES_PASSWORD=$${POSTGRES_PASS}
@@ -177,6 +178,23 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+  seeder:
+      image: $${ECR_REPO_URI_SEEDER}:latest
+      container_name: snookerup-seeder
+      profiles: ["tools"]
+      environment:
+        - MONGO_HOST=mongo
+        - MONGO_PORT=27017
+        - MONGO_DATABASE=snookerup_catalog
+        - MONGO_USERNAME=$${MONGO_INITDB_ROOT_USERNAME}
+        - MONGO_PASSWORD=$${MONGO_INITDB_ROOT_PASSWORD}
+        - MONGO_AUTH_DB=admin
+      depends_on:
+        mongo:
+          condition: service_healthy
+      networks:
+        - app-network
 
 networks:
   app-network:

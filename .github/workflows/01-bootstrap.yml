@@ -31,7 +31,8 @@ jobs:
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           STATE_BUCKET="${APP_NAME}-tf-state-${ACCOUNT_ID}"
           LOCK_TABLE="${APP_NAME}-tf-locks"
-          ECR_REPO="${APP_NAME}-webapp"
+          ECR_REPO_WEBAPP="${APP_NAME}-webapp"
+          ECR_REPO_SEEDER="${APP_NAME}-seeder"
 
           echo "=== Setting up Terraform State Backend & ECR Repository in ${AWS_REGION} ==="
 
@@ -74,12 +75,23 @@ jobs:
           fi
 
           # 3. Create ECR Repository for WebApp Container
-          if aws ecr describe-repositories --repository-names "${ECR_REPO}" --region "${AWS_REGION}" >/dev/null 2>&1; then
-              echo "ECR Repository '${ECR_REPO}' already exists."
+          if aws ecr describe-repositories --repository-names "${ECR_REPO_WEBAPP}" --region "${AWS_REGION}" >/dev/null 2>&1; then
+              echo "ECR Repository '${ECR_REPO_WEBAPP}' already exists."
           else
-              echo "Creating ECR Repository '${ECR_REPO}'..."
+              echo "Creating ECR Repository '${ECR_REPO_WEBAPP}'..."
               aws ecr create-repository \
-                  --repository-name "${ECR_REPO}" \
+                  --repository-name "${ECR_REPO_WEBAPP}" \
+                  --image-scanning-configuration scanOnPush=true \
+                  --region "${AWS_REGION}"
+          fi
+
+          # 4. Create ECR Repository for Routine Seeder Container
+          if aws ecr describe-repositories --repository-names "${ECR_REPO_SEEDER}" --region "${AWS_REGION}" >/dev/null 2>&1; then
+              echo "ECR Repository '${ECR_REPO_SEEDER}' already exists."
+          else
+              echo "Creating ECR Repository '${ECR_REPO_SEEDER}'..."
+              aws ecr create-repository \
+                  --repository-name "${ECR_REPO_SEEDER}" \
                   --image-scanning-configuration scanOnPush=true \
                   --region "${AWS_REGION}"
           fi

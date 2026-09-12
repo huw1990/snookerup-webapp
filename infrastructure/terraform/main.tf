@@ -204,6 +204,7 @@ resource "aws_instance" "app_server" {
     cognito_domain_prefix = var.cognito_domain_prefix
     s3_backup_bucket      = aws_s3_bucket.backups.id
     invite_codes          = var.invite_codes
+    ecr_repo_uri_seeder   = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.app_name}-seeder"
   })
 
   tags = {
