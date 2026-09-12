@@ -240,3 +240,32 @@ resource "aws_route53_record" "app_www" {
   ttl     = 300
   records = [var.domain_name]
 }
+
+# IAM Policy allowing EC2 instance to manage Cognito users
+resource "aws_iam_policy" "cognito_admin_policy" {
+  name        = "${var.app_name}-cognito-admin-policy"
+  description = "Allows EC2 application to perform admin actions on Cognito User Pool"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "cognito-idp:AdminCreateUser",
+          "cognito-idp:AdminGetUser",
+          "cognito-idp:AdminUpdateUserAttributes",
+          "cognito-idp:AdminSetUserPassword",
+          "cognito-idp:AdminDeleteUser",
+          "cognito-idp:AdminAddUserToGroup"
+        ]
+        Resource = "arn:aws:cognito-idp:${var.aws_region}:${data.aws_caller_identity.current.account_id}:userpool/${var.cognito_user_pool_id}"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "cognito_admin_attach" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = aws_iam_policy.cognito_admin_policy.arn
+}

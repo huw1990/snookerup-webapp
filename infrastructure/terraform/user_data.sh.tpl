@@ -121,6 +121,7 @@ services:
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=$${COGNITO_ISSUER_URI}
       - AWS_REGION=$${AWS_REGION}
       - INVITE_CODES=$${INVITE_CODES}
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_COGNITO_REDIRECT_URI: "{baseUrl}/login/oauth2/code/{registrationId}"
     depends_on:
       postgres:
         condition: service_healthy
