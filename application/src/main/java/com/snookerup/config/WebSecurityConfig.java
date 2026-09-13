@@ -40,7 +40,9 @@ public class WebSecurityConfig {
                                 "/routines",
                                 "/routines/**",
                                 "/routines-frag",
-                                "/register*")
+                                "/register*",
+                                "/manifest.json",
+                                "/icons/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .logout(logout -> logout.logoutSuccessHandler(logoutSuccessHandler));

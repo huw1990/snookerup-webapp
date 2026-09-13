@@ -1,0 +1,28 @@
+{
+  "name": "SnookerUp",
+  "short_name": "SnookerUp",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#eefced",
+  "theme_color": "#4cb04f",
+  "icons": [
+    {
+      "src": "/icons/snookerup-logo-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/snookerup-logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/snookerup-logo-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
