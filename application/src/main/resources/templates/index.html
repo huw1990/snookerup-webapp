@@ -24,20 +24,19 @@
             <div th:if="${last30DaysStats != null}" class="flex flex-col md:flex-row justify-center flex-wrap mt-2">
                 <div class="bg-green-50 flex-none min-w-full md:min-w-60 max-w-full md:max-w-none m-auto md:mx-3 p-4 rounded-lg shadow-md mb-6 drop-shadow-xl border-solid border-4 border-brown">
                     <p class="uppercase text-sm text-gray-700">NUMBER OF SCORES</p>
-                    <p class="pt-2 px-4 font-shrikhand text-6xl text-right text-green-700">0000</p>
-<!--                    <p class="pt-2 px-4 font-shrikhand text-6xl text-right text-green-700">[[${last30DaysStats.numberOfScores}]]</p>-->
+                    <p class="pt-2 px-4 font-shrikhand text-6xl text-right text-green-700">[[${last30DaysStats.numberOfScores}]]</p>
                 </div>
                 <div class="bg-green-50 flex-none min-w-full md:min-w-60 max-w-full md:max-w-none m-auto md:mx-3 p-4 rounded-lg shadow-md mb-6 drop-shadow-xl border-solid border-4 border-brown">
                     <p class="uppercase text-sm text-gray-700">AVERAGE SCORES PER SESSION</p>
-                    <p class="pt-2 px-4 font-shrikhand text-6xl text-right text-green-700">00</p>
+                    <p class="pt-2 px-4 font-shrikhand text-6xl text-right text-green-700">[[${last30DaysStats.averageScoresPerSession}]]</p>
                 </div>
                 <div class="bg-green-50 flex-none min-w-full md:min-w-60 max-w-full md:max-w-none m-auto md:mx-3 p-4 rounded-lg shadow-md mb-6 drop-shadow-xl border-solid border-4 border-brown">
                     <p class="uppercase text-sm text-gray-700">DAYS SINCE LAST SCORE</p>
-                    <p class="pt-2 px-4 font-shrikhand text-6xl text-right text-green-700">00</p>
+                    <p class="pt-2 px-4 font-shrikhand text-6xl text-right text-green-700">[[${last30DaysStats.daysSinceLastScore}]]</p>
                 </div>
                 <div class="bg-green-50 flex-none min-w-full md:min-w-60 max-w-full md:max-w-none m-auto md:mx-3 p-4 rounded-lg shadow-md mb-6 drop-shadow-xl border-solid border-4 border-brown">
                     <p class="uppercase text-sm text-gray-700">NUMBER OF ROUTINES ATTEMPTED</p>
-                    <p class="pt-2 px-4 font-shrikhand text-6xl text-right text-green-700">000</p>
+                    <p class="pt-2 px-4 font-shrikhand text-6xl text-right text-green-700">[[${last30DaysStats.routinesAttempted.size()}]]</p>
                 </div>
             </div>
         </div>
