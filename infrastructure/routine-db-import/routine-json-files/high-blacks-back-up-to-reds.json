@@ -1,0 +1,20 @@
+{
+  "routineId": "high-blacks-back-up-to-reds",
+  "title": "High Blacks Back Up to Reds",
+  "descriptionLines": [
+    "Place four reds in a line from the black spot up to the blue spot, where the third red is on the pink spot.",
+    "Start by placing the white on one side of the table, as high up the table as the pink spot, but near (ish) to a side cushion.",
+    "Pot the first high black, coming off just the top cushion (not the side cushion) to finish high on one of the remaining reds, on the same side of the table as you started on.",
+    "Pot the next red, coming off just the bottom cushion again if necessary, but again leaving yourself high on the black, where you then pot the black and again come off just the top cushion to be high on the next red.",
+    "This is a relatively advanced routine because it requires pinpoint position on every shot, due to the restrictions on what cushions you're allowed to hit and what parts of the table the white is allowed in."
+  ],
+  "titleImage": "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/high-blacks-back-up-to-reds-ls.png",
+  "otherImages": [
+    "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/high-blacks-back-up-to-reds.png"
+  ],
+  "tags": [
+    "match-situations",
+    "positional-play"
+  ],
+  "variations": {}
+}

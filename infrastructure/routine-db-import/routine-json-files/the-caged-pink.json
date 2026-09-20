@@ -1,0 +1,34 @@
+{
+  "routineId": "the-caged-pink",
+  "title": "The Caged Pink",
+  "descriptionLines": [
+    "Arrange eight reds in a square around the pink, so that the corner reds block the pink into the nearest middle or corner pocket, with the other reds in the middle of each side of the square.",
+    "Pot the balls in order (i.e. red, colour, red, and so on), trying to make as high a break as possible.",
+    "This is a good break building routine, and useful for focusing on blacks, because the pink can't be potted, at least not initially."
+  ],
+  "variationsLinesEasier": [
+    "For beginner and intermediate levels, don't make a complete square with all 8 reds, instead maybe just take 3 or 5 reds (but still focus on mainly blacks)."
+  ],
+  "variationsLinesHarder": [
+    "Once you can clear a certain number of reds and all the colours, try to loop through the routine, i.e. complete the routine, then set it up and try to complete it again, playing the white on the first red from where it finished after the last black on the previous routine.",
+    "Add self-imposed positional restrictions, such as limiting the number of cushions you're allowed to hit, or potting the reds in a specific order."
+  ],
+  "titleImage": "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/the-caged-pink-ls.png",
+  "otherImages": [
+    "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/the-caged-pink.png",
+    "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/the-caged-pink-five-reds.png"
+  ],
+  "tags": [
+    "break-building",
+    "positional-play"
+  ],
+  "variations": {
+    "loop": true,
+    "cushionLimit": true,
+    "unitNumbers": {
+      "min": 3,
+      "max": 8
+    },
+    "potInOrder": true
+  }
+}

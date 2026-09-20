@@ -1,0 +1,16 @@
+{
+  "routineId": "all-balls-in-any-order",
+  "title": "All Balls in Any Order",
+  "descriptionLines": [
+    "A good warm-up routine to get your cue arm going, dot the balls in a random order around the table and pot them in whatever order you want.",
+    "Not having to plan red-colour-red-colour (and so on) makes position easier, but it can get tricky when you get down to the last few pots."
+  ],
+  "titleImage": "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/all-balls-in-any-order-ls.png",
+  "otherImages": [
+    "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/all-balls-in-any-order.png"
+  ],
+  "tags": [
+    "positional-play"
+  ],
+  "variations": {}
+}
