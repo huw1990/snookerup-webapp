@@ -35,6 +35,21 @@ async function importJsonFiles({ uri, db: dbName, collection: collectionName, di
         const collection = db.collection(collectionName);
         await db.command({ ping: 1 });
 
+        if (process.env.DROP_COLLECTION === 'true') {
+            console.log(`Dropping existing collection '${collectionName}' before adding routines`);
+            try {
+                await collection.drop();
+                console.log(`Successfully dropped collection '${collectionName}'.`);
+            } catch (err) {
+                // MongoDB throws error code 26 (NamespaceNotFound) if the collection doesn't exist yet
+                if (err.code === 26 || err.codeName === 'NamespaceNotFound') {
+                    console.log(`Collection '${collectionName}' did not exist, skipping drop.`);
+                } else {
+                    throw err;
+                }
+            }
+        }
+
         // Check we can access the provided directory of JSON files
         try {
             await fs.access(dir);

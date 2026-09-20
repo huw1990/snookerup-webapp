@@ -10,10 +10,10 @@
   "variationsLinesHarder": [
     "Restricting every pot to the same type of ball striking, e.g. stun, screw, deep screw, top, etc."
   ],
-  "titleImage": "/images/routines/straight-pots-along-blue-spot-ls.png",
+  "titleImage": "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/straight-pots-along-blue-spot-ls.png",
   "otherImages": [
-    "/images/routines/straight-pots-along-blue-spot.png",
-    "/images/routines/straight-pots-along-blue-spot-3.png"
+    "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/straight-pots-along-blue-spot.png",
+    "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/straight-pots-along-blue-spot-3.png"
   ],
   "tags": [
     "straight-cueing",

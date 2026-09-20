@@ -14,10 +14,10 @@
     "Once you can clear a certain number of reds and all the colours, try to loop through the routine, i.e. complete the routine, then set it up and try to complete it again, playing the white on the first red from where it finished after the last black on the previous routine.",
     "Add self-imposed positional restrictions, such as limiting the number of cushions you're allowed to hit, or potting the reds in a specific order."
   ],
-  "titleImage": "/images/routines/x-line-up-normal-ls.png",
+  "titleImage": "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/x-line-up-normal-ls.png",
   "otherImages": [
-    "/images/routines/x-line-up-normal.png",
-    "/images/routines/x-line-up-8-reds.png"
+    "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/x-line-up-normal.png",
+    "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/x-line-up-8-reds.png"
   ],
   "tags": [
     "break-building",

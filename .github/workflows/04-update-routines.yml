@@ -4,6 +4,12 @@ name: 04 - Update Routines Data
 
 on:
   workflow_dispatch:
+    inputs:
+      drop_collection:
+        description: 'Drop the routines collection before importing?'
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   build-and-seed:
@@ -44,6 +50,9 @@ jobs:
 
       - name: Execute Seeder Container on EC2 via SSM
         run: |
+          # Default to 'false' if for any reason inputs.drop_collection is empty
+          DROP_COLLECTION="${{ inputs.drop_collection || 'false' }}"
+
           aws ssm send-command \
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
@@ -51,5 +60,5 @@ jobs:
               "cd /opt/snookerup",
               "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}",
               "docker compose pull seeder",
-              "docker compose run --rm seeder"
+              "docker compose run --rm-e DROP_COLLECTION=${DROP_COLLECTION} seeder"
             ]'

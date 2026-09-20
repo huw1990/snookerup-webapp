@@ -8,9 +8,9 @@
   "variationsLinesHarder": [
     "Limiting the number of cushions the white is allowed to hit."
   ],
-  "titleImage": "/images/routines/8-reds-between-blue-and-black-ls.png",
+  "titleImage": "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/8-reds-between-blue-and-black-ls.png",
   "otherImages": [
-    "/images/routines/8-reds-between-blue-and-black.png"
+    "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/8-reds-between-blue-and-black.png"
   ],
   "tags": [
     "break-building",
