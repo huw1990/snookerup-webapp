@@ -783,6 +783,10 @@ video {
   height: 10rem;
 }
 
+.h-full {
+  height: 100%;
+}
+
 .h-routine {
   height: 32rem;
 }
@@ -901,6 +905,10 @@ video {
 
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .flex-row {
@@ -2086,10 +2094,6 @@ routine-image-slider {
 
   .md\:w-auto {
     width: auto;
-  }
-
-  .md\:min-w-60 {
-    min-width: 15rem;
   }
 
   .md\:min-w-80 {
