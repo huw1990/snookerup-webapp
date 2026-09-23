@@ -124,27 +124,30 @@
         </div>
     </section>
     <section sec:authorize="isAnonymous()" class="py-4 pb-8 md:pb-10 md:py-10">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row">
-            <div class="flex-1">
-                <img class="w-5/6 md:w-auto h:auto md:h-[350px] m-auto rounded-3xl" src="images/lineup-hero-image.jpg">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8 px-4 sm:px-6 lg:px-8">
+            <div class="flex-1 flex justify-center">
+                <img class="w-full max-w-lg md:max-w-none h-auto md:h-[350px] object-cover rounded-3xl shadow-2xl border border-gray-200/50 transition-transform duration-300 hover:scale-[1.02]"
+                     src="images/lineup-hero-image.webp"
+                     alt="Snooker lineup training setup"
+                     fetchpriority="high"
+                     width="1200"
+                     height="655">
             </div>
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col flex-1 items-center">
-                <div class="text-center">
-                    <h1
-                            id="heroTitle" class="m-4 font-sigmar text-3xl font-extrabold text-red-500 drop-shadow-crisp sm:text-5xl md:text-6xl"
-                    >
-                        Level up your snooker
-                    </h1>
-                    <p class="my-4 text-xl text-green-700">
-                        Track your progress on practice routines.
-                    </p>
-                    <p class="my-4 text-xl text-green-700">
-                        Become a better player with SnookerUp.
-                    </p>
-                    <button class="bg-green-300 border-solid border-2 border-green-800 hover:bg-green-700 mt-5 px-8 py-4 rounded-lg text-center text-xl text-green-700 hover:text-green-300">
-                        <a th:href="@{/register}">SIGN UP NOW</a>
-                    </button>
+            <div class="flex flex-col flex-1 items-center md:items-start text-center md:text-left">
+                <h1 id="heroTitle" class="font-sigmar text-3xl font-extrabold text-red-600 drop-shadow-crisp sm:text-5xl md:text-6xl tracking-wide">
+                    Level up your snooker
+                </h1>
+                <div class="my-4 space-y-1 text-lg sm:text-xl text-green-900 font-medium">
+                    <p>Track your progress on practice routines.</p>
+                    <p>Become a better player with SnookerUp.</p>
                 </div>
+                <a th:href="@{/register}"
+                   class="mt-4 inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 uppercase tracking-wider">
+                    <span>Sign Up Now</span>
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                </a>
             </div>
         </div>
     </section>
@@ -154,28 +157,28 @@
                 HOW IT WORKS
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 rounded-lg">
-                <div class="bg-green-700 bg-texture text-stone-50 drop-shadow-xl border-solid border-4 border-brown p-6 rounded-lg shadow-md">
+                <div class="bg-green-700 bg-texture text-stone-50 drop-shadow-xl border-solid border-4 border-brown p-6 rounded-lg shadow-md transition-transform duration-300 hover:scale-[1.02]">
                     <h2 class="text-2xl font-bold text-center font-ubuntu drop-shadow-crisp">BROWSE</h2>
                     <img class="h-20 w-auto m-auto mt-5 mb-5 drop-shadow-crisp" src="images/browse-icon.svg"/>
                     <p class="mt-2 mb-4 text-center drop-shadow-crisp">
                         Search our vast catalogue of routines for a routine that aims to improve part of the game you struggle with
                     </p>
                 </div>
-                <div class="bg-green-700 bg-texture text-stone-50 drop-shadow-xl border-solid border-4 border-brown p-6 rounded-lg shadow-md">
+                <div class="bg-green-700 bg-texture text-stone-50 drop-shadow-xl border-solid border-4 border-brown p-6 rounded-lg shadow-md transition-transform duration-300 hover:scale-[1.02]">
                     <h2 class="text-2xl font-bold text-center font-ubuntu drop-shadow-crisp">PLAY</h2>
                     <img class="h-20 w-auto m-auto mt-5 mb-5 drop-shadow-crisp" src="images/complete-icon.svg"/>
                     <p class="mt-2 mb-4 text-center drop-shadow-crisp">
                         Go to your local club and try out your selected routine a few times
                     </p>
                 </div>
-                <div class="bg-green-700 bg-texture text-stone-50 drop-shadow-xl border-solid border-4 border-brown p-6 rounded-lg shadow-md">
+                <div class="bg-green-700 bg-texture text-stone-50 drop-shadow-xl border-solid border-4 border-brown p-6 rounded-lg shadow-md transition-transform duration-300 hover:scale-[1.02]">
                     <h2 class="text-2xl font-bold text-center font-ubuntu drop-shadow-crisp">RECORD</h2>
                     <img class="h-20 w-auto m-auto mt-5 mb-5 drop-shadow-crisp" src="images/record-icon.svg"/>
                     <p class="mt-2 mb-4 text-center drop-shadow-crisp">
                         After each attempt, add your score to your SnookerUp profile (don't worry about mistakes, scores are private to yourself!)
                     </p>
                 </div>
-                <div class="bg-green-700 bg-texture text-stone-50 drop-shadow-xl border-solid border-4 border-brown p-6 rounded-lg shadow-md">
+                <div class="bg-green-700 bg-texture text-stone-50 drop-shadow-xl border-solid border-4 border-brown p-6 rounded-lg shadow-md transition-transform duration-300 hover:scale-[1.02]">
                     <h2 class="text-2xl font-bold text-center font-ubuntu drop-shadow-crisp">ANALYSE</h2>
                     <img class="h-20 w-auto m-auto mt-5 mb-5 drop-shadow-crisp" src="images/analyse-icon.svg"/>
                     <p class="mt-2 mb-4 text-center drop-shadow-crisp">

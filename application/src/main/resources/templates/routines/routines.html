@@ -9,15 +9,18 @@
             <h2 class="text-3xl font-bold text-green-800 text-center font-ubuntu">
                 Routines
             </h2>
-            <div class="w-full md:w-2/3 2xl:w-1/2 m-auto">
-                <form id="routineFilterByTagForm" class="flex flex-row justify-center gap-3 p-2 md:p-10">
-                    <input type="text" id="searchByTitle" name="searchByTitle" placeholder="Search by title" th:value="${searchTerm != null} ? ${searchTerm} : ''" class="grow md:flex-none md:w-56 h-10 border-2 border-green-700 focus:outline-none focus:border-green-700 text-green-700 rounded px-2 md:px-3 py-0 md:py-1 tracking-wider">
-                    <button type="submit" class="bg-green-700 text-white rounded-r px-2 md:px-3 py-0 md:py-1">Search</button>
+            <div class="w-full md:w-2/3 2xl:w-1/2 m-auto px-4">
+                <form id="routineFilterByTagForm" class="flex flex-row justify-center gap-2 md:gap-3 py-4 md:py-10">
+                    <input type="text" id="searchByTitle" name="searchByTitle" placeholder="Search by title"
+                           th:value="${searchTerm != null} ? ${searchTerm} : ''"
+                           class="grow md:flex-none md:w-56 h-10 border-2 border-green-700 focus:outline-none focus:border-green-700 text-green-700 rounded-l px-3 py-1 tracking-wider">
+                    <button type="submit" class="bg-green-700 text-white rounded-r px-4 py-1 whitespace-nowrap">Search</button>
                 </form>
-                <div class="relative flex items-center mb-6 m-auto">
-                    <div id="pill-carousel" class="flex gap-3 overflow-x-auto no-scrollbar scroll-smooth pb-2">
+
+                <div class="relative flex items-center mb-6">
+                    <div id="pill-carousel" class="flex gap-3 overflow-x-auto no-scrollbar scroll-smooth pb-2 px-1">
                         <button th:each="tag : ${tags}" th:attr="data-tag-value=${tag}"
-                                class="tag-pill px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 text-white shadow-sm"
+                                class="tag-pill px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 text-white shadow-sm flex-shrink-0"
                                 th:classappend="${tag == selectedTag} ? 'bg-green-600' : 'bg-green-800'">
                             [[${tag}]]
                         </button>
