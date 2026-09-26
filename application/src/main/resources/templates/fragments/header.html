@@ -50,13 +50,22 @@
                         >Sessions</a
                         >
                     </li>
-                    <li sec:authorize="isAuthenticated()">
-                        <p class="block my-1 md:my-0 text-white rounded-md px-3 py-2 border-solid border-2 border-green-800">[[${#authentication.principal.attributes.name}]]</p>
-                    </li>
-                    <li sec:authorize="isAuthenticated()">
-                        <form th:action="@{/logout}" method="post">
-                            <input class="cursor-pointer block my-1 md:my-0 text-white hover:bg-green-950 hover:text-white rounded-md px-3 py-2 border-solid border-2 border-green-800" type="submit" value="Logout">
-                        </form>
+                    <li sec:authorize="isAuthenticated()" class="relative">
+                        <button id="userDropdownButton" type="button" class="inline-flex items-center my-1 md:my-0 text-white bg-green-800 hover:bg-green-950 rounded-md px-3 py-2 border-2 border-green-800 focus:outline-none">
+                            <span>[[${#authentication.principal.attributes.name}]]</span>
+                            <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                            </svg>
+                        </button>
+                        <div id="userDropdownMenu" class="hidden absolute right-0 z-10 mt-2 w-48 bg-white divide-y divide-gray-100 rounded-lg shadow-lg">
+                            <div class="py-1">
+                                <form th:action="@{/logout}" method="post">
+                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Sign out
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </li>
                     <li sec:authorize="isAnonymous()">
                         <a
@@ -76,5 +85,24 @@
             </div>
         </div>
     </nav>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdownButton = document.getElementById('userDropdownButton');
+            const dropdownMenu = document.getElementById('userDropdownMenu');
+
+            if (dropdownButton && dropdownMenu) {
+                dropdownButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('hidden');
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!dropdownMenu.contains(e.target) && !dropdownButton.contains(e.target)) {
+                        dropdownMenu.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    </script>
 </div>
 </html>
