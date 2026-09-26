@@ -7,8 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AliasExistsException;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.CognitoIdentityProviderException;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.UsernameExistsException;
 
+import static com.snookerup.controllers.RegistrationController.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -30,7 +33,6 @@ class RegistrationControllerTests {
     private Model mockModel;
     private BindingResult mockBindingResult;
     private RedirectAttributes mockRedirectAttributes;
-    private CognitoIdentityProviderException mockCognitoException;
 
     RegistrationController registrationController;
 
@@ -40,7 +42,6 @@ class RegistrationControllerTests {
         mockModel = mock(Model.class);
         mockBindingResult = mock(BindingResult.class);
         mockRedirectAttributes = mock(RedirectAttributes.class);
-        mockCognitoException = mock(CognitoIdentityProviderException.class);
 
         registrationController = new RegistrationController(mockRegistrationService);
     }
@@ -82,13 +83,14 @@ class RegistrationControllerTests {
     }
 
     @Test
-    public void registerUser_Should_ReturnToRegisterPageWithRegistrationAndErrorMessage_When_RegistrationServiceThrowsException() {
+    public void registerUser_Should_ReturnToRegisterPageWithRegistrationAndEmailAlreadyUsedErrorMessage_When_RegistrationServiceThrowsUsernameExistsExceptionWithDuplicateEmail() {
         // Define variables
         Registration validRegistration = new Registration();
         validRegistration.setUsername(USERNAME);
         validRegistration.setEmail(EMAIL);
         validRegistration.setInvitationCode(VALID_INVITATION_CODE);
-        String cognitoExceptionMessage = "Cognito exception";
+        String cognitoExceptionMessage = "An account with the given email already exists.";
+        UsernameExistsException mockCognitoException = mock(UsernameExistsException.class);
 
         // Set mock expectations
         doThrow(mockCognitoException).when(mockRegistrationService).registerUser(validRegistration);
@@ -103,7 +105,88 @@ class RegistrationControllerTests {
         // Verify
         assertEquals(REGISTER_PAGE, page);
         verify(mockModel).addAttribute("registration", validRegistration);
-        verify(mockModel).addAttribute("message", cognitoExceptionMessage);
+        verify(mockModel).addAttribute("message", EMAIL_ALREADY_EXISTS_FAILED_REGISTRATION_MESSAGE);
+        verify(mockModel).addAttribute("messageType", "danger");
+    }
+
+    @Test
+    public void registerUser_Should_ReturnToRegisterPageWithRegistrationAndUsernameAlreadyUsedErrorMessage_When_RegistrationServiceThrowsUsernameExistsException() {
+        // Define variables
+        Registration validRegistration = new Registration();
+        validRegistration.setUsername(USERNAME);
+        validRegistration.setEmail(EMAIL);
+        validRegistration.setInvitationCode(VALID_INVITATION_CODE);
+        String cognitoExceptionMessage = "User already exists.";
+        UsernameExistsException mockCognitoException = mock(UsernameExistsException.class);
+
+        // Set mock expectations
+        doThrow(mockCognitoException).when(mockRegistrationService).registerUser(validRegistration);
+        when(mockCognitoException.getMessage()).thenReturn(cognitoExceptionMessage);
+
+        // Execute method under test
+        String page = registrationController.registerUser(validRegistration,
+                mockBindingResult,
+                mockModel,
+                mockRedirectAttributes);
+
+        // Verify
+        assertEquals(REGISTER_PAGE, page);
+        verify(mockModel).addAttribute("registration", validRegistration);
+        verify(mockModel).addAttribute("message", USERNAME_ALREADY_EXISTS_FAILED_REGISTRATION_MESSAGE);
+        verify(mockModel).addAttribute("messageType", "danger");
+    }
+
+    @Test
+    public void registerUser_Should_ReturnToRegisterPageWithRegistrationAndEmailAlreadyUsedErrorMessage_When_RegistrationServiceThrowsAliasExistsException() {
+        // Define variables
+        Registration validRegistration = new Registration();
+        validRegistration.setUsername(USERNAME);
+        validRegistration.setEmail(EMAIL);
+        validRegistration.setInvitationCode(VALID_INVITATION_CODE);
+        String cognitoExceptionMessage = "An account with the email already exists.";
+        AliasExistsException mockCognitoException = mock(AliasExistsException.class);
+
+        // Set mock expectations
+        doThrow(mockCognitoException).when(mockRegistrationService).registerUser(validRegistration);
+        when(mockCognitoException.getMessage()).thenReturn(cognitoExceptionMessage);
+
+        // Execute method under test
+        String page = registrationController.registerUser(validRegistration,
+                mockBindingResult,
+                mockModel,
+                mockRedirectAttributes);
+
+        // Verify
+        assertEquals(REGISTER_PAGE, page);
+        verify(mockModel).addAttribute("registration", validRegistration);
+        verify(mockModel).addAttribute("message", EMAIL_ALREADY_EXISTS_FAILED_REGISTRATION_MESSAGE);
+        verify(mockModel).addAttribute("messageType", "danger");
+    }
+
+    @Test
+    public void registerUser_Should_ReturnToRegisterPageWithRegistrationAndGeneralErrorMessage_When_RegistrationServiceThrowsGeneralCognitoException() {
+        // Define variables
+        Registration validRegistration = new Registration();
+        validRegistration.setUsername(USERNAME);
+        validRegistration.setEmail(EMAIL);
+        validRegistration.setInvitationCode(VALID_INVITATION_CODE);
+        String cognitoExceptionMessage = "Cognito exception";
+        CognitoIdentityProviderException mockCognitoException = mock(CognitoIdentityProviderException.class);
+
+        // Set mock expectations
+        doThrow(mockCognitoException).when(mockRegistrationService).registerUser(validRegistration);
+        when(mockCognitoException.getMessage()).thenReturn(cognitoExceptionMessage);
+
+        // Execute method under test
+        String page = registrationController.registerUser(validRegistration,
+                mockBindingResult,
+                mockModel,
+                mockRedirectAttributes);
+
+        // Verify
+        assertEquals(REGISTER_PAGE, page);
+        verify(mockModel).addAttribute("registration", validRegistration);
+        verify(mockModel).addAttribute("message", GENERAL_FAILED_REGISTRATION_MESSAGE);
         verify(mockModel).addAttribute("messageType", "danger");
     }
 

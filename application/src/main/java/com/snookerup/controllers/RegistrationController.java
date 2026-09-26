@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AliasExistsException;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.CognitoIdentityProviderException;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.InvalidPasswordException;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.UsernameExistsException;
 
 /**
  * Controller serving all routes related to user registration.
@@ -20,6 +23,15 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.CognitoIden
 @Controller
 @RequestMapping("/register")
 public class RegistrationController {
+
+    protected static final String GENERAL_FAILED_REGISTRATION_MESSAGE =
+            "Unable to complete registration. Please try again later.";
+
+    protected static final String EMAIL_ALREADY_EXISTS_FAILED_REGISTRATION_MESSAGE =
+            "An account with this email address already exists.";
+
+    protected static final String USERNAME_ALREADY_EXISTS_FAILED_REGISTRATION_MESSAGE =
+            "Username is already taken.";
 
     private final RegistrationService registrationService;
 
@@ -52,10 +64,27 @@ public class RegistrationController {
             redirectAttributes.addFlashAttribute("messageType", "success");
 
             return "redirect:/";
-        } catch (CognitoIdentityProviderException exception) {
-
+        } catch (UsernameExistsException e) {
+            // Check if message specifies email vs username
+            if (e.getMessage() != null && e.getMessage().contains("email")) {
+                model.addAttribute("message", EMAIL_ALREADY_EXISTS_FAILED_REGISTRATION_MESSAGE);
+            } else {
+                model.addAttribute("message", USERNAME_ALREADY_EXISTS_FAILED_REGISTRATION_MESSAGE);
+            }
             model.addAttribute("registration", registration);
-            model.addAttribute("message", exception.getMessage());
+            model.addAttribute("messageType", "danger");
+
+            return "register";
+
+        } catch (AliasExistsException e) {
+            model.addAttribute("registration", registration);
+            model.addAttribute("message", EMAIL_ALREADY_EXISTS_FAILED_REGISTRATION_MESSAGE);
+            model.addAttribute("messageType", "danger");
+
+            return "register";
+        } catch (CognitoIdentityProviderException exception) {
+            model.addAttribute("registration", registration);
+            model.addAttribute("message", GENERAL_FAILED_REGISTRATION_MESSAGE);
             model.addAttribute("messageType", "danger");
 
             return "register";
