@@ -47,7 +47,10 @@
                     </div>
                 </div>
                 <div>
-                    <button type="submit" class="flex w-full justify-center rounded-md bg-green-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Submit score</button>
+                    <button type="submit" id="normalSubmit" class="flex w-full justify-center rounded-md bg-green-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Submit score</button>
+                </div>
+                <div>
+                    <button type="submit" id="submitTimeNow" class="mt-2 flex w-full justify-center rounded-md bg-green-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Submit with time set to now</button>
                 </div>
             </form>
         </div>
@@ -57,6 +60,7 @@
 
 <th:block layout:fragment="page-scripts">
     <script th:inline="javascript" type="text/javascript" th:src="@{/js/set-score-datetime-to-now.js}"></script>
+    <script th:inline="javascript" type="text/javascript" th:src="@{/js/submit-score-with-time-now.js}"></script>
     <script th:inline="javascript" type="text/javascript" th:src="@{/js/ajax/dynamic-add-score-fields-ajax.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.6.2/dist/js/tom-select.complete.min.js"></script>
     <script th:inline="javascript" type="text/javascript" th:src="@{/js/routine-title-dynamic-select.js}"></script>
