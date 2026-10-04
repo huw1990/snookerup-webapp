@@ -34,6 +34,13 @@
         "type": "string"
       }
     },
+    "externalLinks": {
+      "description": "An array of links to external sites (e.g. YouTube), containing supplemental information about the routine",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "titleImage": {
       "description": "The headline image filename for the routine (matching the file in src/main/resources/static/), typically more of a thumbnail, smaller resolution image, in landscape",
       "type": "string"

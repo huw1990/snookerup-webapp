@@ -58,9 +58,44 @@
                         <li th:each="variationsLineEasier : ${routine.variationsLinesEasier}" class="m-2">[[${variationsLineEasier}]]</li>
                     </ul>
                     <p th:if="${!routine.variationsLinesHarder.isEmpty()}" class="text-m text-green-700 m-6 ml-2 mr-2">Make the routine harder by:</p>
-                    <ul  th:if="${!routine.variationsLinesHarder.isEmpty()}" class="list-disc text-m text-green-700 m-4 mb-6">
+                    <ul th:if="${!routine.variationsLinesHarder.isEmpty()}" class="list-disc text-m text-green-700 m-4 mb-6">
                         <li th:each="variationsLineHarder : ${routine.variationsLinesHarder}" class="m-2">[[${variationsLineHarder}]]</li>
                     </ul>
+                    <div th:if="${!routine.externalLinks.isEmpty()}" class="mt-8 pt-5 border-t border-slate-200/60">
+                        <h3 class="text-base font-bold text-emerald-950 mb-3 flex items-center gap-1.5">
+                            External Resources:
+                            <span class="text-xs font-normal text-slate-500">(links open in new window)</span>
+                        </h3>
+                        <div class="flex flex-col sm:flex-row flex-wrap gap-2.5">
+                            <a th:each="link : ${routine.externalLinks}"
+                               th:href="${link.url}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-200 border shadow-xs hover:shadow-sm"
+                               th:classappend="${link.type.getValue() == 'youtube'}
+               ? 'bg-emerald-100/70 text-emerald-900 border-emerald-200 hover:bg-emerald-200/60 hover:text-emerald-950 hover:border-emerald-300'
+               : 'bg-slate-100 text-slate-800 border-slate-200 hover:bg-slate-200/70 hover:text-slate-900 hover:border-slate-300'">
+                                <svg th:if="${link.type.getValue() == 'youtube'}"
+                                     class="w-4 h-4 text-red-600 fill-current shrink-0"
+                                     viewBox="0 0 24 24">
+                                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.377.55a3.016 3.016 0 0 0-2.122 2.136C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.55 9.376.55 9.376.55s7.505 0 9.377-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                                </svg>
+                                <svg th:if="${link.type.getValue() != 'youtube'}"
+                                     class="w-4 h-4 text-emerald-700 stroke-current shrink-0"
+                                     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                </svg>
+                                <span th:text="${link.label}">Watch Video Guide</span>
+                                <svg class="w-3.5 h-3.5 opacity-60 ml-0.5 stroke-current shrink-0" viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                    <polyline points="15 3 21 3 21 9"></polyline>
+                                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -49,6 +49,9 @@ public class Routine {
     /** Specifics about the variations that can make the routine easier or harder. */
     private RoutineVariations variations;
 
+    /** A list of external links, e.g. to other snooker websites or YouTube videos. */
+    private List<ExternalLink> externalLinks = new ArrayList<>();
+
     /**
      * Verifies if the provided score is valid for this routine. Includes checking the routine ID matches, as well as
      * checking any variations included on the score are allowed by the routine.
