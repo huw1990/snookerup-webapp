@@ -15,5 +15,8 @@
     "positional-play",
     "match-situations"
   ],
-  "variations": {}
+  "variations": {
+    "loop": true,
+    "cushionLimit": true
+  }
 }

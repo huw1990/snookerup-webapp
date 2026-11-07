@@ -14,5 +14,7 @@
     "break-building",
     "positional-play"
   ],
-  "variations": {}
+  "variations": {
+    "loop": true
+  }
 }

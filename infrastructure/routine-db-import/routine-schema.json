@@ -20,20 +20,6 @@
         "type": "string"
       }
     },
-    "variationsLinesEasier": {
-      "description": "A description of variations that could make the routine easier, as an array of lines",
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "variationsLinesHarder": {
-      "description": "A description of variations that could make the routine harder, as an array of lines",
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
     "externalLinks": {
       "description": "An array of links to external sites (e.g. YouTube), containing supplemental information about the routine",
       "type": "array",

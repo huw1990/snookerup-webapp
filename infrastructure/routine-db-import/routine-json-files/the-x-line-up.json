@@ -7,13 +7,6 @@
     "Put the reds in lines between the pink and all middle/black pockets, close to the pink. If you use all 15 reds, this should be one line of three reds, and three lines of four reds, the line with the odd red is up to you.",
     "Alternative placements of the reds include placing some below the black instead of on the \"wings\"."
   ],
-  "variationsLinesEasier": [
-    "For beginner and intermediate levels, don't use all 15 reds. Start with 4 reds, try to clear the table, and work your way up to the full 15."
-  ],
-  "variationsLinesHarder": [
-    "Once you can clear a certain number of reds and all the colours, try to loop through the routine, i.e. complete the routine, then set it up and try to complete it again, playing the white on the first red from where it finished after the last black on the previous routine.",
-    "Add self-imposed positional restrictions, such as limiting the number of cushions you're allowed to hit, or potting the reds in a specific order."
-  ],
   "titleImage": "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/x-line-up-normal-ls.png",
   "otherImages": [
     "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/x-line-up-normal.png",

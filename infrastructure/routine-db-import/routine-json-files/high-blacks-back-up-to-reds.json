@@ -16,5 +16,8 @@
     "match-situations",
     "positional-play"
   ],
-  "variations": {}
+  "variations": {
+    "loop": true,
+    "potInOrder": true
+  }
 }

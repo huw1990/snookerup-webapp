@@ -12,5 +12,10 @@
   "tags": [
     "positional-play"
   ],
-  "variations": {}
+  "scoreUnit": "Pots",
+  "unit": "balls",
+  "variations": {
+    "loop": true,
+    "cushionLimit": true
+  }
 }

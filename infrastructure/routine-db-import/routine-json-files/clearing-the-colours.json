@@ -4,10 +4,6 @@
   "descriptionLines": [
     "Put all colours on their spots, then try to clear them in order, i.e. yellow, green, brown, blue, pink, black."
   ],
-  "variationsLinesHarder": [
-    "Limiting the number of cushions the white is allowed to hit.",
-    "Looping through the routine, i.e. pot yellow to black, but on the black play for position on the yellow, then replace the balls and try to clear again. With this configuration, your score is the number of completed loops."
-  ],
   "titleImage": "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/clearing-the-colours-ls.png",
   "otherImages": [
     "https://snookerup-routine-images.s3.eu-west-2.amazonaws.com/clearing-the-colours.png"
@@ -18,6 +14,7 @@
   ],
   "variations": {
     "loop": true,
-    "cushionLimit": true
+    "cushionLimit": true,
+    "stayOnOneSideOfTable": true
   }
 }
