@@ -211,14 +211,43 @@
                     <h1 class="text-2xl font-bold text-green-800 mb-4 font-ubuntu">[[${routine.title}]]</h1>
                     <span th:each="tag : ${routine.tags}" class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset mx-1">[[${tag}]]</span>
                     <p th:each="descriptionLine : ${routine.descriptionLines}" class="text-m text-green-700 m-6 ml-2 mr-2">[[${descriptionLine}]]</p>
-                    <p th:if="${!routine.variationsLinesEasier.isEmpty()}" class="text-m text-green-700 m-6 ml-2 mr-2">Make the routine easier by:</p>
-                    <ul th:if="${!routine.variationsLinesEasier.isEmpty()}" class="list-disc text-m text-green-700 m-4 mb-6">
-                        <li th:each="variationsLineEasier : ${routine.variationsLinesEasier}" class="m-2">[[${variationsLineEasier}]]</li>
-                    </ul>
-                    <p th:if="${!routine.variationsLinesHarder.isEmpty()}" class="text-m text-green-700 m-6 ml-2 mr-2">Make the routine harder by:</p>
-                    <ul  th:if="${!routine.variationsLinesHarder.isEmpty()}" class="list-disc text-m text-green-700 m-4 mb-6">
-                        <li th:each="variationsLineHarder : ${routine.variationsLinesHarder}" class="m-2">[[${variationsLineHarder}]]</li>
-                    </ul>
+                    <div th:if="${routine.variations != null && routine.variations.hasVariations()}">
+                        <p class="text-m text-green-700 m-6 ml-2 mr-2">Possible variations:</p>
+                        <ul class="list-disc text-m text-green-700 m-4 mb-6">
+                            <li th:if="${routine.variations.isLoop()}" class="m-2">
+                                <strong>Loop:</strong>
+                                Complete the routine, then with the final shot of the routine, play position for the first shot of the routine,
+                                then set up all the balls and try to complete the routine again, from where the cue ball finished. With this variation,
+                                your score is the number of completed loops.</li>
+                            <li th:if="${routine.variations.isCushionLimit()}" class="m-2">
+                                <strong>Cushion limit:</strong>
+                                Make positional play harder by limiting the number of cushions that can be hit throughout the routine.
+                            </li>
+                            <li th:if="${routine.variations.getUnitNumbers() != null}" class="m-2">
+                                <strong>Number of [[${routine.unit.value}]]:</strong>
+                                Rather than using a fixed number of <span th:text="${routine.unit.value}">balls</span>, try with different numbers,
+                                between a minimum of <span th:text="${routine.variations.unitNumbers.min}">3</span> and a maximum of
+                                <span th:text="${routine.variations.unitNumbers.max}">15</span>.
+                            </li>
+                            <li th:if="${routine.variations.isPotInOrder()}" class="m-2">
+                                <strong>Pot in order:</strong>
+                                Make positional play harder by potting the <span th:text="${routine.unit.value}">balls</span> in a
+                                particular order.
+                            </li>
+                            <li th:if="${routine.variations.isStayOnOneSideOfTable()}" class="m-2">
+                                <strong>Stay on one side of the table:</strong>
+                                Play each shot in the routine from one side of the table, making sure the cue ball comes back
+                                to the same side of the table after each shot.
+                            </li>
+                            <li th:if="${routine.variations.getBallStriking() != null}" class="m-2">
+                                <strong>Ball striking:</strong>
+                                Play every shot with the same ball striking, one of:
+                                <ul class="list-disc list-inside ps-4 mt-1 mb-0 space-y-1">
+                                    <li th:each="item : ${routine.variations.getBallStriking()}" th:text="${item.value}">stun</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
